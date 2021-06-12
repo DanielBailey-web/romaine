@@ -1,0 +1,68 @@
+{
+  "name": "romaine",
+  "version": "0.0.0",
+  "description": "React OpenCV Manipulation and Image Narration & Editing",
+  "main": "dist/romaine.development.esm.jsx",
+  "types": "dist/romaine.development",
+  "files": [
+    "dist/"
+  ],
+  "scripts": {
+    "webpack-dev": "webpack serve --mode=development",
+    "start": "npm run webpack-dev",
+    "compile-dev": "npm run webpack; npm run pretest;",
+    "webpack": "webpack --mode=development",
+    "build": "rollup -c; npm run pretest",
+    "build-watch": "rollup -c -w",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "check-types": "tsc",
+    "pretest": "eslint --ignore-path .gitignore ./src"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DanielBailey-web/romaine.git"
+  },
+  "keywords": [
+    "react",
+    "opencv",
+    "image",
+    "editing",
+    "cropping",
+    "filtering"
+  ],
+  "author": "Daniel Bailey",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/DanielBailey-web/romaine/issues"
+  },
+  "homepage": "https://github.com/DanielBailey-web/romaine#readme",
+  "devDependencies": {
+    "@babel/core": "^7.12.0",
+    "@babel/preset-env": "^7.12.0",
+    "@babel/preset-flow": "^7.12.0",
+    "@babel/preset-react": "^7.12.0",
+    "@rollup/plugin-babel": "^5.3.0",
+    "@rollup/plugin-node-resolve": "^13.0.0",
+    "@rollup/plugin-replace": "^2.4.2",
+    "@types/react": "^17.0.11",
+    "@typescript-eslint/parser": "^4.26.1",
+    "babel-loader": "^8.2.2",
+    "eslint": "^7.28.0",
+    "rollup": "^2.51.1",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-delete": "^2.0.0",
+    "rollup-plugin-eslint": "^7.0.0",
+    "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rollup-plugin-typescript2": "^0.30.0",
+    "ts-loader": "^8.0.11",
+    "typescript": "^4.3.2",
+    "webpack": "^4.46.0",
+    "webpack-cli": "^4.7.2",
+    "webpack-dev-server": "^3.11.2"
+  },
+  "peerDependencies": {
+    "prop-types": "15.7.2",
+    "react": "^16.8.0",
+    "react-dom": "^16.8.0"
+  }
+}

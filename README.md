@@ -1,2 +1,3 @@
 # romaine
-React OpenCV Manipulation and Image Editing
+
+React OpenCV Manipulation and Image Narration & Editing
