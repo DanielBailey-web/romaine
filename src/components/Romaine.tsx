@@ -80,11 +80,4 @@ Romaine.propTypes = {
   onLoad: PropTypes.func,
 };
 
-const Lettuce: FC<{}> = () => {
-  const [state, _setstate] = useState(false);
-  console.log(state, _setstate);
-  return <>WHYYYY</>;
-};
-Lettuce.propTypes = {};
-
-export { OpenCvConsumer, OpenCvContext, Romaine, Lettuce };
+export { OpenCvConsumer, OpenCvContext, Romaine };
