@@ -1,1 +1,1 @@
-export { Lettuce, Romaine } from "./Romaine";
+export * from "./Romaine";
