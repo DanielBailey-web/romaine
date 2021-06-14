@@ -30,6 +30,7 @@ interface ROMAINE {
  * a romaine context for use in getting openCV and the canvas ref element
  * @todo
  * 1) remove ts-ignore
+ * 2) Add ref to provider
  */
 const Romaine: FC<ROMAINE> = ({ openCvPath, children, onLoad }) => {
   const [loaded, setLoaded] = useState(false);

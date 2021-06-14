@@ -8,11 +8,9 @@
     "dist/"
   ],
   "scripts": {
-    "webpack-dev": "webpack serve --mode=development",
-    "start": "npm run webpack-dev",
+    "start": "npm run build-watch && ",
     "compile-dev": "npm run webpack; npm run pretest;",
-    "webpack": "webpack --mode=development",
-    "build": "rollup -c; npm run pretest",
+    "build": "rollup -c --environment NODE_ENV=development; npm run pretest",
     "build-watch": "rollup -c -w",
     "test": "echo \"Error: no test specified\" && exit 1",
     "check-types": "tsc",
@@ -46,7 +44,6 @@
     "@rollup/plugin-replace": "^2.4.2",
     "@types/react": "^17.0.11",
     "@typescript-eslint/parser": "^4.26.1",
-    "babel-loader": "^8.2.2",
     "eslint": "^7.28.0",
     "rollup": "^2.51.1",
     "rollup-plugin-commonjs": "^10.1.0",
@@ -54,11 +51,7 @@
     "rollup-plugin-eslint": "^7.0.0",
     "rollup-plugin-peer-deps-external": "^2.2.4",
     "rollup-plugin-typescript2": "^0.30.0",
-    "ts-loader": "^8.0.11",
-    "typescript": "^4.3.2",
-    "webpack": "^4.46.0",
-    "webpack-cli": "^4.7.2",
-    "webpack-dev-server": "^3.11.2"
+    "typescript": "^4.3.2"
   },
   "peerDependencies": {
     "prop-types": "15.7.2",
