@@ -1,13 +1,19 @@
-import { OpenCV } from "../../components";
-import { ContourCoordinates } from "../../components/Cropper/Canvas/Canvas";
-
-export const transform = (
+import { ContourCoordinates, OpenCV } from "../../components";
+/**
+ * perspective cropping utility (AKA keystone correction)
+ * @param cv openCv
+ * @param docCanvas
+ * @param cropPoints
+ * @param imageResizeRatio
+ * @param setPreviewPaneDimensions
+ */
+export const warpPerspective = (
   cv: OpenCV,
   docCanvas: HTMLCanvasElement,
   cropPoints: ContourCoordinates,
   imageResizeRatio: number,
   setPreviewPaneDimensions: () => void
-) => {
+): void => {
   const dst = cv.imread(docCanvas);
 
   const bR = cropPoints["right-bottom"];

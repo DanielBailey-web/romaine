@@ -5,7 +5,16 @@ import Draggable, {
   DraggableProps,
 } from "react-draggable";
 import T from "prop-types";
-
+export interface CoordinateXY {
+  x: number;
+  y: number;
+}
+export interface ContourCoordinates {
+  "left-bottom": CoordinateXY;
+  "left-top": CoordinateXY;
+  "right-bottom": CoordinateXY;
+  "right-top": CoordinateXY;
+}
 /**
  * Add default styles to the points
  * Makes sure position absolute cannot be overwritten
@@ -22,7 +31,7 @@ const buildCropPointStyle = (
   position: "absolute",
 });
 
-type PointArea = "left-top" | "right-top" | "right-bottom" | "left-bottom";
+type PointArea = keyof ContourCoordinates;
 
 export interface CropPointProps {
   pointSize: number;

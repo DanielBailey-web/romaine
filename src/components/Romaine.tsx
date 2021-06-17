@@ -6,9 +6,12 @@ import React, {
   useMemo,
   useState,
   ReactNode,
+  useReducer,
 } from "react";
 import PropTypes from "prop-types";
 import { moduleConfig } from "../util/configs";
+import { initialRomaineState } from "../util";
+import { cropperReducer } from "../util";
 export type OpenCV = any;
 declare global {
   interface Window {
@@ -16,8 +19,12 @@ declare global {
     Module: typeof moduleConfig;
   }
 }
+export interface RomaineContext {
+  loaded?: boolean;
+  cv?: OpenCV;
+}
 
-const OpenCvContext = createContext<OpenCV>(null);
+const OpenCvContext = createContext<RomaineContext>({});
 const { Consumer: OpenCvConsumer, Provider } = OpenCvContext;
 const scriptId = "opencv-react";
 
@@ -69,10 +76,17 @@ const Romaine: FC<ROMAINE> = ({ openCvPath, children, onLoad }) => {
     document.body.appendChild(generateOpenCvScriptTag());
   }, [openCvPath, handleOnLoad]);
 
-  const memoizedProviderValue = useMemo(
-    () => ({ loaded, cv: window.cv }),
-    [loaded]
+  // const [romaine, setRomaine] = useState<RomaineType>();
+  const [romaine, dispatchRomaine] = useReducer(
+    cropperReducer,
+    {} as typeof initialRomaineState
   );
+
+  const memoizedProviderValue = useMemo(
+    () => ({ loaded, cv: window.cv, romaine, dispatchRomaine }),
+    [loaded, romaine]
+  );
+  console.log("Context updated", memoizedProviderValue);
   return <Provider value={memoizedProviderValue}>{children}</Provider>;
 };
 Romaine.propTypes = {

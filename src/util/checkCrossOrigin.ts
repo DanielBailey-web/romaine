@@ -1,4 +1,4 @@
-export function isCrossOriginURL(url: string) {
+export function isCrossOriginURL(url: string): boolean {
   const { location } = window;
   const parts = url.match(/^(\w+:)\/\/([^:/?#]*):?(\d*)/i);
 

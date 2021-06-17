@@ -1,9 +1,9 @@
 export interface RomaineRef {
-  backToCrop: () => void;
+  backToCrop?: () => void;
   /**
    * function that does the transforming, filtering, and optionally shows a preview
    */
-  done: (options: Partial<ClickCropOptions>) => Promise<Blob | null>;
+  crop?: (options: Partial<ClickCropOptions>) => Promise<Blob | null>;
 }
 
 export type DoneFunc = (options: Partial<ClickCropOptions>) => Promise<Blob>;

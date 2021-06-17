@@ -1,11 +1,11 @@
 import React, {
+  ForwardedRef,
   useCallback,
   useEffect,
   useImperativeHandle,
-  useRef,
   useState,
 } from "react";
-import { useRomaine } from "../../../hooks";
+import { useRomaine } from "../../hooks";
 import T from "prop-types";
 
 import {
@@ -14,82 +14,72 @@ import {
   readFile,
   isCrossOriginURL,
   applyFilter,
-  transform,
-} from "../../../util";
+  warpPerspective,
+} from "../../util";
 
 import { CropPoints } from "./CropPoints";
 import { CropPointsDelimiters } from "./CropPointsDelimiters";
-import { RomaineRef } from "../../Romaine.types";
-
-const buildImgContainerStyle = (previewDims: CalculatedDimensions) => ({
-  width: previewDims.width,
-  height: previewDims.height,
-});
+import { ContourCoordinates, CoordinateXY } from ".";
+import { RomaineRef } from "../Romaine.types";
 
 const imageDimensions = { width: 0, height: 0 };
 let imageResizeRatio: number;
 
-export interface CoordinateXY {
-  x: number;
-  y: number;
-}
-export interface ContourCoordinates {
-  "left-bottom": CoordinateXY;
-  "left-top": CoordinateXY;
-  "right-bottom": CoordinateXY;
-  "right-top": CoordinateXY;
-}
 interface CropperState extends ContourCoordinates {
   loading: boolean;
 }
-export interface CanvasProps {
+export interface CropperProps {
+  romaineRef: ForwardedRef<RomaineRef>;
   image: File | string;
   onDragStop: (s: CropperState) => void;
   onChange: (s: CropperState) => void;
-  pointSize: number;
-  lineWidth: number;
-  pointBgColor: string;
-  pointBorder: string;
-  lineColor: string;
+  pointSize?: number;
+  lineWidth?: number;
+  lineColor?: string;
   maxWidth: number;
   maxHeight: number;
 }
-interface cropperRef {
-  cropperRef: React.ForwardedRef<RomaineRef>;
+interface CropperSpecificProps {
+  canvasRef: React.MutableRefObject<HTMLCanvasElement | undefined>;
+  previewCanvasRef: React.RefObject<HTMLCanvasElement>;
+  previewDims: CalculatedDimensions | undefined;
+  setPreviewDims: React.Dispatch<CalculatedDimensions>;
 }
 
-const Canvas = ({
+export const CroppingCanvas = ({
   image,
   onDragStop,
   onChange,
-  cropperRef,
+  romaineRef,
+  previewCanvasRef,
+  canvasRef,
   pointSize = 30,
   lineWidth,
   lineColor,
   maxWidth,
   maxHeight,
-}: CanvasProps & cropperRef) => {
+  previewDims,
+  setPreviewDims,
+}: CropperProps & CropperSpecificProps) => {
   const { loaded: cvLoaded, cv } = useRomaine();
-  const canvasRef = useRef<HTMLCanvasElement>();
-  const previewCanvasRef = useRef<HTMLCanvasElement>(null);
-  const magnifierCanvasRef = useRef<HTMLCanvasElement>(null);
+  // let canvasRef = useRef<HTMLCanvasElement>();
+  // const magnifierCanvasRef = useRef<HTMLCanvasElement>(null);
 
-  const [previewDims, setPreviewDims] = useState<CalculatedDimensions>();
   const [cropPoints, setCropPoints] = useState<ContourCoordinates>();
   const [loading, setLoading] = useState(false);
   const [mode, setMode] = useState("crop");
 
   useImperativeHandle(
-    cropperRef,
+    romaineRef,
     (): RomaineRef => ({
       backToCrop: () => {
         setMode("crop");
       },
-      done: async (opts) => {
-        return new Promise((resolve, reject) => {
+      crop: async (opts = {}) => {
+        return new Promise((resolve) => {
           if (canvasRef.current && cropPoints) {
             setLoading(true);
-            transform(
+            warpPerspective(
               cv,
               canvasRef.current,
               cropPoints,
@@ -106,15 +96,16 @@ const Canvas = ({
                 resolve(blob);
                 setLoading(false);
               },
-              opts.image?.type ||
+              opts?.image?.type ||
                 (typeof image !== "string" ? image.type : "image/png"),
-              opts.image?.quality || 1
+              opts?.image?.quality || 1
             );
-          } else return reject();
+          }
         });
       },
     })
   );
+
   useEffect(() => {
     if (mode === "preview") {
       showPreview();
@@ -225,18 +216,12 @@ const Canvas = ({
     setCropPoints(contourCoordinates);
   };
 
-  const clearMagnifier = () => {
-    if (magnifierCanvasRef.current) {
-      const magnCtx = magnifierCanvasRef.current.getContext("2d");
-      magnCtx &&
-        magnCtx.clearRect(
-          0,
-          0,
-          magnifierCanvasRef.current.width,
-          magnifierCanvasRef.current.height
-        );
-    }
-  };
+  // const clearCanvasByRef = (ref: React.RefObject<HTMLCanvasElement>) => {
+  //   if (ref.current) {
+  //     const magnCtx = ref.current.getContext("2d");
+  //     magnCtx && magnCtx.clearRect(0, 0, ref.current.width, ref.current.height);
+  //   }
+  // };
 
   useEffect(() => {
     if (onChange && cropPoints) {
@@ -261,31 +246,29 @@ const Canvas = ({
   }, [image, previewCanvasRef.current, cvLoaded, mode]);
 
   const onDrag = useCallback((position, area) => {
-    if (magnifierCanvasRef.current && previewCanvasRef.current) {
-      const { x, y } = position;
-
-      const magnCtx = magnifierCanvasRef.current.getContext("2d");
-      clearMagnifier();
-
-      // TODO we should make those 5, 10 and 20 values proportionate
-      // to the point size
-      magnCtx &&
-        magnCtx.drawImage(
-          previewCanvasRef.current,
-          x - (pointSize - 10),
-          y - (pointSize - 10),
-          pointSize + 5,
-          pointSize + 5,
-          x + 10,
-          y - 90,
-          pointSize + 20,
-          pointSize + 20
-        );
-
-      setCropPoints((cPs) => {
-        if (cPs) return { ...cPs, [area]: { x, y } };
-      });
-    }
+    // if (magnifierCanvasRef.current && previewCanvasRef.current) {
+    // const { x, y } = position;
+    // const magnCtx = magnifierCanvasRef.current.getContext("2d");
+    // clearCanvasByRef(magnifierCanvasRef);
+    // TODO we should make those 5, 10 and 20 values proportionate
+    // to the point size
+    // magnCtx &&
+    //   magnCtx.drawImage(
+    //     previewCanvasRef.current,
+    //     x - (pointSize - 10),
+    //     y - (pointSize - 10),
+    //     pointSize + 5,
+    //     pointSize + 5,
+    //     x + 10,
+    //     y - 90,
+    //     pointSize + 20,
+    //     pointSize + 20
+    //   );
+    console.log(area);
+    setCropPoints((cPs) => {
+      if (cPs) return { ...cPs, [area]: position };
+    });
+    // }
   }, []);
 
   const onStop = useCallback(
@@ -296,7 +279,7 @@ const Canvas = ({
     ) => {
       const { x, y } = position;
 
-      clearMagnifier();
+      // clearCanvasByRef(magnifierCanvasRef);
       setCropPoints((cPs) => {
         if (cPs) return { ...cPs, [area]: { x, y } };
       });
@@ -308,12 +291,7 @@ const Canvas = ({
   );
 
   return (
-    <div
-      style={{
-        position: "relative",
-        ...(previewDims && buildImgContainerStyle(previewDims)),
-      }}
-    >
+    <>
       {previewDims && mode === "crop" && cropPoints && (
         <>
           <CropPoints
@@ -343,7 +321,8 @@ const Canvas = ({
             lineColor={lineColor}
             pointSize={pointSize}
           />
-          <canvas
+          {/* <canvas
+            id="magnifier"
             style={{
               position: "absolute",
               zIndex: 5,
@@ -352,20 +331,14 @@ const Canvas = ({
             width={previewDims.width}
             height={previewDims.height}
             ref={magnifierCanvasRef}
-          />
+          /> */}
         </>
       )}
-      <canvas
-        style={{ zIndex: 5, pointerEvents: "none" }}
-        ref={previewCanvasRef}
-      />
-    </div>
+    </>
   );
 };
 
-export default Canvas;
-
-Canvas.propTypes = {
+CroppingCanvas.propTypes = {
   image: T.object.isRequired,
   onDragStop: T.func,
   onChange: T.func,

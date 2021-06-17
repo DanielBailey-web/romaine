@@ -1,19 +1,21 @@
 import React, { useCallback, useEffect, useRef } from "react";
 import T from "prop-types";
-import { ContourCoordinates, CoordinateXY } from "./Canvas";
+import { ContourCoordinates, CoordinateXY } from "..";
 
 interface CropPointsDelimiters {
   cropPoints: ContourCoordinates;
   pointSize: number;
-  lineColor: string;
-  lineWidth: number;
+  lineColor?: string;
+  lineWidth?: number;
   previewDims: {
     width: number;
     height: number;
     ratio: number;
   };
 }
-
+/**
+ * Create the lines for the cropper utility
+ */
 const CropPointsDelimiters = ({
   cropPoints,
   previewDims,
@@ -79,6 +81,7 @@ const CropPointsDelimiters = ({
 
   return (
     <canvas
+      id="crop-point-delimiters"
       ref={canvas}
       style={{
         position: "absolute",

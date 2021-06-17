@@ -3,10 +3,6 @@ import del from "rollup-plugin-delete";
 import pkg from "./package.json";
 import { eslint } from "rollup-plugin-eslint";
 import replace from "@rollup/plugin-replace";
-import resolve from "@rollup/plugin-node-resolve";
-import babel from "@rollup/plugin-babel";
-import commonjs from "rollup-plugin-commonjs";
-import externalDeps from "rollup-plugin-peer-deps-external";
 import peerDepsExternal from "rollup-plugin-peer-deps-external";
 
 const EXTENSIONS = [".ts", ".tsx", ".js", ".jsx", ".json"];
@@ -32,7 +28,7 @@ export default [
       // },
     },
     plugins: [
-      del({ targets: ["dist/*", "playground/src/component-lib"] }),
+      // del({ targets: ["dist/*", "playground/src/component-lib"] }),
       typescript({ tsconfig: "./tsconfig.json" }),
       replace({
         "process.env.NODE_ENV": JSON.stringify(NODE_ENV),
