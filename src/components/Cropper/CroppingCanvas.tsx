@@ -9,10 +9,9 @@ import { useRomaine } from "../../hooks";
 import T from "prop-types";
 
 import {
-  calcDims,
   CalculatedDimensions,
-  readFile,
-  isCrossOriginURL,
+  // readFile,
+  // isCrossOriginURL,
   applyFilter,
   warpPerspective,
 } from "../../util";
@@ -22,8 +21,7 @@ import { CropPointsDelimiters } from "./CropPointsDelimiters";
 import { ContourCoordinates, CoordinateXY } from ".";
 import { RomaineRef } from "../Romaine.types";
 
-const imageDimensions = { width: 0, height: 0 };
-let imageResizeRatio: number;
+// const imageDimensions = { width: 0, height: 0 };
 
 interface CropperState extends ContourCoordinates {
   loading: boolean;
@@ -43,7 +41,11 @@ interface CropperSpecificProps {
   canvasRef: React.MutableRefObject<HTMLCanvasElement | undefined>;
   previewCanvasRef: React.RefObject<HTMLCanvasElement>;
   previewDims: CalculatedDimensions | undefined;
+  imageResizeRatio: number;
   setPreviewDims: React.Dispatch<CalculatedDimensions>;
+  showPreview: (imageResizeRatio: number, image?: string) => void;
+  setPreviewPaneDimensions: () => void;
+  createCanvas: (src: string) => Promise<void>;
 }
 
 export const CroppingCanvas = ({
@@ -56,10 +58,14 @@ export const CroppingCanvas = ({
   pointSize = 30,
   lineWidth,
   lineColor,
-  maxWidth,
-  maxHeight,
+  // maxWidth,
+  // maxHeight,
   previewDims,
-  setPreviewDims,
+  // setPreviewDims,
+  imageResizeRatio,
+  showPreview,
+  // createCanvas,
+  setPreviewPaneDimensions,
 }: CropperProps & CropperSpecificProps) => {
   const { loaded: cvLoaded, cv } = useRomaine();
   // let canvasRef = useRef<HTMLCanvasElement>();
@@ -108,73 +114,9 @@ export const CroppingCanvas = ({
 
   useEffect(() => {
     if (mode === "preview") {
-      showPreview();
+      showPreview(imageResizeRatio);
     }
   }, [mode]);
-
-  const setPreviewPaneDimensions = () => {
-    if (canvasRef?.current && previewCanvasRef?.current) {
-      // set preview pane dimensions
-      const newPreviewDims = calcDims(
-        canvasRef.current.width,
-        canvasRef.current.height,
-        maxWidth,
-        maxHeight
-      );
-      setPreviewDims(newPreviewDims);
-
-      previewCanvasRef.current.width = newPreviewDims.width;
-      previewCanvasRef.current.height = newPreviewDims.height;
-
-      imageResizeRatio = newPreviewDims.width / canvasRef.current.width;
-    }
-  };
-
-  const createCanvas = (src: string) => {
-    return new Promise<void>((resolve, reject) => {
-      try {
-        const img = document.createElement("img");
-        img.onload = async () => {
-          // set edited image canvas and dimensions
-          canvasRef.current = document.createElement("canvas");
-          canvasRef.current.width = img.width;
-          canvasRef.current.height = img.height;
-          const ctx = canvasRef.current.getContext("2d");
-          if (ctx) {
-            ctx.fillStyle = "white";
-            ctx.fillRect(0, 0, img.width, img.height);
-            ctx.drawImage(img, 0, 0);
-            imageDimensions.width = canvasRef.current.width;
-            imageDimensions.height = canvasRef.current.height;
-            setPreviewPaneDimensions();
-            return resolve();
-          }
-          return reject();
-        };
-        if (isCrossOriginURL(src)) img.crossOrigin = "use-credentials";
-        img.src = src;
-      } catch (err) {
-        reject();
-      }
-    });
-  };
-
-  const showPreview = (image?: string) => {
-    const src = image || cv.imread(canvasRef.current);
-    const dst = new cv.Mat();
-    const dsize = new cv.Size(0, 0);
-    cv.resize(
-      src,
-      dst,
-      dsize,
-      imageResizeRatio,
-      imageResizeRatio,
-      cv.INTER_AREA
-    );
-    cv.imshow(previewCanvasRef.current, dst);
-    src.delete();
-    dst.delete();
-  };
 
   const detectContours = () => {
     const dst = cv.imread(canvasRef.current);
@@ -231,9 +173,9 @@ export const CroppingCanvas = ({
 
   useEffect(() => {
     const bootstrap = async () => {
-      const src = await readFile(image);
-      await createCanvas(src);
-      showPreview();
+      // const src = await readFile(image);
+      // await createCanvas(src);
+      // showPreview(imageResizeRatio);
       detectContours();
       setLoading(false);
     };
@@ -321,17 +263,6 @@ export const CroppingCanvas = ({
             lineColor={lineColor}
             pointSize={pointSize}
           />
-          {/* <canvas
-            id="magnifier"
-            style={{
-              position: "absolute",
-              zIndex: 5,
-              pointerEvents: "none",
-            }}
-            width={previewDims.width}
-            height={previewDims.height}
-            ref={magnifierCanvasRef}
-          /> */}
         </>
       )}
     </>
