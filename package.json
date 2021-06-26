@@ -53,8 +53,7 @@
   },
   "peerDependencies": {
     "prop-types": "15.7.2",
-    "react": "^16.8.0",
-    "react-dom": "^16.8.0"
+    "react": "^16.8.3 || ^17.0.0-0"
   },
   "dependencies": {
     "react-draggable": "^4.4.3"
