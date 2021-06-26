@@ -19,7 +19,9 @@ export const FolderSelection = ({
   children,
   ...props
 }: Props) => {
-  const initialInputStyles: React.CSSProperties = {};
+  const initialInputStyles: React.CSSProperties = {
+    visibility: "hidden",
+  };
   const initialLabelStyles: React.CSSProperties = {};
   const hoverInputStyles: React.CSSProperties = {
     position: "absolute",
@@ -112,6 +114,7 @@ export const FolderSelection = ({
           props.onChange && props.onChange(e);
           setInputValue(e.target.value);
           getFiles && getFiles(e.target.files);
+          dispatch("initial");
         }}
       />
       {children}
