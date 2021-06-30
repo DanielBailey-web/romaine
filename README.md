@@ -2,13 +2,13 @@
 
 React OpenCV Manipulation and Image Narration & Editing
 
-# Versioning
-
-Currently minor changes will be breaking until a stable 1.0.0 release. Semantic versioning will be used post stable release.
-
 # Under Construction
 
 This package is very much a work in progress with new minor versions (with breaking changes potentially with every update).
+
+# Versioning
+
+Currently minor changes will be breaking until a stable 1.0.0 release. Semantic versioning will be used post stable release.
 
 # Quick Features
 
