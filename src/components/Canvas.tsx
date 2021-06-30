@@ -1,4 +1,10 @@
-import React, { forwardRef, useEffect, useRef, useState } from "react";
+import React, {
+  forwardRef,
+  ReactNode,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { CropperProps, CroppingCanvas } from "./Cropper";
 import {
   calcDims,
@@ -16,7 +22,11 @@ interface CanvasProps extends CropperProps {
 }
 let imageResizeRatio = 1;
 const CanvasActual = ({ cropper = true, ...props }: CanvasProps) => {
-  const { cv } = useRomaine();
+  const {
+    cv,
+    romaine: { mode },
+  } = useRomaine();
+
   const { maxHeight, maxWidth, image } = props;
 
   const previewCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -46,7 +56,6 @@ const CanvasActual = ({ cropper = true, ...props }: CanvasProps) => {
     const src = cv.imread(canvasRef.current);
     const dst = new cv.Mat();
     const dsize = new cv.Size(0, 0);
-    console.log(src, dst, dsize, imageResizeRatio);
     cv.resize(
       src,
       dst,
@@ -71,7 +80,7 @@ const CanvasActual = ({ cropper = true, ...props }: CanvasProps) => {
           canvasRef.current.height = img.height;
           const ctx = canvasRef.current.getContext("2d");
           if (ctx) {
-            ctx.fillStyle = "white";
+            ctx.fillStyle = "#fff0";
             ctx.fillRect(0, 0, img.width, img.height);
             ctx.drawImage(img, 0, 0);
             setPreviewPaneDimensions();
@@ -98,59 +107,84 @@ const CanvasActual = ({ cropper = true, ...props }: CanvasProps) => {
 
   return (
     <div
-      id="romaine-wrapper"
       style={{
-        display: "grid",
-        placeItems: "center",
-        padding: "4em",
+        position: "relative",
+        ...(previewDims && buildImgContainerStyle(previewDims)),
       }}
     >
-      <div
+      <canvas
+        id="preview-canvas"
         style={{
-          position: "relative",
-          ...(previewDims && buildImgContainerStyle(previewDims)),
+          backgroundSize: "20px 20px",
+          backgroundImage:
+            "linear-gradient(to bottom, #0001 10px, #0003 10px),linear-gradient(to right, #0002 10px, #0004 10px),linear-gradient(to right, transparent 10px, #ffff 10px),linear-gradient(to bottom, #0004 10px, transparent 10px),linear-gradient(to bottom, #ffff 10px, #ffff 10px)",
+          position: "absolute",
+          top: 0,
+          right: 0,
+          left: 0,
+          bottom: 0,
+          zIndex: 5,
+          pointerEvents: "none",
         }}
-      >
-        <canvas
-          id="preview-canvas"
-          style={{ position: "absolute", zIndex: 5, pointerEvents: "none" }}
-          ref={previewCanvasRef}
-          width={previewDims?.width || maxWidth}
-          height={previewDims?.height || maxHeight}
+        ref={previewCanvasRef}
+        width={previewDims?.width || maxWidth}
+        height={previewDims?.height || maxHeight}
+      />
+      {(mode === "crop" || mode === "perspective-crop") && !loading && (
+        <CroppingCanvas
+          imageResizeRatio={imageResizeRatio}
+          setPreviewPaneDimensions={setPreviewPaneDimensions}
+          createCanvas={createCanvas}
+          showPreview={showPreview}
+          canvasRef={canvasRef}
+          previewCanvasRef={previewCanvasRef}
+          previewDims={previewDims}
+          setPreviewDims={setPreviewDims}
+          {...props}
         />
-        {cropper && !loading && (
-          <CroppingCanvas
-            imageResizeRatio={imageResizeRatio}
-            setPreviewPaneDimensions={setPreviewPaneDimensions}
-            createCanvas={createCanvas}
-            showPreview={showPreview}
-            canvasRef={canvasRef}
-            previewCanvasRef={previewCanvasRef}
-            previewDims={previewDims}
-            setPreviewDims={setPreviewDims}
-            {...props}
-          />
-        )}
-      </div>
+      )}
     </div>
   );
 };
 
-interface RomaineCanvas extends Omit<CanvasProps, "romaineRef"> {
+interface RomaineCanvas extends Omit<Omit<CanvasProps, "image">, "romaineRef"> {
   openCvPath?: string;
+  children?: ReactNode;
+  image: File | string | null;
+  wrapperProps?: React.DetailedHTMLProps<
+    React.HTMLAttributes<HTMLDivElement>,
+    HTMLDivElement
+  >;
 }
 /**
  * This function is to make sure the the user is using Romaine context
- * @param param0
- * @returns
+ *
+ * Can also pass children that can be absolutely positioned
  */
 export const Canvas = forwardRef(
   (
-    { openCvPath, ...props }: RomaineCanvas,
+    { openCvPath, children, image, wrapperProps = {}, ...props }: RomaineCanvas,
     ref: React.ForwardedRef<RomaineRef>
   ) => (
     <Romaine openCvPath={openCvPath}>
-      <CanvasActual {...props} romaineRef={ref} />
+      <div
+        id="romaine-wrapper"
+        {...wrapperProps}
+        style={{
+          position: "relative",
+          display: "grid",
+          placeItems: "center",
+          padding: "0 250px 0 2em",
+          width: props.maxWidth,
+          height: props.maxHeight,
+          marginLeft: "auto",
+          marginRight: "auto",
+          ...wrapperProps.style,
+        }}
+      >
+        {children}
+        {image && <CanvasActual image={image} {...props} romaineRef={ref} />}
+      </div>
     </Romaine>
   )
 );

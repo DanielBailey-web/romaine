@@ -67,7 +67,7 @@ export const CroppingCanvas = ({
   // createCanvas,
   setPreviewPaneDimensions,
 }: CropperProps & CropperSpecificProps) => {
-  const { loaded: cvLoaded, cv } = useRomaine();
+  const { loaded: cvLoaded, cv, romaine, setMode: changeMode } = useRomaine();
   // let canvasRef = useRef<HTMLCanvasElement>();
   // const magnifierCanvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -101,6 +101,7 @@ export const CroppingCanvas = ({
                 // blob.name = image.name;
                 resolve(blob);
                 setLoading(false);
+                changeMode && changeMode(null);
               },
               opts?.image?.type ||
                 (typeof image !== "string" ? image.type : "image/png"),
@@ -187,33 +188,80 @@ export const CroppingCanvas = ({
     }
   }, [image, previewCanvasRef.current, cvLoaded, mode]);
 
-  const onDrag = useCallback((position, area) => {
-    // if (magnifierCanvasRef.current && previewCanvasRef.current) {
-    // const { x, y } = position;
-    // const magnCtx = magnifierCanvasRef.current.getContext("2d");
-    // clearCanvasByRef(magnifierCanvasRef);
-    // TODO we should make those 5, 10 and 20 values proportionate
-    // to the point size
-    // magnCtx &&
-    //   magnCtx.drawImage(
-    //     previewCanvasRef.current,
-    //     x - (pointSize - 10),
-    //     y - (pointSize - 10),
-    //     pointSize + 5,
-    //     pointSize + 5,
-    //     x + 10,
-    //     y - 90,
-    //     pointSize + 20,
-    //     pointSize + 20
-    //   );
-    console.log(area);
-    setCropPoints((cPs) => {
-      if (cPs) return { ...cPs, [area]: position };
-    });
-    // }
-  }, []);
+  const handleNormalCornerMove = useCallback(
+    (
+      position: CoordinateXY,
+      area: keyof ContourCoordinates,
+      cPs: ContourCoordinates | undefined
+    ) => {
+      const { x, y } = position;
+      if (cPs) {
+        switch (area) {
+          case "left-bottom":
+            return {
+              ...cPs,
+              [area]: { x, y },
+              "left-top": { x, y: cPs["left-top"].y },
+              "right-bottom": { x: cPs["right-bottom"].x, y },
+            };
+          case "right-bottom":
+            return {
+              ...cPs,
+              [area]: { x, y },
+              "right-top": { x, y: cPs["right-top"].y },
+              "left-bottom": { x: cPs["left-bottom"].x, y },
+            };
+          case "right-top":
+            return {
+              ...cPs,
+              [area]: { x, y },
+              "left-top": { x: cPs["left-top"].x, y },
+              "right-bottom": { x, y: cPs["right-bottom"].y },
+            };
+          case "left-top":
+            return {
+              ...cPs,
+              [area]: { x, y },
+              "left-bottom": { x, y: cPs["left-bottom"].y },
+              "right-top": { x: cPs["right-top"].x, y },
+            };
+        }
+      }
+    },
+    []
+  );
 
-  const onStop = useCallback(
+  const onCornerDrag = useCallback(
+    (position, area) => {
+      // if (magnifierCanvasRef.current && previewCanvasRef.current) {
+      // const { x, y } = position;
+      // const magnCtx = magnifierCanvasRef.current.getContext("2d");
+      // clearCanvasByRef(magnifierCanvasRef);
+      // TODO we should make those 5, 10 and 20 values proportionate
+      // to the point size
+      // magnCtx &&
+      //   magnCtx.drawImage(
+      //     previewCanvasRef.current,
+      //     x - (pointSize - 10),
+      //     y - (pointSize - 10),
+      //     pointSize + 5,
+      //     pointSize + 5,
+      //     x + 10,
+      //     y - 90,
+      //     pointSize + 20,
+      //     pointSize + 20
+      //   );
+      setCropPoints((cPs) => {
+        if (cPs && romaine.mode === "perspective-crop")
+          return { ...cPs, [area]: position };
+        return handleNormalCornerMove(position, area, cPs);
+      });
+      // }
+    },
+    [romaine.mode]
+  );
+
+  const onCornerStop = useCallback(
     (
       position: CoordinateXY,
       area: keyof ContourCoordinates,
@@ -223,13 +271,15 @@ export const CroppingCanvas = ({
 
       // clearCanvasByRef(magnifierCanvasRef);
       setCropPoints((cPs) => {
-        if (cPs) return { ...cPs, [area]: { x, y } };
+        if (cPs && romaine.mode === "perspective-crop")
+          return { ...cPs, [area]: { x, y } };
+        return handleNormalCornerMove(position, area, cPs);
       });
       if (onDragStop) {
         onDragStop({ ...cropPoints, [area]: { x, y }, loading });
       }
     },
-    []
+    [romaine.mode]
   );
 
   return (
@@ -240,8 +290,8 @@ export const CroppingCanvas = ({
             pointSize={pointSize}
             cropPoints={cropPoints}
             previewDims={previewDims}
-            onDrag={onDrag}
-            onStop={onStop}
+            onDrag={onCornerDrag}
+            onStop={onCornerStop}
             bounds={{
               left:
                 (previewCanvasRef?.current?.offsetLeft || 0) - pointSize / 2,
@@ -257,6 +307,7 @@ export const CroppingCanvas = ({
             }}
           />
           <CropPointsDelimiters
+            romaineRef={romaineRef as React.RefObject<RomaineRef>}
             previewDims={previewDims}
             cropPoints={cropPoints}
             lineWidth={lineWidth}

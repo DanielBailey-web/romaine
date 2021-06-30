@@ -1,8 +1,9 @@
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import T from "prop-types";
-import { ContourCoordinates, CoordinateXY } from "..";
+import { ContourCoordinates, CoordinateXY, RomaineRef } from "..";
 
 interface CropPointsDelimiters {
+  romaineRef: React.RefObject<RomaineRef>;
   cropPoints: ContourCoordinates;
   pointSize: number;
   lineColor?: string;
@@ -17,6 +18,7 @@ interface CropPointsDelimiters {
  * Create the lines for the cropper utility
  */
 const CropPointsDelimiters = ({
+  romaineRef,
   cropPoints,
   previewDims,
   lineWidth = 3,
@@ -79,16 +81,84 @@ const CropPointsDelimiters = ({
     }
   }, [cropPoints, canvas.current]);
 
+  /**
+   * Takes in a `CoordinateXY` and makes sure that it is inside the `ContourCoordinates`
+   *
+   * @returns boolean
+   *
+   * @todo Should use point slope formula for when using perspective cropper
+   */
+  const xyInPoints = ({ x, y }: CoordinateXY) => {
+    if (
+      x > cropPoints["left-top"].x &&
+      y > cropPoints["left-top"].y &&
+      x < cropPoints["right-top"].x &&
+      y > cropPoints["right-top"].y &&
+      x < cropPoints["right-bottom"].x &&
+      y < cropPoints["right-bottom"].y &&
+      x > cropPoints["left-bottom"].x &&
+      y < cropPoints["left-bottom"].y
+    )
+      return true;
+    return false;
+  };
+  const getCursorPosition = (
+    event: React.MouseEvent<HTMLCanvasElement, MouseEvent>
+  ) => {
+    if (canvas?.current?.getBoundingClientRect) {
+      const x = event.clientX - canvas?.current?.getBoundingClientRect().left;
+      const y = event.clientY - canvas?.current?.getBoundingClientRect().top;
+      if (xyInPoints({ x, y })) return "inside";
+      else return "outside";
+    }
+  };
+  const [cursor, setCursor] =
+    useState<React.CSSProperties["cursor"]>("default");
+
+  const handleMouseMove = (
+    e: React.MouseEvent<HTMLCanvasElement, MouseEvent>
+  ) => {
+    const cursorPosition = getCursorPosition(e);
+    if (cursorPosition === "inside" && cursor !== "crosshair")
+      setCursor("crosshair");
+    else if (cursorPosition === "outside" && cursor !== "default")
+      setCursor("default");
+  };
+
+  const handleClick = (e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
+    const cursorPosition = getCursorPosition(e);
+    if (cursorPosition === "inside" && romaineRef?.current?.crop)
+      romaineRef.current.crop({
+        preview: true,
+        filterCvParams: {
+          grayScale: false,
+          th: false,
+        },
+        image: {
+          quality: 0.92,
+          type: "image/jpeg",
+        },
+      });
+  };
+
   return (
     <canvas
       id="crop-point-delimiters"
       ref={canvas}
       style={{
         position: "absolute",
+        top: 0,
+        right: 0,
+        left: 0,
+        bottom: 0,
         zIndex: 5,
+        cursor,
       }}
       width={previewDims.width}
       height={previewDims.height}
+      onClick={handleClick}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={() => setCursor("default")}
     />
   );
 };
