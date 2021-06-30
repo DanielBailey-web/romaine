@@ -27,7 +27,7 @@ Currently minor changes will be breaking until a stable 1.0.0 release. Semantic 
 
 1. Cropping
    1. Perspective (completed)
-   2. Regular
+   2. Regular (completed)
 2. Filters
    1. Grey scale
    2. Brightness
