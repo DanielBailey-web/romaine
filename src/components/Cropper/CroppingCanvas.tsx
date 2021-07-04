@@ -1,5 +1,4 @@
 import React, {
-  ForwardedRef,
   useCallback,
   useEffect,
   useImperativeHandle,
@@ -20,23 +19,14 @@ import { CropPoints } from "./CropPoints";
 import { CropPointsDelimiters } from "./CropPointsDelimiters";
 import { ContourCoordinates, CoordinateXY } from ".";
 import { RomaineRef } from "../Romaine.types";
+import { CanvasProps } from "../Canvas";
 
 // const imageDimensions = { width: 0, height: 0 };
 
-interface CropperState extends ContourCoordinates {
+export interface CropperState extends ContourCoordinates {
   loading: boolean;
 }
-export interface CropperProps {
-  romaineRef: ForwardedRef<RomaineRef>;
-  image: File | string;
-  onDragStop: (s: CropperState) => void;
-  onChange: (s: CropperState) => void;
-  pointSize?: number;
-  lineWidth?: number;
-  lineColor?: string;
-  maxWidth: number;
-  maxHeight: number;
-}
+
 interface CropperSpecificProps {
   canvasRef: React.MutableRefObject<HTMLCanvasElement | undefined>;
   previewCanvasRef: React.RefObject<HTMLCanvasElement>;
@@ -44,7 +34,7 @@ interface CropperSpecificProps {
   imageResizeRatio: number;
   setPreviewDims: React.Dispatch<CalculatedDimensions>;
   showPreview: (imageResizeRatio: number, image?: string) => void;
-  setPreviewPaneDimensions: () => void;
+  setPreviewPaneDimensions: (dims?: { height: number; width: number }) => void;
   createCanvas: (src: string) => Promise<void>;
 }
 
@@ -66,7 +56,7 @@ export const CroppingCanvas = ({
   showPreview,
   // createCanvas,
   setPreviewPaneDimensions,
-}: CropperProps & CropperSpecificProps) => {
+}: CanvasProps & CropperSpecificProps) => {
   const { loaded: cvLoaded, cv, romaine, setMode: changeMode } = useRomaine();
   // let canvasRef = useRef<HTMLCanvasElement>();
   // const magnifierCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -94,7 +84,7 @@ export const CroppingCanvas = ({
             );
             applyFilter(cv, canvasRef.current, opts.filterCvParams);
             if (opts.preview) {
-              setMode("preview");
+              showPreview(imageResizeRatio);
             }
             canvasRef.current.toBlob(
               (blob) => {
@@ -113,13 +103,7 @@ export const CroppingCanvas = ({
     })
   );
 
-  useEffect(() => {
-    if (mode === "preview") {
-      showPreview(imageResizeRatio);
-    }
-  }, [mode]);
-
-  const detectContours = () => {
+  const detectContours = async () => {
     const dst = cv.imread(canvasRef.current);
     const ksize = new cv.Size(5, 5);
     // convert the image to grayscale, blur it, and find edges in the image
@@ -172,15 +156,25 @@ export const CroppingCanvas = ({
     }
   }, [cropPoints, loading]);
 
-  useEffect(() => {
-    const bootstrap = async () => {
-      // const src = await readFile(image);
-      // await createCanvas(src);
-      // showPreview(imageResizeRatio);
-      detectContours();
-      setLoading(false);
-    };
+  const bootstrap = async () => {
+    if (true) detectContours().then(() => setLoading(false));
+    else {
+      // imread is SLOW
+      const src = cv.imread(previewCanvasRef.current);
+      const contourCoordinates = {
+        "left-top": { x: 0, y: 0 },
+        "right-top": { x: src.cols, y: 0 },
+        "right-bottom": {
+          x: src.cols,
+          y: src.rows,
+        },
+        "left-bottom": { x: 0, y: src.rows },
+      };
 
+      setCropPoints(contourCoordinates);
+    }
+  };
+  useEffect(() => {
     if (image && previewCanvasRef.current && cvLoaded && mode === "crop") {
       bootstrap();
     } else {
