@@ -1,4 +1,9 @@
-type RomaineModes = null | "crop" | "perspective-crop";
+type RomaineModes =
+  | null
+  | "crop"
+  | "perspective-crop"
+  | "rotate-right"
+  | "rotate-left";
 
 export interface RomaineState {
   mode: RomaineModes;
