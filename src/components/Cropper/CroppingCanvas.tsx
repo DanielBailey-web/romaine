@@ -86,6 +86,8 @@ export const CroppingCanvas = ({
             if (opts.preview) {
               showPreview(imageResizeRatio);
             }
+            // @todo
+            // make sure that this is still necessary
             canvasRef.current.toBlob(
               (blob) => {
                 // blob.name = image.name;
