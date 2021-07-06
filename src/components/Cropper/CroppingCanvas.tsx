@@ -27,7 +27,7 @@ export interface CropperState extends ContourCoordinates {
   loading: boolean;
 }
 
-interface CropperSpecificProps {
+interface CropperSpecificProps extends CanvasProps {
   canvasRef: React.MutableRefObject<HTMLCanvasElement | undefined>;
   previewCanvasRef: React.RefObject<HTMLCanvasElement>;
   previewDims: CalculatedDimensions | undefined;
@@ -36,6 +36,7 @@ interface CropperSpecificProps {
   showPreview: (imageResizeRatio: number, image?: string) => void;
   setPreviewPaneDimensions: (dims?: { height: number; width: number }) => void;
   createCanvas: (src: string) => Promise<void>;
+  romaineRef: React.RefObject<RomaineRef>;
 }
 
 export const CroppingCanvas = ({
@@ -56,7 +57,7 @@ export const CroppingCanvas = ({
   showPreview,
   // createCanvas,
   setPreviewPaneDimensions,
-}: CanvasProps & CropperSpecificProps) => {
+}: CropperSpecificProps) => {
   const { loaded: cvLoaded, cv, romaine, setMode: changeMode } = useRomaine();
   // let canvasRef = useRef<HTMLCanvasElement>();
   // const magnifierCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -64,7 +65,6 @@ export const CroppingCanvas = ({
   const [cropPoints, setCropPoints] = useState<ContourCoordinates>();
   const [loading, setLoading] = useState(false);
   const [mode, setMode] = useState("crop");
-
   useImperativeHandle(
     romaineRef,
     (): RomaineRef => ({
