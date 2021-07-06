@@ -5,6 +5,7 @@ import React, {
   useRef,
   useState,
   ForwardedRef,
+  useImperativeHandle,
 } from "react";
 import { CropperState, CroppingCanvas } from "./Cropper";
 import {
@@ -18,7 +19,7 @@ import { RomaineRef } from "./Romaine.types";
 import { useRomaine } from "../hooks";
 
 export interface CanvasProps {
-  romaineRef: ForwardedRef<RomaineRef>;
+  romaineRef: ForwardedRef<RomaineRef> | React.RefObject<RomaineRef>;
   image: File | string;
   onDragStop: (s: CropperState) => void;
   onChange: (s: CropperState) => void;
@@ -29,12 +30,35 @@ export interface CanvasProps {
   maxHeight: number;
 }
 let imageResizeRatio = 1;
-const CanvasActual = ({ ...props }: CanvasProps) => {
+const CanvasActual = ({ romaineRef, ...props }: CanvasProps) => {
   const {
     cv,
     romaine: { mode },
     setMode,
   } = useRomaine();
+
+  useImperativeHandle(
+    romaineRef,
+    (): RomaineRef => ({
+      getBlob: async (opts = {}) => {
+        return new Promise((resolve) => {
+          if (canvasRef.current) {
+            canvasRef.current.toBlob(
+              (blob) => {
+                // blob.name = image.name;
+                resolve(blob);
+                setLoading(false);
+                setMode && setMode(null);
+              },
+              opts?.type ||
+                (typeof image !== "string" ? image.type : "image/png"),
+              opts?.quality || 1
+            );
+          }
+        });
+      },
+    })
+  );
 
   const { maxHeight, maxWidth, image } = props;
 
@@ -232,6 +256,7 @@ const CanvasActual = ({ ...props }: CanvasProps) => {
       />
       {(mode === "crop" || mode === "perspective-crop") && !loading && (
         <CroppingCanvas
+          romaineRef={romaineRef as React.RefObject<RomaineRef>}
           imageResizeRatio={imageResizeRatio}
           setPreviewPaneDimensions={setPreviewPaneDimensions}
           createCanvas={createCanvas}

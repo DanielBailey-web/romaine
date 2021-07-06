@@ -4,6 +4,7 @@ export interface RomaineRef {
    * function that does the transforming, filtering, and optionally shows a preview
    */
   crop?: (options: Partial<ClickCropOptions>) => Promise<Blob | null>;
+  getBlob?: (options: Partial<ImageExportOptions>) => Promise<Blob | null>;
 }
 
 export type DoneFunc = (options: Partial<ClickCropOptions>) => Promise<Blob>;
