@@ -2,9 +2,13 @@
 
 React OpenCV Manipulation and Image Narration & Editing
 
+# Example
+
+See <a href="https://www.npmjs.com/package/romaine-components">romaine-components</a>
+
 # Under Construction
 
-This package is very much a work in progress with new minor versions (with breaking changes potentially with every update).
+This package is very much a work in progress with new minor versions (with potentially breaking changes with every update).
 
 # Versioning
 
@@ -12,7 +16,10 @@ Currently minor changes will be breaking until a stable 1.0.0 release. Semantic 
 
 # Quick Features
 
+- Image Cropping
 - Perspective Cropping
+- Image Rotation
+- Image Quality
 - More coming soon...
 
 # todo
