@@ -30,8 +30,8 @@ const OpenCvContext = createContext<RomaineContext>({
   romaine: initialRomaineState,
 });
 const { Consumer: OpenCvConsumer, Provider } = OpenCvContext;
-const scriptId = "opencv-react";
 
+const scriptId = "openCvScriptTag";
 interface ROMAINE {
   openCvPath?: string;
   onLoad?: (openCv: OpenCV) => void;
@@ -47,11 +47,24 @@ const Romaine: FC<ROMAINE> = ({ openCvPath, children, onLoad }) => {
   const [loaded, setLoaded] = useState(false);
 
   const handleOnLoad = useCallback(() => {
+    console.log(window.cv);
     if (onLoad) {
       onLoad(window.cv);
     }
     setLoaded(true);
   }, [onLoad]);
+
+  const generateOpenCvScriptTag = useMemo(() => {
+    const js = document.createElement("script");
+    js.id = scriptId;
+    js.src = openCvPath || "https://docs.opencv.org/3.4.13/opencv.js";
+    //@ts-ignore
+    js.nonce = true;
+    js.defer = true;
+    js.async = true;
+
+    return js;
+  }, [openCvPath]);
 
   useEffect(() => {
     if (document.getElementById(scriptId) || window.cv) {
@@ -65,19 +78,9 @@ const Romaine: FC<ROMAINE> = ({ openCvPath, children, onLoad }) => {
     moduleConfig.onRuntimeInitialized = handleOnLoad;
     window.Module = moduleConfig;
 
-    const generateOpenCvScriptTag = () => {
-      const js = document.createElement("script");
-      js.id = scriptId;
-      js.src = openCvPath || "https://docs.opencv.org/3.4.13/opencv.js";
-      //@ts-ignore
-      js.nonce = true;
-      js.defer = true;
-      js.async = true;
-
-      return js;
-    };
-
-    document.body.appendChild(generateOpenCvScriptTag());
+    // if (!document.getElementById(scriptId))
+    document.body.appendChild(generateOpenCvScriptTag);
+    // else handleOnLoad();
   }, [openCvPath, handleOnLoad]);
 
   const [romaine, dispatchRomaine] = useReducer(
