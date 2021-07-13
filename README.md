@@ -46,9 +46,3 @@ Currently minor changes will be breaking until a stable 1.0.0 release. Semantic 
 ## Usability
 
 1. Make cropper be able to be moved via drag
-
-## Components
-
-1. Optional Components
-   1. File uploader
-   2. Cropper Icon
