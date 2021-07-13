@@ -57,6 +57,7 @@ export const CroppingCanvas = ({
   showPreview,
   // createCanvas,
   setPreviewPaneDimensions,
+  saltId,
 }: CropperSpecificProps) => {
   const { loaded: cvLoaded, cv, romaine, setMode: changeMode } = useRomaine();
   // let canvasRef = useRef<HTMLCanvasElement>();
@@ -309,6 +310,7 @@ export const CroppingCanvas = ({
             lineWidth={lineWidth}
             lineColor={lineColor}
             pointSize={pointSize}
+            saltId={saltId}
           />
         </>
       )}

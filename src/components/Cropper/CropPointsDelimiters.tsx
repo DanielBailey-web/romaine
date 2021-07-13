@@ -8,6 +8,7 @@ interface CropPointsDelimiters {
   pointSize: number;
   lineColor?: string;
   lineWidth?: number;
+  saltId?: string;
   previewDims: {
     width: number;
     height: number;
@@ -24,6 +25,7 @@ const CropPointsDelimiters = ({
   lineWidth = 3,
   lineColor = "#3cabe2",
   pointSize,
+  ...props
 }: CropPointsDelimiters) => {
   const canvas = useRef<HTMLCanvasElement>(null);
 
@@ -143,7 +145,7 @@ const CropPointsDelimiters = ({
 
   return (
     <canvas
-      id="crop-point-delimiters"
+      id={`${props.saltId ? props.saltId + "-" : ""}crop-point-delimiters`}
       ref={canvas}
       style={{
         position: "absolute",

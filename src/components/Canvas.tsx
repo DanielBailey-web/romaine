@@ -28,6 +28,7 @@ export interface CanvasProps {
   lineColor?: string;
   maxWidth: number;
   maxHeight: number;
+  saltId?: string;
 }
 let imageResizeRatio = 1;
 const CanvasActual = ({ romaineRef, ...props }: CanvasProps) => {
@@ -103,19 +104,21 @@ const CanvasActual = ({ romaineRef, ...props }: CanvasProps) => {
     source: any = cv.imread(canvasRef.current),
     cleanup: boolean = true
   ) => {
-    const dst = new cv.Mat();
-    const dsize = new cv.Size(0, 0);
-    cv.resize(
-      source,
-      dst,
-      dsize,
-      imageResizeRatio,
-      imageResizeRatio,
-      cv.INTER_AREA
-    );
-    cv.imshow("preview-canvas", dst);
-    if (cleanup) source.delete();
-    dst.delete();
+    if (cv) {
+      const dst = new cv.Mat();
+      const dsize = new cv.Size(0, 0);
+      cv.resize(
+        source,
+        dst,
+        dsize,
+        imageResizeRatio,
+        imageResizeRatio,
+        cv.INTER_AREA
+      );
+      cv.imshow(previewCanvasRef.current, dst);
+      if (cleanup) source.delete();
+      dst.delete();
+    }
   };
 
   const createCanvas = (src: string) => {
@@ -125,7 +128,9 @@ const CanvasActual = ({ romaineRef, ...props }: CanvasProps) => {
         img.onload = async () => {
           // set edited image canvas and dimensions
           canvasRef.current = document.createElement("canvas");
-          canvasRef.current.id = "working-canvas";
+          canvasRef.current.id = `${
+            props.saltId ? props.saltId + "-" : ""
+          }working-canvas`;
           canvasRef.current.width = img.width;
           canvasRef.current.height = img.height;
           setOriginalDims({ height: img.height, width: img.width });
@@ -151,7 +156,8 @@ const CanvasActual = ({ romaineRef, ...props }: CanvasProps) => {
     setLoading(true);
     readFile(image).then(async (res) => {
       await createCanvas(res);
-      showPreview(imageResizeRatio);
+      cv && showPreview(imageResizeRatio);
+      console.log(cv);
       setLoading(false);
     });
   }, [cv, image]);
@@ -237,7 +243,7 @@ const CanvasActual = ({ romaineRef, ...props }: CanvasProps) => {
       }}
     >
       <canvas
-        id="preview-canvas"
+        id={`${props.saltId ? props.saltId + "-" : ""}preview-canvas`}
         style={{
           backgroundSize: "20px 20px",
           backgroundImage:
@@ -290,24 +296,29 @@ export const Canvas = forwardRef(
   (
     { openCvPath, children, image, wrapperProps = {}, ...props }: RomaineCanvas,
     ref: React.ForwardedRef<RomaineRef>
-  ) => (
-    <div
-      id="romaine-wrapper"
-      {...wrapperProps}
-      style={{
-        position: "relative",
-        display: "grid",
-        placeItems: "center",
-        padding: "0 250px 0 2em",
-        width: props.maxWidth,
-        height: props.maxHeight,
-        marginLeft: "auto",
-        marginRight: "auto",
-        ...wrapperProps.style,
-      }}
-    >
-      {children}
-      {image && <CanvasActual image={image} {...props} romaineRef={ref} />}
-    </div>
-  )
+  ) => {
+    const { cv, loaded } = useRomaine();
+    return cv || loaded ? (
+      <div
+        id={`${props.saltId ? props.saltId + "-" : ""}romaine-wrapper`}
+        {...wrapperProps}
+        style={{
+          position: "relative",
+          display: "grid",
+          placeItems: "center",
+          padding: "0 250px 0 2em",
+          width: props.maxWidth,
+          height: props.maxHeight,
+          marginLeft: "auto",
+          marginRight: "auto",
+          ...wrapperProps.style,
+        }}
+      >
+        {children}
+        {image && cv && (
+          <CanvasActual image={image} {...props} romaineRef={ref} />
+        )}
+      </div>
+    ) : null;
+  }
 );
