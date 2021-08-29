@@ -47,7 +47,6 @@ const Romaine: FC<ROMAINE> = ({ openCvPath, children, onLoad }) => {
   const [loaded, setLoaded] = useState(false);
 
   const handleOnLoad = useCallback(() => {
-    console.log(window.cv);
     if (onLoad) {
       onLoad(window.cv);
     }
@@ -55,15 +54,19 @@ const Romaine: FC<ROMAINE> = ({ openCvPath, children, onLoad }) => {
   }, [onLoad]);
 
   const generateOpenCvScriptTag = useMemo(() => {
-    const js = document.createElement("script");
-    js.id = scriptId;
-    js.src = openCvPath || "https://docs.opencv.org/3.4.13/opencv.js";
-    //@ts-ignore
-    js.nonce = true;
-    js.defer = true;
-    js.async = true;
+    if (!document.getElementById(scriptId) && !window.cv) {
+      const js = document.createElement("script");
+      js.id = scriptId;
+      js.src = openCvPath || "https://docs.opencv.org/3.4.13/opencv.js";
+      //@ts-ignore
+      js.nonce = true;
+      js.defer = true;
+      js.async = true;
 
-    return js;
+      return js;
+    } else if (document.getElementById(scriptId) && !window.cv) {
+      return document.getElementById(scriptId);
+    }
   }, [openCvPath]);
 
   useEffect(() => {
@@ -79,7 +82,8 @@ const Romaine: FC<ROMAINE> = ({ openCvPath, children, onLoad }) => {
     window.Module = moduleConfig;
 
     // if (!document.getElementById(scriptId))
-    document.body.appendChild(generateOpenCvScriptTag);
+    if (generateOpenCvScriptTag && !document.getElementById(scriptId))
+      document.body.appendChild(generateOpenCvScriptTag);
     // else handleOnLoad();
   }, [openCvPath, handleOnLoad]);
 
