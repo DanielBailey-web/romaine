@@ -40,8 +40,9 @@ Currently minor changes will be breaking until a stable 1.0.0 release. Semantic 
    2. Brightness
    3. Hue
    4. Retro
+   5. Pop-art
 3. Rotation
-   1. Allow for image roration
+   1. Allow for image roration (currently working with 1 degree increments)
 
 ## Usability
 
