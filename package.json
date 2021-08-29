@@ -8,7 +8,7 @@
     "dist/"
   ],
   "scripts": {
-    "start": "npm run build-watch && ",
+    "start": "npm run build-watch",
     "compile-dev": "npm run webpack; npm run pretest;",
     "build": "rollup -c --environment NODE_ENV=development; npm run pretest",
     "build-watch": "rollup -c -w",
