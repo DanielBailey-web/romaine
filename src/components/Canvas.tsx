@@ -17,6 +17,7 @@ import {
 import { buildImgContainerStyle } from "../util/buildImgContainerStyle";
 import { RomaineRef } from "./Romaine.types";
 import { useRomaine } from "../hooks";
+import { SetPreviewPaneDimensions, ShowPreview } from "../types";
 
 export interface CanvasProps {
   romaineRef: ForwardedRef<RomaineRef> | React.RefObject<RomaineRef>;
@@ -73,8 +74,8 @@ const CanvasActual = ({ romaineRef, ...props }: CanvasProps) => {
   const [loading, setLoading] = useState(true);
   const [originalDims, setOriginalDims] = useState({ height: 0, width: 0 });
 
-  const setPreviewPaneDimensions = (
-    dims: typeof originalDims = originalDims
+  const setPreviewPaneDimensions: SetPreviewPaneDimensions = (
+    dims = originalDims
   ) => {
     if (dims && previewCanvasRef?.current) {
       let newPreviewDims = calcDims(
@@ -98,10 +99,10 @@ const CanvasActual = ({ romaineRef, ...props }: CanvasProps) => {
    * @param cleanup (default is true) Should the src object be cleaned up
    * only use false if cleaning up your own src object! Otherwise this will result in memory leak!
    */
-  const showPreview = (
-    resizeRatio: number = imageResizeRatio,
-    source: any = cv.imread(canvasRef.current),
-    cleanup: boolean = true
+  const showPreview: ShowPreview = (
+    resizeRatio = imageResizeRatio,
+    source = cv.imread(canvasRef.current),
+    cleanup = true
   ) => {
     if (cv) {
       const dst = new cv.Mat();
@@ -143,7 +144,6 @@ const CanvasActual = ({ romaineRef, ...props }: CanvasProps) => {
       }
     });
   };
-
   useEffect(() => {
     setLoading(true);
     readFile(image).then(async (res) => {
