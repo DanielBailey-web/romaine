@@ -34,7 +34,10 @@ Currently minor changes will be breaking until a stable 1.0.0 release. Semantic 
 
 1. Cropping
    1. Perspective (completed)
-   2. Regular (completed)
+   2. Regular
+      1. Crop the image (completed)
+      2. Lock aspect ratio
+      3. Basic border recognition (completed)
 2. Filters
    1. Grey scale
    2. Brightness
@@ -43,6 +46,8 @@ Currently minor changes will be breaking until a stable 1.0.0 release. Semantic 
    5. Pop-art
 3. Rotation
    1. Allow for image roration (currently working with 1 degree increments)
+4. Zooming
+   1. Zoom in and out of the image (creating transparent padding around the image)
 
 ## Usability
 
