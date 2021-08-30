@@ -83,13 +83,12 @@ const CanvasActual = ({ romaineRef, ...props }: CanvasProps) => {
         maxWidth,
         maxHeight
       );
-
       setPreviewDims(newPreviewDims);
 
       previewCanvasRef.current.width = newPreviewDims.width;
       previewCanvasRef.current.height = newPreviewDims.height;
-
       imageResizeRatio = newPreviewDims.width / dims.width;
+      return imageResizeRatio;
     }
   };
   /**
@@ -100,21 +99,14 @@ const CanvasActual = ({ romaineRef, ...props }: CanvasProps) => {
    * only use false if cleaning up your own src object! Otherwise this will result in memory leak!
    */
   const showPreview = (
-    imageResizeRatio: number,
+    resizeRatio: number = imageResizeRatio,
     source: any = cv.imread(canvasRef.current),
     cleanup: boolean = true
   ) => {
     if (cv) {
       const dst = new cv.Mat();
       const dsize = new cv.Size(0, 0);
-      cv.resize(
-        source,
-        dst,
-        dsize,
-        imageResizeRatio,
-        imageResizeRatio,
-        cv.INTER_AREA
-      );
+      cv.resize(source, dst, dsize, resizeRatio, resizeRatio, cv.INTER_AREA);
       cv.imshow(previewCanvasRef.current, dst);
       if (cleanup) source.delete();
       dst.delete();
@@ -157,7 +149,6 @@ const CanvasActual = ({ romaineRef, ...props }: CanvasProps) => {
     readFile(image).then(async (res) => {
       await createCanvas(res);
       cv && showPreview(imageResizeRatio);
-      console.log(cv);
       setLoading(false);
     });
   }, [cv, image]);

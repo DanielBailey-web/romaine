@@ -33,8 +33,15 @@ interface CropperSpecificProps extends CanvasProps {
   previewDims: CalculatedDimensions | undefined;
   imageResizeRatio: number;
   setPreviewDims: React.Dispatch<CalculatedDimensions>;
-  showPreview: (imageResizeRatio: number, image?: string) => void;
-  setPreviewPaneDimensions: (dims?: { height: number; width: number }) => void;
+  showPreview: (
+    imageResizeRatio?: number,
+    image?: string,
+    cleanup?: boolean
+  ) => void;
+  setPreviewPaneDimensions: (dims?: {
+    height: number;
+    width: number;
+  }) => undefined | number;
   createCanvas: (src: string) => Promise<void>;
   romaineRef: React.RefObject<RomaineRef>;
 }
@@ -80,12 +87,16 @@ export const CroppingCanvas = ({
               cv,
               canvasRef.current,
               cropPoints,
-              imageResizeRatio,
-              setPreviewPaneDimensions
+              imageResizeRatio
             );
             applyFilter(cv, canvasRef.current, opts.filterCvParams);
             if (opts.preview) {
-              showPreview(imageResizeRatio);
+              setPreviewPaneDimensions({
+                width: canvasRef.current.width,
+                height: canvasRef.current.height,
+              });
+
+              showPreview();
             }
             // @todo
             // make sure that this is still necessary

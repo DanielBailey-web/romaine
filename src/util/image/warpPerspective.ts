@@ -11,8 +11,7 @@ export const warpPerspective = (
   cv: OpenCV,
   docCanvas: HTMLCanvasElement,
   cropPoints: ContourCoordinates,
-  imageResizeRatio: number,
-  setPreviewPaneDimensions: () => void
+  imageResizeRatio: number
 ): void => {
   const dst = cv.imread(docCanvas);
 
@@ -72,6 +71,4 @@ export const warpPerspective = (
   Ms.delete();
   Md.delete();
   transformMatrix.delete();
-
-  setPreviewPaneDimensions();
 };
