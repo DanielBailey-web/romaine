@@ -28,7 +28,9 @@ Currently minor changes will be breaking until a stable 1.0.0 release. Semantic 
 
 1. Create a minified production build
 2. Create a code sandbox demo
-3. Add basic use case
+3. Basic use case (completed, see <a href="https://www.npmjs.com/package/romaine-components">romaine-components</a>)
+4. History (undo, redo)
+5. Layers
 
 ## OpenCV Implementations
 
