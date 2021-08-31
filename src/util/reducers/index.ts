@@ -1,9 +1,4 @@
-type RomaineModes =
-  | null
-  | "crop"
-  | "perspective-crop"
-  | "rotate-right"
-  | "rotate-left";
+import { RomaineModes } from "./cropperReducer";
 
 export interface RomaineState {
   mode: RomaineModes;

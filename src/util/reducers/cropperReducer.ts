@@ -1,9 +1,21 @@
 import { RomaineState } from ".";
+export type RomaineModes =
+  | null
+  | "crop"
+  | "perspective-crop"
+  | "rotate-right"
+  | "rotate-left"
+  | "full-reset";
 
-export interface CropperReducer {
-  type: "JOIN_PAYLOAD" | "REMOVE_CROPPER" | "MODE";
-  payload?: any;
-}
+export type CropperReducer =
+  | {
+      type: "JOIN_PAYLOAD" | "REMOVE_CROPPER";
+      payload?: any;
+    }
+  | {
+      type: "MODE";
+      payload: RomaineModes;
+    };
 export const cropperReducer = (state: RomaineState, action: CropperReducer) => {
   switch (action.type) {
     case "JOIN_PAYLOAD":
