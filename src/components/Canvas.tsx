@@ -6,6 +6,7 @@ import React, {
   useState,
   ForwardedRef,
   useImperativeHandle,
+  useCallback,
 } from "react";
 import { CropperState, CroppingCanvas } from "./Cropper";
 import {
@@ -104,7 +105,8 @@ const CanvasActual = ({ romaineRef, ...props }: CanvasProps) => {
     source = cv.imread(canvasRef.current),
     cleanup = true
   ) => {
-    if (cv) {
+    console.trace(previewCanvasRef.current);
+    if (cv && previewCanvasRef.current) {
       const dst = new cv.Mat();
       const dsize = new cv.Size(0, 0);
       cv.resize(source, dst, dsize, resizeRatio, resizeRatio, cv.INTER_AREA);
@@ -144,13 +146,27 @@ const CanvasActual = ({ romaineRef, ...props }: CanvasProps) => {
       }
     });
   };
-  useEffect(() => {
+
+  // use a callback so that if the image is dynamic we aren't downloading a new one every time
+  const ReadFile = useCallback(() => {
+    return readFile(image);
+  }, [image]);
+
+  // this function will do a full reset on the image removing all progress (also used on startup)
+  const Restart = () => {
     setLoading(true);
-    readFile(image).then(async (res) => {
+    canvasRef.current = undefined;
+    ReadFile().then(async (res) => {
       await createCanvas(res);
-      cv && showPreview(imageResizeRatio);
+      cv && showPreview();
       setLoading(false);
     });
+  };
+
+  useEffect(() => {
+    if (cv) {
+      Restart();
+    }
   }, [cv, image]);
 
   const rotate_bound = (canvas: HTMLCanvasElement, angle: number) => {
@@ -217,12 +233,15 @@ const CanvasActual = ({ romaineRef, ...props }: CanvasProps) => {
   // https://docs.opencv.org/3.4/dd/d52/tutorial_js_geometric_transformations.html
   useEffect(() => {
     if (canvasRef.current) {
+      let angle = 1;
       if (mode === "rotate-left") {
-        const angle = 1;
         rotate_bound(canvasRef.current, angle);
       } else if (mode === "rotate-right") {
-        const angle = 359;
+        angle = 360 - angle;
         rotate_bound(canvasRef.current, angle);
+      } else if (mode === "full-reset") {
+        Restart();
+        setMode && setMode(null);
       }
     }
   }, [mode]);
