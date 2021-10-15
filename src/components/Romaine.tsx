@@ -47,11 +47,9 @@ const Romaine: FC<ROMAINE> = ({ openCvPath, children, onLoad }) => {
   const [loaded, setLoaded] = useState(false);
 
   const handleOnLoad = useCallback(() => {
-    if (onLoad) {
-      onLoad(window.cv);
-    }
+    onLoad && onLoad(window.cv);
     setLoaded(true);
-  }, [onLoad]);
+  }, [onLoad, setLoaded]);
 
   const generateOpenCvScriptTag = useMemo(() => {
     if (!document.getElementById(scriptId) && !window.cv) {
