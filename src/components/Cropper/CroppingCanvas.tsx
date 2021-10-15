@@ -13,6 +13,7 @@ import {
   // isCrossOriginURL,
   applyFilter,
   warpPerspective,
+  crop,
 } from "../../util";
 
 import { CropPoints } from "./CropPoints";
@@ -66,29 +67,37 @@ export const CroppingCanvas = ({
   setPreviewPaneDimensions,
   saltId,
 }: CropperSpecificProps) => {
-  const { loaded: cvLoaded, cv, romaine, setMode: changeMode } = useRomaine();
+  const {
+    loaded: cvLoaded,
+    cv,
+    romaine: { mode },
+    setMode,
+  } = useRomaine();
   // let canvasRef = useRef<HTMLCanvasElement>();
   // const magnifierCanvasRef = useRef<HTMLCanvasElement>(null);
 
   const [cropPoints, setCropPoints] = useState<ContourCoordinates>();
   const [loading, setLoading] = useState(false);
-  const [mode, setMode] = useState("crop");
   useImperativeHandle(
     romaineRef,
     (): RomaineRef => ({
       backToCrop: () => {
-        setMode("crop");
+        setMode && setMode("crop");
       },
       crop: async (opts = {}) => {
         return new Promise((resolve) => {
           if (canvasRef.current && cropPoints) {
             setLoading(true);
-            warpPerspective(
-              cv,
-              canvasRef.current,
-              cropPoints,
-              imageResizeRatio
-            );
+            console.log(mode);
+            if (mode === "perspective-crop")
+              warpPerspective(
+                cv,
+                canvasRef.current,
+                cropPoints,
+                imageResizeRatio
+              );
+            else crop(cv, canvasRef.current, cropPoints, imageResizeRatio);
+
             applyFilter(cv, canvasRef.current, opts.filterCvParams);
             if (opts.preview) {
               setPreviewPaneDimensions({
@@ -98,19 +107,9 @@ export const CroppingCanvas = ({
 
               showPreview();
             }
-            // @todo
-            // make sure that this is still necessary
-            canvasRef.current.toBlob(
-              (blob) => {
-                // blob.name = image.name;
-                resolve(blob);
-                setLoading(false);
-                changeMode && changeMode(null);
-              },
-              opts?.image?.type ||
-                (typeof image !== "string" ? image.type : "image/png"),
-              opts?.image?.quality || 1
-            );
+            setMode && setMode(null);
+            setLoading(false);
+            return resolve();
           }
         });
       },
@@ -189,7 +188,12 @@ export const CroppingCanvas = ({
     }
   };
   useEffect(() => {
-    if (image && previewCanvasRef.current && cvLoaded && mode === "crop") {
+    if (
+      image &&
+      previewCanvasRef.current &&
+      cvLoaded &&
+      (mode === "crop" || mode === "perspective-crop")
+    ) {
       bootstrap();
     } else {
       setLoading(true);
@@ -260,13 +264,13 @@ export const CroppingCanvas = ({
       //     pointSize + 20
       //   );
       setCropPoints((cPs) => {
-        if (cPs && romaine.mode === "perspective-crop")
+        if (cPs && mode === "perspective-crop")
           return { ...cPs, [area]: position };
         return handleNormalCornerMove(position, area, cPs);
       });
       // }
     },
-    [romaine.mode]
+    [mode]
   );
 
   const onCornerStop = useCallback(
@@ -279,7 +283,7 @@ export const CroppingCanvas = ({
 
       // clearCanvasByRef(magnifierCanvasRef);
       setCropPoints((cPs) => {
-        if (cPs && romaine.mode === "perspective-crop")
+        if (cPs && mode === "perspective-crop")
           return { ...cPs, [area]: { x, y } };
         return handleNormalCornerMove(position, area, cPs);
       });
@@ -287,44 +291,47 @@ export const CroppingCanvas = ({
         onDragStop({ ...cropPoints, [area]: { x, y }, loading });
       }
     },
-    [romaine.mode]
+    [mode]
   );
 
   return (
     <>
-      {previewDims && mode === "crop" && cropPoints && (
-        <>
-          <CropPoints
-            pointSize={pointSize}
-            cropPoints={cropPoints}
-            previewDims={previewDims}
-            onDrag={onCornerDrag}
-            onStop={onCornerStop}
-            bounds={{
-              left:
-                (previewCanvasRef?.current?.offsetLeft || 0) - pointSize / 2,
-              top: (previewCanvasRef?.current?.offsetTop || 0) - pointSize / 2,
-              right:
-                (previewCanvasRef?.current?.offsetLeft || 0) -
-                pointSize / 2 +
-                (previewCanvasRef?.current?.offsetWidth || 0),
-              bottom:
-                (previewCanvasRef?.current?.offsetTop || 0) -
-                pointSize / 2 +
-                (previewCanvasRef?.current?.offsetHeight || 0),
-            }}
-          />
-          <CropPointsDelimiters
-            romaineRef={romaineRef as React.RefObject<RomaineRef>}
-            previewDims={previewDims}
-            cropPoints={cropPoints}
-            lineWidth={lineWidth}
-            lineColor={lineColor}
-            pointSize={pointSize}
-            saltId={saltId}
-          />
-        </>
-      )}
+      {previewDims &&
+        (mode === "crop" || mode === "perspective-crop") &&
+        cropPoints && (
+          <>
+            <CropPoints
+              pointSize={pointSize}
+              cropPoints={cropPoints}
+              previewDims={previewDims}
+              onDrag={onCornerDrag}
+              onStop={onCornerStop}
+              bounds={{
+                left:
+                  (previewCanvasRef?.current?.offsetLeft || 0) - pointSize / 2,
+                top:
+                  (previewCanvasRef?.current?.offsetTop || 0) - pointSize / 2,
+                right:
+                  (previewCanvasRef?.current?.offsetLeft || 0) -
+                  pointSize / 2 +
+                  (previewCanvasRef?.current?.offsetWidth || 0),
+                bottom:
+                  (previewCanvasRef?.current?.offsetTop || 0) -
+                  pointSize / 2 +
+                  (previewCanvasRef?.current?.offsetHeight || 0),
+              }}
+            />
+            <CropPointsDelimiters
+              romaineRef={romaineRef as React.RefObject<RomaineRef>}
+              previewDims={previewDims}
+              cropPoints={cropPoints}
+              lineWidth={lineWidth}
+              lineColor={lineColor}
+              pointSize={pointSize}
+              saltId={saltId}
+            />
+          </>
+        )}
     </>
   );
 };
