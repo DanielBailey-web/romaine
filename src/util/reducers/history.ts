@@ -1,5 +1,16 @@
 import type { RomaineState, HistoryAction, RomaineHistory } from ".";
+/**
+ * function to add the current state to the history
+ *
+ * This function only depends on state inside romaine and therefore is called with no input
+ * @example PushHistory();
+ */
 export type PushHistory = () => void;
+/**
+ * function to clear the history on romaine
+ * @example ClearHistory();
+ */
+export type ClearHistory = () => void;
 
 /**
  *
