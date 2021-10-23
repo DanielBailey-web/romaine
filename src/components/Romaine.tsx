@@ -47,15 +47,21 @@ interface ROMAINE {
   openCvPath?: string;
   onLoad?: (openCv: OpenCV) => void;
   children?: ReactNode;
+  /** Angle to use when rotating images @default 90 */
   angle?: number;
 }
 /**
  * a romaine context for use in getting openCV and the canvas ref element
  * @todo
- * 1) remove ts-ignore
- * 2) Add ref to provider
+ * 1) Add ref to provider
+ * 2) See if nonce is really required here
  */
-const Romaine: FC<ROMAINE> = ({ openCvPath, children, onLoad, angle = 90 }) => {
+const Romaine: FC<ROMAINE> = ({
+  openCvPath,
+  children,
+  onLoad,
+  angle = 90,
+}: ROMAINE) => {
   const [loaded, setLoaded] = useState(false);
 
   const handleOnLoad = useCallback(() => {
@@ -68,8 +74,7 @@ const Romaine: FC<ROMAINE> = ({ openCvPath, children, onLoad, angle = 90 }) => {
       const js = document.createElement("script");
       js.id = scriptId;
       js.src = openCvPath || "https://docs.opencv.org/3.4.13/opencv.js";
-      //@ts-ignore
-      js.nonce = true;
+      js.nonce = "8IBTHwOdqNKAWeKl7plt8g==";
       js.defer = true;
       js.async = true;
 
