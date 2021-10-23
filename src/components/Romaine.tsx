@@ -10,7 +10,7 @@ import React, {
 } from "react";
 import PropTypes from "prop-types";
 import { moduleConfig } from "../util/configs";
-import { romaineReducer, initialRomaineState } from "../util";
+import { romaineReducer, initialRomaineState, ClearHistory } from "../util";
 import type { RomaineState, PushHistory, SetCropPoints } from "../util";
 export type OpenCV = any;
 declare global {
@@ -22,7 +22,9 @@ declare global {
 export interface RomaineContext {
   loaded: boolean;
   cv?: OpenCV;
-  romaine: RomaineState;
+  romaine: RomaineState & {
+    clearHistory: ClearHistory;
+  };
   setMode?: (mode: RomaineState["mode"]) => void;
   setAngle?: (angle: RomaineState["angle"]) => void;
   setCropPoints: SetCropPoints;
@@ -33,7 +35,7 @@ export interface RomaineContext {
 
 const OpenCvContext = createContext<RomaineContext>({
   loaded: false,
-  romaine: initialRomaineState,
+  romaine: initialRomaineState as unknown as RomaineContext["romaine"],
   setCropPoints: null as unknown as SetCropPoints,
   undo: null as unknown as PushHistory,
   redo: null as unknown as PushHistory,
@@ -124,6 +126,10 @@ const Romaine: FC<ROMAINE> = ({ openCvPath, children, onLoad, angle = 90 }) => {
     dispatchRomaine({ type: "HISTORY", payload: { cmd: "PUSH" } });
   }, [dispatchRomaine, romaineReducer]);
 
+  const clearHistory: ClearHistory = useCallback(() => {
+    dispatchRomaine({ type: "HISTORY", payload: { cmd: "CLEAR" } });
+  }, [dispatchRomaine, romaineReducer]);
+
   const moveHistory: (direction: boolean) => PushHistory = useCallback(
     (direction: boolean) => {
       if (direction)
@@ -148,7 +154,7 @@ const Romaine: FC<ROMAINE> = ({ openCvPath, children, onLoad, angle = 90 }) => {
     () => ({
       loaded,
       cv: window.cv,
-      romaine,
+      romaine: { ...romaine, clearHistory },
       setMode,
       setAngle,
       pushHistory,

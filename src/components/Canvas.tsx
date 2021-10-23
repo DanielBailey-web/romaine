@@ -42,7 +42,7 @@ let imageResizeRatio = 1;
 const CanvasActual = ({ romaineRef, ...props }: CanvasProps) => {
   const {
     cv,
-    romaine: { mode, angle, history },
+    romaine: { mode, angle, history, clearHistory },
     setMode,
     pushHistory,
     undo,
@@ -245,6 +245,7 @@ const CanvasActual = ({ romaineRef, ...props }: CanvasProps) => {
       } else if (mode === "rotate-right") {
         rotate_bound(canvasRef.current, 360 - angle);
       } else if (mode === "full-reset") {
+        clearHistory();
         Restart();
         setMode && setMode(null);
       } else if (mode === "undo") {
