@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import T from "prop-types";
-import { ContourCoordinates, CoordinateXY, RomaineRef } from "..";
+import { ContourCoordinates, CoordinateXY } from "..";
 
 interface CropPointsDelimiters {
-  romaineRef: React.RefObject<RomaineRef>;
+  // romaineRef: React.RefObject<RomaineRef>;
+  crop: Function;
   cropPoints: ContourCoordinates;
   pointSize: number;
   lineColor?: string;
@@ -19,7 +20,8 @@ interface CropPointsDelimiters {
  * Create the lines for the cropper utility
  */
 const CropPointsDelimiters = ({
-  romaineRef,
+  // romaineRef,
+  crop,
   cropPoints,
   previewDims,
   lineWidth = 3,
@@ -129,8 +131,8 @@ const CropPointsDelimiters = ({
 
   const handleClick = (e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
     const cursorPosition = getCursorPosition(e);
-    if (cursorPosition === "inside" && romaineRef?.current?.crop)
-      romaineRef.current.crop({
+    if (cursorPosition === "inside")
+      crop({
         preview: true,
         filterCvParams: {
           grayScale: false,

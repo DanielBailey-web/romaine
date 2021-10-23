@@ -10,7 +10,8 @@ import React, {
 } from "react";
 import PropTypes from "prop-types";
 import { moduleConfig } from "../util/configs";
-import { cropperReducer, initialRomaineState, RomaineState } from "../util";
+import { romaineReducer, initialRomaineState } from "../util";
+import type { RomaineState, PushHistory, SetCropPoints } from "../util";
 export type OpenCV = any;
 declare global {
   interface Window {
@@ -23,11 +24,19 @@ export interface RomaineContext {
   cv?: OpenCV;
   romaine: RomaineState;
   setMode?: (mode: RomaineState["mode"]) => void;
+  setAngle?: (angle: RomaineState["angle"]) => void;
+  setCropPoints: SetCropPoints;
+  pushHistory?: PushHistory;
+  undo: PushHistory;
+  redo: PushHistory;
 }
 
 const OpenCvContext = createContext<RomaineContext>({
   loaded: false,
   romaine: initialRomaineState,
+  setCropPoints: null as unknown as SetCropPoints,
+  undo: null as unknown as PushHistory,
+  redo: null as unknown as PushHistory,
 });
 const { Consumer: OpenCvConsumer, Provider } = OpenCvContext;
 
@@ -36,6 +45,7 @@ interface ROMAINE {
   openCvPath?: string;
   onLoad?: (openCv: OpenCV) => void;
   children?: ReactNode;
+  angle?: number;
 }
 /**
  * a romaine context for use in getting openCV and the canvas ref element
@@ -43,7 +53,7 @@ interface ROMAINE {
  * 1) remove ts-ignore
  * 2) Add ref to provider
  */
-const Romaine: FC<ROMAINE> = ({ openCvPath, children, onLoad }) => {
+const Romaine: FC<ROMAINE> = ({ openCvPath, children, onLoad, angle = 90 }) => {
   const [loaded, setLoaded] = useState(false);
 
   const handleOnLoad = useCallback(() => {
@@ -86,7 +96,7 @@ const Romaine: FC<ROMAINE> = ({ openCvPath, children, onLoad }) => {
   }, [openCvPath, handleOnLoad]);
 
   const [romaine, dispatchRomaine] = useReducer(
-    cropperReducer,
+    romaineReducer,
     initialRomaineState
   );
 
@@ -94,12 +104,59 @@ const Romaine: FC<ROMAINE> = ({ openCvPath, children, onLoad }) => {
     (mode: RomaineState["mode"]) => {
       dispatchRomaine({ type: "MODE", payload: mode });
     },
-    [dispatchRomaine, cropperReducer]
+    [dispatchRomaine, romaineReducer]
+  );
+  const setAngle = useCallback(
+    (angle: RomaineState["angle"]) => {
+      dispatchRomaine({ type: "ANGLE", payload: angle });
+    },
+    [dispatchRomaine, romaineReducer]
+  );
+  const { cropPoints } = romaine;
+  const setCropPoints: SetCropPoints = useCallback(
+    (payload) => {
+      if (typeof payload === "function") payload = payload(cropPoints);
+      dispatchRomaine({ type: "CROP_POINTS", payload });
+    },
+    [dispatchRomaine, romaineReducer, cropPoints]
+  );
+  const pushHistory: PushHistory = useCallback(() => {
+    dispatchRomaine({ type: "HISTORY", payload: { cmd: "PUSH" } });
+  }, [dispatchRomaine, romaineReducer]);
+
+  const moveHistory: (direction: boolean) => PushHistory = useCallback(
+    (direction: boolean) => {
+      if (direction)
+        return () => {
+          dispatchRomaine({ type: "MODE", payload: null });
+          dispatchRomaine({ type: "HISTORY", payload: { cmd: "UNDO" } });
+        };
+      else
+        return () => {
+          dispatchRomaine({ type: "MODE", payload: null });
+          dispatchRomaine({ type: "HISTORY", payload: { cmd: "REDO" } });
+        };
+    },
+    [dispatchRomaine, romaineReducer]
   );
 
-  const memoizedProviderValue = useMemo(
-    () => ({ loaded, cv: window.cv, romaine, setMode }),
-    [loaded, romaine]
+  useEffect(() => {
+    setAngle(angle);
+  }, [angle]);
+
+  const memoizedProviderValue: RomaineContext = useMemo(
+    () => ({
+      loaded,
+      cv: window.cv,
+      romaine,
+      setMode,
+      setAngle,
+      pushHistory,
+      setCropPoints,
+      undo: moveHistory(true),
+      redo: moveHistory(false),
+    }),
+    [loaded, romaine, setMode, setAngle, pushHistory, moveHistory]
   );
   return <Provider value={memoizedProviderValue}>{children}</Provider>;
 };

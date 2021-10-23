@@ -1,18 +1,19 @@
+import type { ContourCoordinates } from ".";
+import type { RomaineModes } from "../util";
+
 export interface RomaineRef {
-  backToCrop?: () => void;
-  /**
-   * function that does the transforming, filtering, and optionally shows a preview
-   */
-  crop?: (options: Partial<ClickCropOptions>) => void;
   getBlob?: (options: Partial<ImageExportOptions>) => Promise<Blob | null>;
 }
 
-export type DoneFunc = (options: Partial<ClickCropOptions>) => Promise<Blob>;
+export type CropFunc = (options?: Partial<ClickCropOptions>) => Promise<void>;
 
 interface ClickCropOptions {
   preview: boolean;
   filterCvParams: Partial<OpenCVFilterProps>;
   image: Partial<ImageExportOptions>;
+  cropPoints: ContourCoordinates;
+  imageResizeRatio: number;
+  mode: RomaineModes;
 }
 interface OpenCVFilterProps {
   blur: boolean;

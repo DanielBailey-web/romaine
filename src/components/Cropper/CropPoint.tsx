@@ -1,10 +1,11 @@
 import React, { useMemo, useCallback, CSSProperties } from "react";
+import type { FC } from "react";
 import Draggable, {
   ControlPosition,
   DraggableEventHandler,
   DraggableProps,
 } from "react-draggable";
-import T from "prop-types";
+import { useRomaine } from "../../hooks";
 export interface CoordinateXY {
   x: number;
   y: number;
@@ -27,6 +28,7 @@ const buildCropPointStyle = (
   border: "4px solid #3cabe2",
   zIndex: 1001,
   borderRadius: "100%",
+  cursor: "move",
   ...cropPointStyles,
   position: "absolute",
 });
@@ -35,7 +37,6 @@ type PointArea = keyof ContourCoordinates;
 
 export interface CropPointProps {
   pointSize: number;
-  cropPoints: any;
   defaultPosition?: ControlPosition;
   onStop: Function;
   onDrag: Function;
@@ -46,16 +47,18 @@ export interface CropPointProps {
 /**
  * @returns A crop point to use during cropping and image rotation
  */
-export const CropPoint = ({
+export const CropPoint: FC<CropPointProps & { pointArea: PointArea }> = ({
   pointSize,
-  cropPoints,
   pointArea,
   defaultPosition,
   onStop: externalOnStop,
   onDrag: externalOnDrag,
   bounds,
   cropPointStyles = {},
-}: CropPointProps & { pointArea: PointArea }) => {
+}) => {
+  const {
+    romaine: { cropPoints },
+  } = useRomaine();
   const cropPointStyle = useMemo(() => {
     if (
       cropPointStyles.width !== pointSize ||
@@ -99,7 +102,7 @@ export const CropPoint = ({
     [externalOnDrag, cropPoints]
   );
 
-  return (
+  return cropPoints ? (
     <Draggable
       bounds={bounds}
       defaultPosition={defaultPosition}
@@ -112,22 +115,5 @@ export const CropPoint = ({
     >
       <div style={cropPointStyle} />
     </Draggable>
-  );
-};
-
-CropPoint.propTypes = {
-  cropPoints: T.shape({
-    "left-top": T.shape({ x: T.number, y: T.number }).isRequired,
-    "right-top": T.shape({ x: T.number, y: T.number }).isRequired,
-    "right-bottom": T.shape({ x: T.number, y: T.number }).isRequired,
-    "left-bottom": T.shape({ x: T.number, y: T.number }).isRequired,
-  }),
-  pointArea: T.oneOf(["left-top", "right-top", "right-bottom", "left-bottom"]),
-  defaultPosition: T.shape({
-    x: T.number,
-    y: T.number,
-  }),
-  onStop: T.func,
-  onDrag: T.func,
-  cropPointStyles: T.object,
+  ) : null;
 };

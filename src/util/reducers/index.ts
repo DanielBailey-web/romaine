@@ -1,10 +1,31 @@
-import { RomaineModes } from "./cropperReducer";
+import type { ContourCoordinates } from "../../components";
+import type { RomaineModes, RomaineCommands } from "./romaineReducer";
+export interface RomaineHistory {
+  cmd: RomaineCommands;
+  payload: any;
+}
 
 export interface RomaineState {
   mode: RomaineModes;
+  angle: number;
+  cropPoints?: ContourCoordinates;
+  /** A command and a payload.
+   * The payload is automatically generated based on current state
+   * (e.g. angle of rotation, crop point locations)
+   */
+  history: { commands: RomaineHistory[]; pointer: number };
 }
 export const initialRomaineState: RomaineState = {
   mode: null,
+  angle: 90,
+  history: { commands: [], pointer: 0 },
 };
 
-export * from "./cropperReducer";
+export type SetCropPoints = (
+  cropPoints:
+    | undefined
+    | ContourCoordinates
+    | ((CPs?: ContourCoordinates) => ContourCoordinates | undefined)
+) => void;
+export * from "./romaineReducer";
+export * from "./history";

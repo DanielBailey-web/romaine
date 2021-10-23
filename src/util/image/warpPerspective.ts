@@ -14,11 +14,11 @@ export const warpPerspective = (
   imageResizeRatio: number
 ): void => {
   const dst = cv.imread(docCanvas);
-
   const bR = cropPoints["right-bottom"];
   const bL = cropPoints["left-bottom"];
   const tR = cropPoints["right-top"];
   const tL = cropPoints["left-top"];
+  console.log(cropPoints, [tL, tR, bR, bL]);
 
   // create source coordinates matrix
   const sourceCoordinates = [tL, tR, bR, bL].map((point) => [

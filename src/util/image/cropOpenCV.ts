@@ -7,7 +7,7 @@ import { ContourCoordinates, OpenCV } from "../../components";
  * @param imageResizeRatio
  * @param setPreviewPaneDimensions
  */
-export const crop = (
+export const cropOpenCV = (
   cv: OpenCV,
   docCanvas: HTMLCanvasElement,
   cropPoints: ContourCoordinates,

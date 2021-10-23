@@ -29,7 +29,10 @@ Currently minor changes will be breaking until a stable 1.0.0 release. Semantic 
 1. Create a minified production build
 2. Create a code sandbox demo
 3. Basic use case (completed, see <a href="https://www.npmjs.com/package/romaine-components">romaine-components</a>)
-4. History (undo, redo)
+4. History
+   1. Reinitialize (completed)
+   2. Undo (completed)
+   3. Redo
 5. Layers
 
 ## OpenCV Implementations
@@ -47,7 +50,11 @@ Currently minor changes will be breaking until a stable 1.0.0 release. Semantic 
    4. Retro
    5. Pop-art
 3. Rotation
-   1. Allow for image roration (currently working with 1 degree increments)
+   1. Allow for image roration (currently working with 90 degree increments)
+   2. Change angle of rotation
+      1. Update Function from useRomaine (completed)
+      2. Prop for Romaine (completed)
+         `<Romaine angle={90}>`
 4. Zooming
    1. Zoom in and out of the image (creating transparent padding around the image)
 

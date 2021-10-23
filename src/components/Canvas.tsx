@@ -1,12 +1,18 @@
+import type {
+  ReactNode,
+  ForwardedRef,
+  RefObject,
+  DetailedHTMLProps,
+  HTMLAttributes,
+} from "react";
 import React, {
   forwardRef,
-  ReactNode,
   useEffect,
   useRef,
   useState,
-  ForwardedRef,
   useImperativeHandle,
   useCallback,
+  useMemo,
 } from "react";
 import { CropperState, CroppingCanvas } from "./Cropper";
 import {
@@ -16,12 +22,12 @@ import {
   readFile,
 } from "../util";
 import { buildImgContainerStyle } from "../util/buildImgContainerStyle";
-import { RomaineRef } from "./Romaine.types";
+import { CropFunc, RomaineRef } from "./Romaine.types";
 import { useRomaine } from "../hooks";
 import { SetPreviewPaneDimensions, ShowPreview } from "../types";
 
 export interface CanvasProps {
-  romaineRef: ForwardedRef<RomaineRef> | React.RefObject<RomaineRef>;
+  romaineRef: ForwardedRef<RomaineRef> | RefObject<RomaineRef>;
   image: File | string;
   onDragStop: (s: CropperState) => void;
   onChange: (s: CropperState) => void;
@@ -36,10 +42,11 @@ let imageResizeRatio = 1;
 const CanvasActual = ({ romaineRef, ...props }: CanvasProps) => {
   const {
     cv,
-    romaine: { mode },
+    romaine: { mode, angle, history },
     setMode,
+    pushHistory,
+    undo,
   } = useRomaine();
-
   useImperativeHandle(
     romaineRef,
     (): RomaineRef => ({
@@ -67,6 +74,7 @@ const CanvasActual = ({ romaineRef, ...props }: CanvasProps) => {
 
   const previewCanvasRef = useRef<HTMLCanvasElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>();
+  const cropRef = useRef<CropFunc>();
   const [previewDims, setPreviewDims] = useState<CalculatedDimensions>({
     height: maxHeight,
     width: maxWidth,
@@ -105,7 +113,6 @@ const CanvasActual = ({ romaineRef, ...props }: CanvasProps) => {
     source = cv.imread(canvasRef.current),
     cleanup = true
   ) => {
-    console.trace(previewCanvasRef.current);
     if (cv && previewCanvasRef.current) {
       const dst = new cv.Mat();
       const dsize = new cv.Size(0, 0);
@@ -153,14 +160,12 @@ const CanvasActual = ({ romaineRef, ...props }: CanvasProps) => {
   }, [image]);
 
   // this function will do a full reset on the image removing all progress (also used on startup)
-  const Restart = () => {
+  const Restart = async () => {
     setLoading(true);
     canvasRef.current = undefined;
-    ReadFile().then(async (res) => {
-      await createCanvas(res);
-      cv && showPreview();
-      setLoading(false);
-    });
+    await createCanvas(await ReadFile());
+    cv && showPreview();
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -170,6 +175,8 @@ const CanvasActual = ({ romaineRef, ...props }: CanvasProps) => {
   }, [cv, image]);
 
   const rotate_bound = (canvas: HTMLCanvasElement, angle: number) => {
+    if (mode !== "undo" && mode !== "redo") pushHistory && pushHistory();
+
     const src = cv.imread(canvasRef.current);
     const dst = new cv.Mat();
     const center = new cv.Point(src.cols / 2, src.rows / 2);
@@ -218,29 +225,72 @@ const CanvasActual = ({ romaineRef, ...props }: CanvasProps) => {
     );
     M.delete();
     src.delete();
-
     setTimeout(() => {
       // show the real preview first so it works faster for user
       // due to this we must cleanup dst ourselves
-      showPreview(imageResizeRatio, dst, false);
-      cv.imshow(canvas, dst);
+      if (mode !== "undo" && mode !== "redo")
+        showPreview(imageResizeRatio, dst, false);
       dst.delete();
       // finished, set the mode back to null
       setMode && setMode(null);
     }, 0);
+    cv.imshow(canvas, dst);
   };
   // opencv documentation
   // https://docs.opencv.org/3.4/dd/d52/tutorial_js_geometric_transformations.html
   useEffect(() => {
     if (canvasRef.current) {
-      let angle = 1;
       if (mode === "rotate-left") {
         rotate_bound(canvasRef.current, angle);
       } else if (mode === "rotate-right") {
-        angle = 360 - angle;
-        rotate_bound(canvasRef.current, angle);
+        rotate_bound(canvasRef.current, 360 - angle);
       } else if (mode === "full-reset") {
         Restart();
+        setMode && setMode(null);
+      } else if (mode === "undo") {
+        const length = history.pointer - 1;
+        Restart().then(() => {
+          if (!canvasRef.current) return;
+          for (let i = 0; i < length; i++) {
+            const imageResizeRatio = setPreviewPaneDimensions({
+              width: canvasRef.current.width,
+              height: canvasRef.current.height,
+            });
+            switch (history.commands[i].cmd) {
+              case "rotate-left":
+                rotate_bound(canvasRef.current, history.commands[i].payload);
+                break;
+              case "rotate-right":
+                rotate_bound(canvasRef.current, history.commands[i].payload);
+                break;
+              case "crop":
+                cropRef.current?.({
+                  preview: false,
+                  cropPoints: history.commands[i].payload,
+                  imageResizeRatio,
+                  mode: history.commands[i].cmd,
+                });
+                break;
+              case "perspective-crop":
+                cropRef.current?.({
+                  preview: false,
+                  cropPoints: history.commands[i].payload,
+                  imageResizeRatio,
+                  mode: history.commands[i].cmd,
+                });
+                break;
+            }
+          }
+          undo();
+          setMode && setMode("preview");
+        });
+      } else if (mode === "preview") {
+        showPreview(
+          setPreviewPaneDimensions({
+            width: canvasRef.current.width,
+            height: canvasRef.current.height,
+          })
+        );
         setMode && setMode(null);
       }
     }
@@ -272,7 +322,8 @@ const CanvasActual = ({ romaineRef, ...props }: CanvasProps) => {
       />
       {(mode === "crop" || mode === "perspective-crop") && !loading && (
         <CroppingCanvas
-          romaineRef={romaineRef as React.RefObject<RomaineRef>}
+          cropRef={cropRef}
+          romaineRef={romaineRef as RefObject<RomaineRef>}
           imageResizeRatio={imageResizeRatio}
           setPreviewPaneDimensions={setPreviewPaneDimensions}
           createCanvas={createCanvas}
@@ -292,8 +343,8 @@ interface RomaineCanvas extends Omit<Omit<CanvasProps, "image">, "romaineRef"> {
   openCvPath?: string;
   children?: ReactNode;
   image: File | string | null;
-  wrapperProps?: React.DetailedHTMLProps<
-    React.HTMLAttributes<HTMLDivElement>,
+  wrapperProps?: DetailedHTMLProps<
+    HTMLAttributes<HTMLDivElement>,
     HTMLDivElement
   >;
 }
@@ -305,12 +356,16 @@ interface RomaineCanvas extends Omit<Omit<CanvasProps, "image">, "romaineRef"> {
 export const Canvas = forwardRef(
   (
     { openCvPath, children, image, wrapperProps = {}, ...props }: RomaineCanvas,
-    ref: React.ForwardedRef<RomaineRef>
+    ref: ForwardedRef<RomaineRef>
   ) => {
     const { cv, loaded } = useRomaine();
+    const salt = useMemo(
+      () => `${props.saltId ? props.saltId + "-" : ""}romaine-wrapper`,
+      []
+    );
     return cv || loaded ? (
       <div
-        id={`${props.saltId ? props.saltId + "-" : ""}romaine-wrapper`}
+        id={salt}
         {...wrapperProps}
         style={{
           position: "relative",
