@@ -55,14 +55,16 @@ const CanvasActual = ({ romaineRef, ...props }: CanvasProps) => {
           if (canvasRef.current) {
             canvasRef.current.toBlob(
               (blob) => {
-                // blob.name = image.name;
                 resolve(blob);
                 setLoading(false);
                 setMode && setMode(null);
               },
-              opts?.type ||
-                (typeof image !== "string" ? image.type : "image/png"),
-              opts?.quality || 1
+              opts?.type === "keep-same"
+                ? typeof image !== "string"
+                  ? image.type
+                  : "image/png"
+                : opts?.type,
+              opts?.quality
             );
           }
         });
