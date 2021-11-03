@@ -26,9 +26,9 @@ Currently minor changes will be breaking until a stable 1.0.0 release. Semantic 
 
 ## Romaine
 
-| Parameter | Type     | Description                  | Default |
-| :-------- | :------- | :--------------------------- | :------ |
-| `angle`   | `number` | Turn angle for rotation tool | `90`    |
+| Parameter | Type     | Description                  | Default | Context Alternative |
+| :-------- | :------- | :--------------------------- | :------ | :------------------ |
+| `angle`   | `number` | Turn angle for rotation tool | `90`    | `setAngle(90)`      |
 
 # todo
 
