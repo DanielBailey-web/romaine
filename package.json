@@ -1,6 +1,6 @@
 {
   "name": "romaine",
-  "version": "0.5.6",
+  "version": "0.6.0",
   "description": "React OpenCV Manipulation and Image Narration & Editing",
   "main": "dist/romaine.development.esm.jsx",
   "types": "dist/romaine.development",
