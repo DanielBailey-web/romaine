@@ -24,7 +24,17 @@ interface OpenCVFilterProps {
   thMax: number;
   grayScale: boolean;
 }
-interface ImageExportOptions {
-  type: "image/png" | "image/jpeg";
+
+export interface ImageExportOptions {
+  /**A DOMString indicating the image format. The default type is image/png; that type is also used if the given type isn't supported.
+   * @external https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob
+   */
+  type: "image/png" | "image/jpeg" | "image/webp" | "keep-same";
+  /**A Number between 0 and 1, indicating image quality if the requested type is image/jpeg or image/webp. If this argument is anything else, the default values 0.92 and 0.80 are used for image/jpeg and image/webp respectively. Other arguments are ignored.
+   *
+   * This argument is used when creating images using lossy compression (such as image/jpeg), to specify the quality of the output.
+   *
+   * @external https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob
+   */
   quality: number;
 }
