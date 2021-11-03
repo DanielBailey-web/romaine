@@ -22,6 +22,14 @@ Currently minor changes will be breaking until a stable 1.0.0 release. Semantic 
 - Image Quality
 - More coming soon...
 
+# Field Inputs
+
+## Romaine
+
+| Parameter | Type     | Description                  | Default |
+| :-------- | :------- | :--------------------------- | :------ |
+| `angle`   | `number` | Turn angle for rotation tool | `90`    |
+
 # todo
 
 ## Meta
@@ -61,11 +69,3 @@ Currently minor changes will be breaking until a stable 1.0.0 release. Semantic 
 ## Usability
 
 1. Make cropper be able to be moved via drag
-
-## Field Inputs
-
-#### Romaine
-
-| Parameter | Type     | Description                  | Default |
-| :-------- | :------- | :--------------------------- | :------ |
-| `angle`   | `number` | Turn angle for rotation tool | `90`    |
