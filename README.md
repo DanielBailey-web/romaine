@@ -26,6 +26,10 @@ Currently minor changes will be breaking until a stable 1.0.0 release. Semantic 
 
 ## Romaine
 
+### Note:
+
+Changing props triggers the Context Alternative, which can cause an un-needed render of some components. To avoid this you can use the context alternative yourself.
+
 | Parameter | Type     | Description                  | Default | Context Alternative |
 | :-------- | :------- | :--------------------------- | :------ | :------------------ |
 | `angle`   | `number` | Turn angle for rotation tool | `90`    | `setAngle(90)`      |
@@ -69,3 +73,10 @@ Currently minor changes will be breaking until a stable 1.0.0 release. Semantic 
 ## Usability
 
 1. Make cropper be able to be moved via drag
+
+# Upcoming Breaking Changes
+
+# Special Thanks
+
+@Giacomocerquone publisher of react-perspective-cropper
+@opencv creaters of computer vision software this package relies on
