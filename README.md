@@ -22,17 +22,15 @@ Currently minor changes will be breaking until a stable 1.0.0 release. Semantic 
 - Image Quality
 - More coming soon...
 
-# Field Inputs
-
-## Romaine
-
-### Note:
-
-Changing props triggers the Context Alternative, which can cause an un-needed render of some components. To avoid this you can use the context alternative yourself.
+# Romaine Input Props
 
 | Parameter | Type     | Description                  | Default | Context Alternative |
 | :-------- | :------- | :--------------------------- | :------ | :------------------ |
 | `angle`   | `number` | Turn angle for rotation tool | `90`    | `setAngle(90)`      |
+
+## Note:
+
+Changing props triggers the Context Alternative, which can cause an un-needed render of some components. To avoid this you can use the context alternative yourself.
 
 # todo
 
@@ -79,4 +77,5 @@ Changing props triggers the Context Alternative, which can cause an un-needed re
 # Special Thanks
 
 @Giacomocerquone publisher of react-perspective-cropper
+
 @opencv creaters of computer vision software this package relies on
