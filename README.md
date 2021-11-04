@@ -76,6 +76,6 @@ Changing props triggers the Context Alternative, which can cause an un-needed re
 
 # Special Thanks
 
-@Giacomocerquone publisher of react-perspective-cropper
+@Giacomocerquone publisher of react-perspective-cropper (MIT)
 
-@opencv creaters of computer vision software this package relies on
+@opencv creaters of computer vision software this package relies on (3-clause BSD)
