@@ -22,11 +22,18 @@
     "url": "git+https://github.com/DanielBailey-web/romaine.git"
   },
   "keywords": [
-    "react",
-    "opencv",
+    "romaine",
+    "romaine-components",
     "image",
-    "editing",
+    "quality",
+    "processing",
     "cropping",
+    "crop",
+    "cropper",
+    "opencv",
+    "perspective-cropper",
+    "rotate",
+    "react",
     "filtering"
   ],
   "author": "Daniel Bailey",
