@@ -69,6 +69,26 @@ const CanvasActual = ({ romaineRef, ...props }: CanvasProps) => {
           }
         });
       },
+      getDataURL: async (opts = {}) => {
+        return new Promise((resolve, reject) => {
+          try {
+            if (canvasRef.current) {
+              resolve(
+                canvasRef.current.toDataURL(
+                  opts?.type === "keep-same"
+                    ? typeof image !== "string"
+                      ? image.type
+                      : "image/png"
+                    : opts?.type,
+                  opts?.quality
+                )
+              );
+            }
+          } catch (err) {
+            reject();
+          }
+        });
+      },
     })
   );
 
