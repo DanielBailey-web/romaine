@@ -3,6 +3,7 @@ import type { RomaineModes } from "../util";
 
 export interface RomaineRef {
   getBlob?: (options: Partial<ImageExportOptions>) => Promise<Blob | null>;
+  getDataURL?: (options: Partial<ImageExportOptions>) => Promise<string>;
 }
 
 export type CropFunc = (options?: Partial<ClickCropOptions>) => Promise<void>;
