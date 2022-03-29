@@ -32,6 +32,10 @@ Currently minor changes will be breaking until a stable 1.0.0 release. Semantic 
 
 Changing props triggers the Context Alternative, which can cause an un-needed render of some components. To avoid this you can use the context alternative yourself.
 
+## Monorepo
+
+Romaine is now a monorepo! This makes setting up the development environment much easier! Just clone the master branch to get started!
+
 # todo
 
 ## Meta
