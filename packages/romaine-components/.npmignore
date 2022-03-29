@@ -1,0 +1,4 @@
+.gitignore
+.prettierignore
+example/src
+src

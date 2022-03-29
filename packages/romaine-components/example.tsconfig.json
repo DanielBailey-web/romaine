@@ -1,0 +1,30 @@
+{
+  "include": ["example/**/*"],
+  "compilerOptions": {
+    "lib": ["es2018", "dom"],
+    "jsx": "react",
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "typeRoots": ["./types/*"],
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "strict": true,
+    "moduleResolution": "node",
+    "module": "ESNext",
+    "target": "es6",
+    "noResolve": true,
+    "declarationDir": "./example",
+    "types": ["react", "node"],
+    "outDir": "./example/dist"
+  },
+  "watchOptions": {
+    "watchFile": "useFsEvents",
+    "watchDirectory": "useFsEvents",
+    "fallbackPolling": "dynamicPriority",
+    "excludeDirectories": ["./src", "./dist", "./node_modules"]
+  },
+  "files": ["./example/src/index.tsx"]
+}
