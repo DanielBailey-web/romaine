@@ -48,6 +48,9 @@ Romaine is now a monorepo! This makes setting up the development environment muc
    2. Undo (completed)
    3. Redo
 5. Layers
+6. Tests
+   1. Add Jest
+   2. Add tests starting with util
 
 ## OpenCV Implementations
 
