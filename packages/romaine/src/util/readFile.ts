@@ -7,7 +7,7 @@ export const readFile = (file: File | string): Promise<string> =>
   new Promise((resolve, reject) => {
     if (file instanceof File) {
       const reader = new FileReader();
-      reader.onload = (_e) => {
+      reader.onload = () => {
         resolve(reader.result as string);
       };
       reader.onerror = (err) => {

@@ -38,8 +38,12 @@ type PointArea = keyof ContourCoordinates;
 export interface CropPointProps {
   pointSize: number;
   defaultPosition?: ControlPosition;
-  onStop: Function;
-  onDrag: Function;
+  onStop: (
+    position: CoordinateXY,
+    area: keyof ContourCoordinates,
+    cropPoints: ContourCoordinates
+  ) => void;
+  onDrag: (position: CoordinateXY, area: keyof ContourCoordinates) => void;
   bounds: DraggableProps["bounds"];
   cropPointStyles?: CSSProperties;
 }
@@ -89,15 +93,16 @@ export const CropPoint: FC<CropPointProps & { pointArea: PointArea }> = ({
 
   const onStop: DraggableEventHandler = useCallback(
     (_, position) => {
-      externalOnStop(
-        {
-          ...position,
-          x: position.x + pointSize / 2,
-          y: position.y + pointSize / 2,
-        },
-        pointArea,
-        cropPoints
-      );
+      cropPoints &&
+        externalOnStop(
+          {
+            ...position,
+            x: position.x + pointSize / 2,
+            y: position.y + pointSize / 2,
+          },
+          pointArea,
+          cropPoints
+        );
     },
     [externalOnDrag, cropPoints]
   );

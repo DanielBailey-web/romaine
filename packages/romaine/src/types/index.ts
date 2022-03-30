@@ -2,3 +2,4 @@
 export * from "./openCV";
 export * from "./offsets";
 export * from "./CanvasFunctions";
+export * from "./AddPadding";

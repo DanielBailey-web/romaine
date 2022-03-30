@@ -26,8 +26,8 @@ import { CropFunc, RomaineRef } from "./Romaine.types";
 import { useRomaine } from "../hooks";
 import { SetPreviewPaneDimensions, ShowPreview } from "../types";
 
-export interface CanvasProps {
-  romaineRef: ForwardedRef<RomaineRef> | RefObject<RomaineRef>;
+export type CanvasProps = {
+  ref: ForwardedRef<RomaineRef> | RefObject<RomaineRef>;
   image: File | string;
   onDragStop: (s: CropperState) => void;
   onChange: (s: CropperState) => void;
@@ -37,9 +37,12 @@ export interface CanvasProps {
   maxWidth: number;
   maxHeight: number;
   saltId?: string;
-}
+};
 let imageResizeRatio = 1;
-const CanvasActual = ({ romaineRef, ...props }: CanvasProps) => {
+const CanvasActual_ = (
+  props: CanvasProps,
+  romaineRef: ForwardedRef<RomaineRef>
+) => {
   const {
     cv,
     romaine: { mode, angle, history, clearHistory },
@@ -109,7 +112,7 @@ const CanvasActual = ({ romaineRef, ...props }: CanvasProps) => {
     dims = originalDims
   ) => {
     if (dims && previewCanvasRef?.current) {
-      let newPreviewDims = calcDims(
+      const newPreviewDims = calcDims(
         dims.width,
         dims.height,
         maxWidth,
@@ -361,8 +364,9 @@ const CanvasActual = ({ romaineRef, ...props }: CanvasProps) => {
     </div>
   );
 };
-
-export interface RomaineCanvas extends Omit<Omit<CanvasProps, "image">, "romaineRef"> {
+const CanvasActual = forwardRef(CanvasActual_);
+export interface RomaineCanvas
+  extends Omit<Omit<CanvasProps, "image">, "romaineRef"> {
   openCvPath?: string;
   children?: ReactNode;
   image: File | string | null;
@@ -376,37 +380,35 @@ export interface RomaineCanvas extends Omit<Omit<CanvasProps, "image">, "romaine
  *
  * Can also pass children that can be absolutely positioned
  */
-export const Canvas = forwardRef(
-  (
-    { openCvPath, children, image, wrapperProps = {}, ...props }: RomaineCanvas,
-    ref: ForwardedRef<RomaineRef>
-  ) => {
-    const { cv, loaded } = useRomaine();
-    const salt = useMemo(
-      () => `${props.saltId ? props.saltId + "-" : ""}romaine-wrapper`,
-      []
-    );
-    return cv || loaded ? (
-      <div
-        id={salt}
-        {...wrapperProps}
-        style={{
-          position: "relative",
-          display: "grid",
-          placeItems: "center",
-          padding: "0 250px 0 2em",
-          width: props.maxWidth,
-          height: props.maxHeight,
-          marginLeft: "auto",
-          marginRight: "auto",
-          ...wrapperProps.style,
-        }}
-      >
-        {children}
-        {image && cv && (
-          <CanvasActual image={image} {...props} romaineRef={ref} />
-        )}
-      </div>
-    ) : null;
-  }
-);
+const _Canvas = (
+  { openCvPath, children, image, wrapperProps = {}, ...props }: RomaineCanvas,
+  ref: ForwardedRef<RomaineRef>
+) => {
+  const { cv, loaded } = useRomaine();
+  const salt = useMemo(
+    () => `${props.saltId ? props.saltId + "-" : ""}romaine-wrapper`,
+    []
+  );
+  return cv || loaded ? (
+    <div
+      id={salt}
+      {...wrapperProps}
+      style={{
+        position: "relative",
+        display: "grid",
+        placeItems: "center",
+        padding: "0 250px 0 2em",
+        width: props.maxWidth,
+        height: props.maxHeight,
+        marginLeft: "auto",
+        marginRight: "auto",
+        ...wrapperProps.style,
+      }}
+    >
+      {children}
+      {image && cv && <CanvasActual image={image} {...props} ref={ref} />}
+    </div>
+  ) : null;
+};
+
+export const Canvas = forwardRef<RomaineRef, RomaineCanvas>(_Canvas);

@@ -1,10 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import T from "prop-types";
 import { ContourCoordinates, CoordinateXY } from "..";
+import { CropFunc } from "../Romaine.types";
 
 interface CropPointsDelimiters {
   // romaineRef: React.RefObject<RomaineRef>;
-  crop: Function;
+  crop: CropFunc;
   cropPoints: ContourCoordinates;
   pointSize: number;
   lineColor?: string;
@@ -184,4 +185,5 @@ CropPointsDelimiters.propTypes = {
   lineColor: T.string,
   lineWidth: T.number,
   pointSize: T.number,
+  saltId: T.string,
 };

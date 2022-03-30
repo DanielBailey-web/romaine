@@ -2,7 +2,7 @@
   "name": "romaine-components",
   "version": "0.5.1",
   "description": "Component library for use with romaine",
-  "main": "index.js",
+  "main": "dist/index.js",
   "types": "dist/romaine_components.development",
   "scripts": {
     "start": "npm run build-watch & npm run build-watch-example",
@@ -14,7 +14,9 @@
     "check-types": "tsc",
     "pretest": "eslint --ignore-path .gitignore ./src",
     "rebuild": "rm -r ./dist; npm run build; cd ..; npm uninstall romaine; npm install ./romaine; cd ./romaine",
-    "find-todo": "grep -r '@todo' ./src"
+    "find-todo": "grep -r '@todo' ./src",
+    "production-build": "rollup -c --environment NODE_ENV=production",
+    "dev": "rollup -c -w"
   },
   "keywords": [
     "romaine",
@@ -52,6 +54,6 @@
   },
   "peerDependencies": {
     "react": ">=16.8.3",
-    "@romaine": "workspace:packages/romaine"
+    "romaine": ">=0.7.0"
   }
 }

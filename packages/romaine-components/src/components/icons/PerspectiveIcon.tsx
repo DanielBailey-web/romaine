@@ -23,7 +23,7 @@ export const PerspectiveIcon = (props: Props) => {
     return () => {
       window.removeEventListener("keydown", eventListenerPerspective);
     };
-  }, []);
+  }, [setMode]);
   return (
     <IconWrapper
       {...props}

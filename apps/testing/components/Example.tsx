@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Canvas, RomaineRef, useRomaine } from "romaine";
 import type { ImageExportOptions } from "romaine";
 import {
@@ -10,6 +10,7 @@ import {
   RotateRight,
   UndoIcon,
 } from "romaine-components";
+import { useMeasure } from "react-use";
 interface RomaineExampleProps {
   setBlob?: (blob: Blob | null) => void;
   image?: string | null;
@@ -26,16 +27,18 @@ export const RomaineExample = ({
   const RomaineRef = useRef<RomaineRef>(null);
   const { loaded, setMode } = useRomaine();
   const [state, setstate] = useState<File | string | null>(image);
-
+  const [containerRef, { x, y, width, height, top, right, bottom, left }] =
+    useMeasure();
+  console.log(width, height);
   return (
-    <div style={{ marginTop: "4em" }}>
+    <div ref={containerRef} className="fixed inset-0 p-16">
       {loaded && (
         <Canvas
           saltId={Math.random().toString()}
           ref={RomaineRef}
           image={state}
-          maxHeight={500}
-          maxWidth={500}
+          maxHeight={height - 100}
+          maxWidth={width - 100}
           onChange={() => {}}
           onDragStop={() => {}}
           pointSize={5}

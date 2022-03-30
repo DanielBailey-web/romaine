@@ -14,7 +14,7 @@ const globals = {
 const NODE_ENV = process.env.NODE_ENV || "development";
 export default [
   {
-    input: "src/romaine.development.tsx",
+    input: "src/index.tsx",
     output: {
       esModule: false,
       name: "romaine",

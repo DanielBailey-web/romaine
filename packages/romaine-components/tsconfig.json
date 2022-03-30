@@ -13,9 +13,10 @@
     "noUnusedParameters": true,
     "strict": true,
     "outDir": "./dist/",
-    "moduleResolution": "node",
     "module": "ESNext",
-    "target": "es6"
+    "target": "es6",
+    "moduleResolution": "node",
+    "types": ["react"]
   },
   "watchOptions": {
     "watchFile": "useFsEvents",

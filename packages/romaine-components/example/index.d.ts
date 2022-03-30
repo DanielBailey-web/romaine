@@ -2,7 +2,7 @@
 import type { ImageExportOptions } from "romaine";
 interface RomaineExampleProps {
     setBlob?: (blob: Blob | null) => void;
-    image: string | null;
+    image?: string | null;
     imageExportOptions?: Partial<ImageExportOptions>;
 }
 /**

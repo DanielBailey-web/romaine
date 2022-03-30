@@ -1,5 +1,5 @@
 export function multiplyMatrices(m1: number[][], m2: number[][]) {
-  let result: number[][] = [];
+  const result: number[][] = [];
   for (let i = 0; i < m1.length; i++) {
     result[i] = [];
     for (let j = 0; j < m2[0].length; j++) {

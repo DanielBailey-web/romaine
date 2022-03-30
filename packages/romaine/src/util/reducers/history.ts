@@ -24,13 +24,14 @@ export const history = (
   payload: HistoryAction["payload"]
 ): RomaineState => {
   switch (payload.cmd) {
-    case "CLEAR":
+    case "CLEAR": {
       // overwrite with empty array
       return {
         ...state,
         history: { commands: [], pointer: 0 },
       };
-    case "PUSH":
+    }
+    case "PUSH": {
       if (state.mode === "undo" || state.mode === "redo" || state.mode === null)
         return { ...state };
       const pointer = state.history.pointer;
@@ -49,6 +50,7 @@ export const history = (
           pointer: pointer + 1,
         },
       };
+    }
     case "UNDO": {
       const pointer = state.history.pointer;
       return {

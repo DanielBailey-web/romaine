@@ -76,7 +76,7 @@ export const CroppingCanvas = ({
   const cropCB: CropFunc = useCallback(
     async (opts = {}) => {
       setLoading(true);
-      pushHistory && pushHistory();
+      pushHistory?.();
       return new Promise<void>((resolve) => {
         if (!opts.cropPoints) opts.cropPoints = cropPoints;
         if (!opts.imageResizeRatio) opts.imageResizeRatio = imageResizeRatio;
@@ -107,7 +107,7 @@ export const CroppingCanvas = ({
               height: canvasRef.current.height,
             });
             showPreview();
-            setMode && setMode(null);
+            setMode?.(null);
           }
           setLoading(false);
           return resolve();
@@ -165,24 +165,28 @@ export const CroppingCanvas = ({
       onChange({ ...cropPoints, loading });
     }
   }, [cropPoints, loading]);
-
+  /**
+   * @todo
+   * 1) Need to make sure that this is valid to never run the other code
+   *   if it is, then need to remove the code in the else block
+   */
   const bootstrap = async () => {
-    if (true) detectContours().then(() => setLoading(false));
-    else {
-      // imread is SLOW
-      const src = cv.imread(previewCanvasRef.current);
-      const contourCoordinates = {
-        "left-top": { x: 0, y: 0 },
-        "right-top": { x: src.cols, y: 0 },
-        "right-bottom": {
-          x: src.cols,
-          y: src.rows,
-        },
-        "left-bottom": { x: 0, y: src.rows },
-      };
+    detectContours().then(() => setLoading(false));
+    // else {
+    //   // imread is SLOW
+    //   const src = cv.imread(previewCanvasRef.current);
+    //   const contourCoordinates = {
+    //     "left-top": { x: 0, y: 0 },
+    //     "right-top": { x: src.cols, y: 0 },
+    //     "right-bottom": {
+    //       x: src.cols,
+    //       y: src.rows,
+    //     },
+    //     "left-bottom": { x: 0, y: src.rows },
+    //   };
 
-      setCropPoints(contourCoordinates);
-    }
+    //   setCropPoints(contourCoordinates);
+    // }
   };
   useEffect(() => {
     if (
@@ -241,7 +245,7 @@ export const CroppingCanvas = ({
   );
 
   const onCornerDrag = useCallback(
-    (position, area) => {
+    (position: CoordinateXY, area: keyof ContourCoordinates) => {
       // if (magnifierCanvasRef.current && previewCanvasRef.current) {
       // const { x, y } = position;
       // const magnCtx = magnifierCanvasRef.current.getContext("2d");
