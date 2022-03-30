@@ -20,7 +20,7 @@ Currently minor changes will be breaking until a stable 1.0.0 release. Semantic 
 - Perspective Cropping
 - Image Rotation
 - Image Quality
-- More coming soon...
+- SSR Support with Next
 
 # Romaine Input Props
 
@@ -51,6 +51,7 @@ Romaine is now a monorepo! This makes setting up the development environment muc
 6. Tests
    1. Add Jest
    2. Add tests starting with util
+7. Switch state management from context to redux
 
 ## OpenCV Implementations
 
