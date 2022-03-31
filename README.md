@@ -91,6 +91,8 @@ Contributors are welcome, just create a pull request.
 
 # Upcoming Breaking Changes
 
+1. Planning on changing locations of context functions for cleaner destructuring (0.8.0)
+
 # Special Thanks
 
 @Giacomocerquone publisher of react-perspective-cropper (MIT)
