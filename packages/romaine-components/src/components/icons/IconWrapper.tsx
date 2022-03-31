@@ -1,15 +1,15 @@
 import React, { useState } from "react";
+import type { DetailedHTMLProps, HTMLAttributes } from "react";
 import { useRomaine } from "romaine";
 
-export interface IconProps
-  extends React.DetailedHTMLProps<
-    React.HTMLAttributes<HTMLButtonElement>,
-    HTMLButtonElement
-  > {
+export type IconProps = DetailedHTMLProps<
+  HTMLAttributes<HTMLButtonElement>,
+  HTMLButtonElement
+> & {
   selected?: boolean | string;
   tooltip?: string;
   disabled?: boolean;
-}
+};
 
 export const IconWrapper = ({
   selected,

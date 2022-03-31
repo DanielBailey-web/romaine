@@ -103,7 +103,7 @@ const Romaine: FC<ROMAINE> = ({
     if (generateOpenCvScriptTag && !document.getElementById(scriptId))
       document.body.appendChild(generateOpenCvScriptTag);
     // else handleOnLoad();
-  }, [openCvPath, handleOnLoad]);
+  }, [openCvPath, handleOnLoad, generateOpenCvScriptTag]);
 
   const [romaine, dispatchRomaine] = useReducer(
     romaineReducer,
@@ -114,13 +114,13 @@ const Romaine: FC<ROMAINE> = ({
     (mode: RomaineState["mode"]) => {
       dispatchRomaine({ type: "MODE", payload: mode });
     },
-    [dispatchRomaine, romaineReducer]
+    [dispatchRomaine]
   );
   const setAngle = useCallback(
     (angle: RomaineState["angle"]) => {
       dispatchRomaine({ type: "ANGLE", payload: angle });
     },
-    [dispatchRomaine, romaineReducer]
+    [dispatchRomaine]
   );
   const { cropPoints } = romaine;
   const setCropPoints: SetCropPoints = useCallback(
@@ -128,15 +128,15 @@ const Romaine: FC<ROMAINE> = ({
       if (typeof payload === "function") payload = payload(cropPoints);
       dispatchRomaine({ type: "CROP_POINTS", payload });
     },
-    [dispatchRomaine, romaineReducer, cropPoints]
+    [dispatchRomaine, cropPoints]
   );
   const pushHistory: PushHistory = useCallback(() => {
     dispatchRomaine({ type: "HISTORY", payload: { cmd: "PUSH" } });
-  }, [dispatchRomaine, romaineReducer]);
+  }, [dispatchRomaine]);
 
   const clearHistory: ClearHistory = useCallback(() => {
     dispatchRomaine({ type: "HISTORY", payload: { cmd: "CLEAR" } });
-  }, [dispatchRomaine, romaineReducer]);
+  }, [dispatchRomaine]);
 
   const moveHistory: (direction: boolean) => PushHistory = useCallback(
     (direction: boolean) => {
@@ -151,12 +151,12 @@ const Romaine: FC<ROMAINE> = ({
           dispatchRomaine({ type: "HISTORY", payload: { cmd: "REDO" } });
         };
     },
-    [dispatchRomaine, romaineReducer]
+    [dispatchRomaine]
   );
 
   useEffect(() => {
     setAngle(angle);
-  }, [angle]);
+  }, [angle, setAngle]);
 
   const memoizedProviderValue: RomaineContext = useMemo(
     () => ({
@@ -170,7 +170,16 @@ const Romaine: FC<ROMAINE> = ({
       undo: moveHistory(true),
       redo: moveHistory(false),
     }),
-    [loaded, romaine, setMode, setAngle, pushHistory, moveHistory]
+    [
+      loaded,
+      romaine,
+      setMode,
+      setAngle,
+      pushHistory,
+      moveHistory,
+      clearHistory,
+      setCropPoints,
+    ]
   );
   return <Provider value={memoizedProviderValue}>{children}</Provider>;
 };
@@ -178,6 +187,7 @@ Romaine.propTypes = {
   openCvPath: PropTypes.string,
   children: PropTypes.node,
   onLoad: PropTypes.func,
+  angle: PropTypes.number,
 };
 
 export { OpenCvConsumer, OpenCvContext, Romaine };

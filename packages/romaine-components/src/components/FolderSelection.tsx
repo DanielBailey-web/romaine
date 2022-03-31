@@ -141,7 +141,7 @@ export const FolderSelection = ({
       dispatch("hover");
     };
     const dragExit = () => {
-      dispatch(Boolean(image) ? "final" : "initial");
+      dispatch(image ? "final" : "initial");
     };
 
     window.addEventListener("dragover", preventDefault);
@@ -154,6 +154,7 @@ export const FolderSelection = ({
       window.removeEventListener("dragenter", dragEnter);
       window.removeEventListener("dragexit", dragExit);
     };
+    // @eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   //https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API/File_drag_and_drop
   function dropHandler(ev: React.DragEvent<HTMLDivElement>) {

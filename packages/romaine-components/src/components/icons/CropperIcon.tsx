@@ -14,7 +14,7 @@ export const CropperIcon = (props: Props) => {
     const eventListenerCropper = (e: KeyboardEvent) => {
       if (!e.ctrlKey && e.shiftKey && e.key === "C") {
         e.preventDefault();
-        setMode && setMode("crop");
+        setMode?.("crop");
       }
     };
     window.removeEventListener("keydown", eventListenerCropper);
@@ -22,7 +22,7 @@ export const CropperIcon = (props: Props) => {
     return () => {
       window.removeEventListener("keydown", eventListenerCropper);
     };
-  }, []);
+  }, [setMode]);
   return (
     <IconWrapper
       {...props}

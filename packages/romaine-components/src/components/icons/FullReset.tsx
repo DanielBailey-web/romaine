@@ -30,11 +30,10 @@ export const FullReset = (props: Props) => {
           window.confirm(
             "Are you sure you want to reset this image? All current cropping progress will be lost."
           ) &&
-          setMode &&
-          setMode("full-reset");
+          setMode?.("full-reset");
       }
     },
-    [pointer]
+    [pointer, setMode]
   );
   useEffect(() => {
     window.removeEventListener("keydown", eventListenerCropper);

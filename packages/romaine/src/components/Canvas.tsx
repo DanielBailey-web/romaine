@@ -128,8 +128,8 @@ const CanvasActual_ = (
   };
   /**
    *
-   * @param imageResizeRatio maxWidth / width
-   * @param src (optional) The openCV imread pointer defaults to `cv.imread(canvasRef.current)`
+   * @global `imageResizeRatio` maxWidth / width
+   * @global `src` (optional) The openCV imread pointer defaults to `cv.imread(canvasRef.current)`
    * @param cleanup (default is true) Should the src object be cleaned up
    * only use false if cleaning up your own src object! Otherwise this will result in memory leak!
    */
