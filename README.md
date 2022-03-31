@@ -36,6 +36,17 @@ Changing props triggers the Context Alternative, which can cause an un-needed re
 
 Romaine is now a monorepo! This makes setting up the development environment much easier! Just clone the master branch to get started!
 
+## Contributing
+
+### Getting development server started
+
+```
+git clone https://github.com/DanielBailey-web/romaine;
+cd romaine;
+yarn install;
+yarn dev
+```
+
 # todo
 
 ## Meta
