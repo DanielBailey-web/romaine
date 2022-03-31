@@ -17,20 +17,14 @@ export const UndoIcon = (props: Props) => {
   // using keydown because it already requires another key to be pressed
   const eventListenerCropper = useCallback(
     (e: KeyboardEvent) => {
-      if (e.ctrlKey && e.key === "Z") {
+      if (e.ctrlKey && /z/i.test(e.key)) {
         e.preventDefault();
-        pointer && setMode && setMode("undo");
+        pointer && setMode?.("undo");
       }
     },
-    [pointer]
+    [pointer, setMode]
   );
   useEffect(() => {
-    // const eventListenerCropper = (e: KeyboardEvent) => {
-    //   if (e.ctrlKey && e.key === "Z") {
-    //     e.preventDefault();
-    //     setMode && setMode("undo");
-    //   }
-    // };
     window.removeEventListener("keydown", eventListenerCropper);
     window.addEventListener("keydown", eventListenerCropper);
     return () => {
