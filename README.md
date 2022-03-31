@@ -4,7 +4,12 @@ React OpenCV Manipulation and Image Narration & Editing
 
 # Example
 
-See <a href="https://www.npmjs.com/package/romaine-components">romaine-components</a>
+```
+git clone https://github.com/DanielBailey-web/romaine;
+cd romaine;
+yarn install;
+yarn dev;
+```
 
 # Under Construction
 
@@ -38,14 +43,7 @@ Romaine is now a monorepo! This makes setting up the development environment muc
 
 ## Contributing
 
-### Getting development server started
-
-```
-git clone https://github.com/DanielBailey-web/romaine;
-cd romaine;
-yarn install;
-yarn dev
-```
+Contributors are welcome, just create a pull request.
 
 # todo
 
