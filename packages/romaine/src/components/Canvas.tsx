@@ -96,7 +96,6 @@ const CanvasActual_ = (
   );
 
   const { maxHeight, maxWidth, image } = props;
-
   const previewCanvasRef = useRef<HTMLCanvasElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>();
   const cropRef = useRef<CropFunc>();
@@ -106,26 +105,28 @@ const CanvasActual_ = (
     ratio: 1,
   });
   const [loading, setLoading] = useState(true);
-  const [originalDims, setOriginalDims] = useState({ height: 0, width: 0 });
+  // don't use 0 as original dims or there is possibly divide by zero error in setPreviewPaneDimensions
+  const [originalDims, setOriginalDims] = useState({ height: 1, width: 1 });
 
-  const setPreviewPaneDimensions: SetPreviewPaneDimensions = (
-    dims = originalDims
-  ) => {
-    if (dims && previewCanvasRef?.current) {
-      const newPreviewDims = calcDims(
-        dims.width,
-        dims.height,
-        maxWidth,
-        maxHeight
-      );
-      setPreviewDims(newPreviewDims);
+  const setPreviewPaneDimensions: SetPreviewPaneDimensions = useCallback(
+    (dims = originalDims) => {
+      if (dims && previewCanvasRef?.current) {
+        const newPreviewDims = calcDims(
+          dims.width,
+          dims.height,
+          maxWidth,
+          maxHeight
+        );
+        setPreviewDims(newPreviewDims);
 
-      previewCanvasRef.current.width = newPreviewDims.width;
-      previewCanvasRef.current.height = newPreviewDims.height;
-      imageResizeRatio = newPreviewDims.width / dims.width;
-      return imageResizeRatio;
-    }
-  };
+        previewCanvasRef.current.width = newPreviewDims.width;
+        previewCanvasRef.current.height = newPreviewDims.height;
+        imageResizeRatio = newPreviewDims.width / dims.width;
+        return imageResizeRatio;
+      }
+    },
+    [originalDims, maxHeight, maxWidth]
+  );
   /**
    *
    * @global `imageResizeRatio` maxWidth / width
@@ -147,6 +148,23 @@ const CanvasActual_ = (
       dst.delete();
     }
   };
+
+  // window resizing re-render canvas
+  const resizeTimeout = useRef(0);
+  useEffect(() => {
+    const windowResizeEvent = () => {
+      // timeout 1s for resize event to finish
+      const resizeRatio = setPreviewPaneDimensions();
+      if (resizeRatio !== Infinity) {
+        clearTimeout(resizeTimeout.current);
+        const timeout = setTimeout(() => {
+          showPreview(resizeRatio);
+        }, 1000);
+        resizeTimeout.current = timeout;
+      }
+    };
+    windowResizeEvent();
+  }, [setPreviewPaneDimensions]);
 
   const createCanvas = (src: string) => {
     return new Promise<void>((resolve, reject) => {
@@ -397,11 +415,8 @@ const _Canvas = (
         position: "relative",
         display: "grid",
         placeItems: "center",
-        padding: "0 250px 0 2em",
         width: props.maxWidth,
         height: props.maxHeight,
-        marginLeft: "auto",
-        marginRight: "auto",
         ...wrapperProps.style,
       }}
     >
