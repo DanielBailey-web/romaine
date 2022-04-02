@@ -154,20 +154,26 @@ const CanvasActual_ = (
   useEffect(() => {
     const windowResizeEvent = () => {
       // timeout 1s for resize event to finish
-      const resizeRatio = setPreviewPaneDimensions();
+      const resizeRatio = setPreviewPaneDimensions(
+        canvasRef.current && {
+          width: canvasRef.current.width,
+          height: canvasRef.current.height,
+        }
+      );
       if (resizeRatio !== Infinity) {
         clearTimeout(resizeTimeout.current);
         const timeout = setTimeout(() => {
           showPreview(resizeRatio);
-        }, 1000);
+        }, 250);
         resizeTimeout.current = timeout;
       }
     };
-    windowResizeEvent();
-  }, [setPreviewPaneDimensions]);
+    if (!loading) windowResizeEvent();
+  }, [setPreviewPaneDimensions, loading]);
 
-  const createCanvas = (src: string) => {
+  const createCanvas = (src: string | null) => {
     return new Promise<void>((resolve, reject) => {
+      if (!src) return reject("Image source is invalid");
       try {
         const img = document.createElement("img");
         img.onload = async () => {
@@ -184,7 +190,10 @@ const CanvasActual_ = (
             ctx.fillStyle = "#fff0";
             ctx.fillRect(0, 0, img.width, img.height);
             ctx.drawImage(img, 0, 0);
-            setPreviewPaneDimensions({ height: img.height, width: img.width });
+            setPreviewPaneDimensions({
+              height: img.height,
+              width: img.width,
+            });
             return resolve();
           }
           return reject();
@@ -212,7 +221,7 @@ const CanvasActual_ = (
   };
 
   useEffect(() => {
-    if (cv) {
+    if (cv && image) {
       Restart();
     }
   }, [cv, image]);
