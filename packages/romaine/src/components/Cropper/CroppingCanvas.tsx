@@ -39,7 +39,7 @@ export interface CropperSpecificProps extends CanvasProps {
     height: number;
     width: number;
   }) => undefined | number;
-  createCanvas: (src: string) => Promise<void>;
+  createCanvas: (src: string|null) => Promise<void>;
   romaineRef: React.RefObject<RomaineRef>;
 }
 
