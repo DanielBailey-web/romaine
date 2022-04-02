@@ -60,7 +60,7 @@ const CanvasActual_ = (
               (blob) => {
                 resolve(blob);
                 setLoading(false);
-                setMode && setMode(null);
+                setMode?.(null);
               },
               opts?.type === "keep-same"
                 ? typeof image !== "string"
