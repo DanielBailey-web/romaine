@@ -4,6 +4,9 @@
   "description": "Component library for use with romaine",
   "main": "dist/index.js",
   "types": "dist/romaine_components.development",
+  "files": [
+    "dist/"
+  ],
   "scripts": {
     "start": "npm run build-watch & npm run build-watch-example",
     "compile-dev": "npm run webpack; npm run pretest;",
