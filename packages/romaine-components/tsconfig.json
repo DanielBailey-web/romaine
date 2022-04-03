@@ -24,5 +24,5 @@
     "fallbackPolling": "dynamicPriority",
     "excludeDirectories": ["./example"]
   },
-  "files": ["./src/romaine_components.development.tsx"]
+  "files": ["src/index.tsx"]
 }

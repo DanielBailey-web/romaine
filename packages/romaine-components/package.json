@@ -2,8 +2,8 @@
   "name": "romaine-components",
   "version": "0.6.0",
   "description": "Component library for use with romaine",
-  "main": "dist/index.js",
-  "types": "dist/romaine_components.development",
+  "main": "dist/index.jsx",
+  "types": "dist/",
   "files": [
     "dist/"
   ],

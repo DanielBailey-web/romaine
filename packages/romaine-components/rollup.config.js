@@ -14,7 +14,7 @@ const globals = {
 const NODE_ENV = process.env.NODE_ENV || "development";
 export default [
   {
-    input: "src/romaine_components.development.tsx",
+    input: "src/index.tsx",
     output: {
       esModule: false,
       name: "romaine",
@@ -32,7 +32,6 @@ export default [
       typescript({ tsconfig: "./tsconfig.json" }),
       replace({
         "process.env.NODE_ENV": JSON.stringify(NODE_ENV),
-        preventAssignment: true,
       }),
       peerDepsExternal(),
       eslint(),

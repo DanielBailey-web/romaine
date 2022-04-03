@@ -4,3 +4,5 @@ example
 src
 *config.js
 *config.json
+.eslintrc.json
+.eslintignore
