@@ -54,6 +54,6 @@
   },
   "peerDependencies": {
     "react": ">=16.8.3",
-    "romaine": ">=0.7.0"
+    "romaine": "0.7.0-canary.0"
   }
 }
