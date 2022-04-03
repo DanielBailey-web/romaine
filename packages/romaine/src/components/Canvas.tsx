@@ -187,7 +187,7 @@ const CanvasActual_ = (
           setOriginalDims({ height: img.height, width: img.width });
           const ctx = canvasRef.current.getContext("2d");
           if (ctx) {
-            ctx.fillStyle = "#fff0";
+            ctx.fillStyle = "#fff0"; // transparent
             ctx.fillRect(0, 0, img.width, img.height);
             ctx.drawImage(img, 0, 0);
             setPreviewPaneDimensions({
@@ -201,7 +201,8 @@ const CanvasActual_ = (
         if (isCrossOriginURL(src)) img.crossOrigin = "anonymous";
         img.src = src;
       } catch (err) {
-        reject();
+        console.error(err);
+        reject("unknown error while creating canvas");
       }
     });
   };
