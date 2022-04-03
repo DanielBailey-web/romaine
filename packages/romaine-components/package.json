@@ -1,13 +1,13 @@
 {
   "name": "romaine-components",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "description": "Component library for use with romaine",
   "main": "dist/index.js",
   "types": "dist/romaine_components.development",
   "scripts": {
     "start": "npm run build-watch & npm run build-watch-example",
     "compile-dev": "npm run webpack; npm run pretest;",
-    "build": "rollup -c --environment NODE_ENV=production & tsc -p ./example.tsconfig.json",
+    "build": "rollup -c --environment NODE_ENV=production",
     "build-watch": "rollup -c -w",
     "build-watch-example": "tsc -p ./example.tsconfig.json",
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -54,6 +54,6 @@
   },
   "peerDependencies": {
     "react": ">=16.8.3",
-    "romaine": "0.7.0-canary.0"
+    "romaine": "0.7.0"
   }
 }

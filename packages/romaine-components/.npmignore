@@ -1,4 +1,6 @@
 .gitignore
 .prettierignore
-example/src
+example
 src
+*config.js
+*config.json
