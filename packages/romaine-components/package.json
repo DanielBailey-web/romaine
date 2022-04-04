@@ -1,12 +1,13 @@
 {
   "name": "romaine-components",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "Component library for use with romaine",
   "main": "dist/index.jsx",
   "types": "dist/",
   "files": [
     "dist/"
   ],
+  "type": "module",
   "scripts": {
     "start": "npm run build-watch & npm run build-watch-example",
     "compile-dev": "npm run webpack; npm run pretest;",
