@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useRomaine } from "../../hooks";
-import T from "prop-types";
 
 import {
   CalculatedDimensions,
@@ -24,8 +23,11 @@ export interface CropperState extends ContourCoordinates {
 }
 
 export interface CropperSpecificProps extends CanvasProps {
+  /** The canvas which we pass to OpenCV for manipulations */
   canvasRef: React.MutableRefObject<HTMLCanvasElement | undefined>;
+  /** The canvas we display images on */
   previewCanvasRef: React.RefObject<HTMLCanvasElement>;
+  /** The canvas we draw the lines connecting the crop points on */
   cropRef: React.MutableRefObject<CropFunc | undefined>;
   previewDims: CalculatedDimensions | undefined;
   imageResizeRatio: number;
@@ -39,7 +41,7 @@ export interface CropperSpecificProps extends CanvasProps {
     height: number;
     width: number;
   }) => undefined | number;
-  createCanvas: (src: string|null) => Promise<void>;
+  createCanvas: (src: string | null) => Promise<void>;
   romaineRef: React.RefObject<RomaineRef>;
 }
 
@@ -59,7 +61,6 @@ export const CroppingCanvas = ({
   // setPreviewDims,
   imageResizeRatio,
   showPreview,
-  // createCanvas,
   setPreviewPaneDimensions,
   saltId,
 }: CropperSpecificProps) => {
@@ -114,7 +115,19 @@ export const CroppingCanvas = ({
         }
       });
     },
-    [cv, cropPoints, mode]
+    // disabling because eslint doesn't know that canvasRef is a ref
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      cv,
+      cropPoints,
+      mode,
+      pushHistory,
+      setLoading,
+      setMode,
+      setPreviewPaneDimensions,
+      showPreview,
+      imageResizeRatio,
+    ]
   );
   useEffect(() => {
     cropRef.current = cropCB;
@@ -199,7 +212,7 @@ export const CroppingCanvas = ({
     } else {
       setLoading(true);
     }
-  }, [image, previewCanvasRef.current, cvLoaded, mode]);
+  }, [image, cvLoaded, mode]);
 
   const handleNormalCornerMove = useCallback(
     (
@@ -271,7 +284,7 @@ export const CroppingCanvas = ({
       });
       // }
     },
-    [mode, setCropPoints]
+    [mode, setCropPoints, handleNormalCornerMove]
   );
 
   const onCornerStop = useCallback(
@@ -288,11 +301,9 @@ export const CroppingCanvas = ({
           return { ...cPs, [area]: { x, y } as CoordinateXY };
         return handleNormalCornerMove(position, area, cPs);
       });
-      if (onDragStop) {
-        onDragStop({ ...cropPoints, [area]: { x, y }, loading });
-      }
+      onDragStop?.({ ...cropPoints, [area]: { x, y }, loading });
     },
-    [mode, setCropPoints]
+    [mode, setCropPoints, handleNormalCornerMove]
   );
 
   return (
@@ -335,21 +346,4 @@ export const CroppingCanvas = ({
         )}
     </>
   );
-};
-
-CroppingCanvas.propTypes = {
-  image: T.object.isRequired,
-  onDragStop: T.func,
-  onChange: T.func,
-  cropperRef: T.shape({
-    current: T.shape({
-      done: T.func.isRequired,
-      backToCrop: T.func.isRequired,
-    }),
-  }),
-  pointSize: T.number,
-  lineWidth: T.number,
-  pointBgColor: T.string,
-  pointBorder: T.string,
-  lineColor: T.string,
 };
