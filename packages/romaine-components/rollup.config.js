@@ -35,6 +35,7 @@ export default [
       typescript({ tsconfig: "./tsconfig.json" }),
       replace({
         "process.env.NODE_ENV": JSON.stringify(NODE_ENV),
+        preventAssignment: false,
       }),
       peerDepsExternal(),
     ],
