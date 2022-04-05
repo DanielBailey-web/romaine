@@ -29,12 +29,14 @@ export default [
     },
     plugins: [
       // del({ targets: ["dist/*", "playground/src/component-lib"] }),
+      eslint({
+        exclude: ["node_modules/**", "dist/**"],
+      }),
       typescript({ tsconfig: "./tsconfig.json" }),
       replace({
         "process.env.NODE_ENV": JSON.stringify(NODE_ENV),
       }),
       peerDepsExternal(),
-      eslint(),
     ],
     external,
   },
