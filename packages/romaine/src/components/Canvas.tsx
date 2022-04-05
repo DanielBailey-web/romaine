@@ -27,7 +27,6 @@ import { useRomaine } from "../hooks";
 import { SetPreviewPaneDimensions, ShowPreview } from "../types";
 
 export type CanvasProps = {
-  ref: ForwardedRef<RomaineRef> | RefObject<RomaineRef>;
   image: File | string;
   onDragStop: (s: CropperState) => void;
   onChange: (s: CropperState) => void;
@@ -40,7 +39,7 @@ export type CanvasProps = {
 };
 let imageResizeRatio = 1;
 const CanvasActual_ = (
-  props: CanvasProps,
+  props: Omit<CanvasProps, "ref">,
   romaineRef: ForwardedRef<RomaineRef>
 ) => {
   const {
@@ -169,7 +168,8 @@ const CanvasActual_ = (
       }
     };
     if (!loading) windowResizeEvent();
-  }, [setPreviewPaneDimensions, loading]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [setPreviewPaneDimensions]);
 
   const createCanvas = (src: string | null) => {
     return new Promise<void>((resolve, reject) => {
@@ -336,7 +336,7 @@ const CanvasActual_ = (
             }
           }
           undo();
-          setMode && setMode("preview");
+          setMode?.("preview");
         });
       } else if (mode === "preview") {
         showPreview(
@@ -345,7 +345,7 @@ const CanvasActual_ = (
             height: canvasRef.current.height,
           })
         );
-        setMode && setMode(null);
+        setMode?.(null);
       }
     }
   }, [mode]);
