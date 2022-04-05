@@ -2,13 +2,12 @@ import React, { useEffect } from "react";
 import { IconWrapper } from "./IconWrapper";
 import { useRomaine } from "romaine";
 
-interface Props
-  extends React.DetailedHTMLProps<
+export const PerspectiveIcon = (
+  props: React.DetailedHTMLProps<
     React.HTMLAttributes<HTMLButtonElement>,
     HTMLButtonElement
-  > {}
-
-export const PerspectiveIcon = (props: Props) => {
+  >
+) => {
   const { setMode } = useRomaine();
   useEffect(() => {
     // using keydown because it already requires another key to be pressed

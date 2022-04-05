@@ -2,16 +2,16 @@ import React, { useCallback, useEffect } from "react";
 import { IconWrapper } from "./IconWrapper";
 import { useRomaine } from "romaine";
 
-interface Props
-  extends React.DetailedHTMLProps<
-    React.HTMLAttributes<HTMLButtonElement>,
-    HTMLButtonElement
-  > {}
 /**
  * @copyright The SVG comes from: Remix Icons https://remixicon.com/
  * @license `Apache 2.0`
  */
-export const FullReset = (props: Props) => {
+export const FullReset = (
+  props: React.DetailedHTMLProps<
+    React.HTMLAttributes<HTMLButtonElement>,
+    HTMLButtonElement
+  >
+) => {
   const {
     setMode,
     romaine: {

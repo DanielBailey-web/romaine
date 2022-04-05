@@ -2,11 +2,6 @@ import React from "react";
 import { IconWrapper } from "./IconWrapper";
 import { useRomaine } from "romaine";
 
-interface Props
-  extends React.DetailedHTMLProps<
-    React.HTMLAttributes<HTMLButtonElement>,
-    HTMLButtonElement
-  > {}
 /**
  * @todo
  * 1) Need the ability to change angle for rotation
@@ -18,7 +13,12 @@ interface Props
  * @copyright The SVG comes from: Ant Design Icons https://github.com/ant-design/ant-design-icons
  * @license MIT
  */
-export const RotateLeft = (props: Props) => {
+export const RotateLeft = (
+  props: React.DetailedHTMLProps<
+    React.HTMLAttributes<HTMLButtonElement>,
+    HTMLButtonElement
+  >
+) => {
   const { setMode } = useRomaine();
   return (
     <IconWrapper

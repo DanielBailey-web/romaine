@@ -1,13 +1,13 @@
 import React, { useEffect } from "react";
 import { IconWrapper } from "./IconWrapper";
 import { useRomaine } from "romaine";
-interface Props
-  extends React.DetailedHTMLProps<
+
+export const CropperIcon = (
+  props: React.DetailedHTMLProps<
     React.HTMLAttributes<HTMLButtonElement>,
     HTMLButtonElement
-  > {}
-
-export const CropperIcon = (props: Props) => {
+  >
+) => {
   const { setMode } = useRomaine();
   useEffect(() => {
     // using keydown because it already requires another key to be pressed

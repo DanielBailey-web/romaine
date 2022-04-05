@@ -2,17 +2,16 @@ import React from "react";
 import { IconWrapper } from "./IconWrapper";
 import { useRomaine } from "romaine";
 
-interface Props
-  extends React.DetailedHTMLProps<
-    React.HTMLAttributes<HTMLButtonElement>,
-    HTMLButtonElement
-  > {}
-
 /**
  * @copyright Ant Design Icons https://github.com/ant-design/ant-design-icons
  * @license MIT
  */
-export const RotateRight = (props: Props) => {
+export const RotateRight = (
+  props: React.DetailedHTMLProps<
+    React.HTMLAttributes<HTMLButtonElement>,
+    HTMLButtonElement
+  >
+) => {
   const { setMode } = useRomaine();
   return (
     <IconWrapper

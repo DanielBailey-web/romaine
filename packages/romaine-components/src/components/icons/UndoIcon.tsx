@@ -1,13 +1,13 @@
 import React, { useCallback, useEffect } from "react";
 import { IconWrapper } from "./IconWrapper";
 import { useRomaine } from "romaine";
-interface Props
-  extends React.DetailedHTMLProps<
+
+export const UndoIcon = (
+  props: React.DetailedHTMLProps<
     React.HTMLAttributes<HTMLButtonElement>,
     HTMLButtonElement
-  > {}
-
-export const UndoIcon = (props: Props) => {
+  >
+) => {
   const {
     setMode,
     romaine: {

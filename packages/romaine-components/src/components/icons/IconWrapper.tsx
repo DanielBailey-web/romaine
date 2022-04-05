@@ -26,6 +26,7 @@ export const IconWrapper = ({
     <abbr
       style={{ cursor: disabled ? "not-allowed" : "pointer" }}
       title={tooltip}
+      aria-label={tooltip}
     >
       <button
         onMouseEnter={() => sethover(true)}
