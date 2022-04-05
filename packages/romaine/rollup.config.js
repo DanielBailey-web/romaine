@@ -28,6 +28,9 @@ export default [
       // },
     },
     plugins: [
+      eslint({
+        exclude: ["node_modules/**", "dist/**"],
+      }),
       // del({ targets: ["dist/*", "playground/src/component-lib"] }),
       typescript({ tsconfig: "./tsconfig.json" }),
       replace({
@@ -35,7 +38,6 @@ export default [
         preventAssignment: false,
       }),
       peerDepsExternal(),
-      eslint(),
     ],
     external,
   },
