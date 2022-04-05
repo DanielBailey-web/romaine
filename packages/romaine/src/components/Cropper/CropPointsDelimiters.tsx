@@ -38,7 +38,10 @@ const CropPointsDelimiters = ({
       ctx && ctx.clearRect(0, 0, previewDims.width, previewDims.height);
     }
   }, [previewDims]);
-
+  /** This needs to do a better job. See Issue #2
+   * @link https://github.com/DanielBailey-web/romaine/issues/2
+   *
+   */
   const sortPoints = useCallback(() => {
     const sortOrder = [
       "left-top",
@@ -52,28 +55,31 @@ const CropPointsDelimiters = ({
     );
   }, [cropPoints]);
 
-  const drawShape = useCallback(([point1, point2, point3, point4]) => {
-    const ctx = canvas.current && canvas.current.getContext("2d");
-    if (ctx) {
-      ctx.lineWidth = lineWidth;
-      ctx.strokeStyle = lineColor;
+  const drawShape = useCallback(
+    ([point1, point2, point3, point4]) => {
+      const ctx = canvas.current && canvas.current.getContext("2d");
+      if (ctx) {
+        ctx.lineWidth = lineWidth;
+        ctx.strokeStyle = lineColor;
 
-      ctx.beginPath();
-      ctx.moveTo(point1.x + pointSize / 2, point1.y);
-      ctx.lineTo(point2.x - pointSize / 2, point2.y);
+        ctx.beginPath();
+        ctx.moveTo(point1.x + pointSize / 2, point1.y);
+        ctx.lineTo(point2.x - pointSize / 2, point2.y);
 
-      ctx.moveTo(point2.x, point2.y + pointSize / 2);
-      ctx.lineTo(point3.x, point3.y - pointSize / 2);
+        ctx.moveTo(point2.x, point2.y + pointSize / 2);
+        ctx.lineTo(point3.x, point3.y - pointSize / 2);
 
-      ctx.moveTo(point3.x - pointSize / 2, point3.y);
-      ctx.lineTo(point4.x + pointSize / 2, point4.y);
+        ctx.moveTo(point3.x - pointSize / 2, point3.y);
+        ctx.lineTo(point4.x + pointSize / 2, point4.y);
 
-      ctx.moveTo(point4.x, point4.y - pointSize / 2);
-      ctx.lineTo(point1.x, point1.y + pointSize / 2);
-      ctx.closePath();
-      ctx.stroke();
-    }
-  }, []);
+        ctx.moveTo(point4.x, point4.y - pointSize / 2);
+        ctx.lineTo(point1.x, point1.y + pointSize / 2);
+        ctx.closePath();
+        ctx.stroke();
+      }
+    },
+    [lineColor, lineWidth, pointSize]
+  );
 
   useEffect(() => {
     if (cropPoints && canvas.current) {
@@ -81,7 +87,7 @@ const CropPointsDelimiters = ({
       const sortedPoints = sortPoints();
       drawShape(sortedPoints);
     }
-  }, [cropPoints]);
+  }, [cropPoints, drawShape, clearCanvas, sortPoints]);
 
   /**
    * Takes in a `CoordinateXY` and makes sure that it is inside the `ContourCoordinates`
