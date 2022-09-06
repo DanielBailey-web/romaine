@@ -44,9 +44,10 @@ export const RomaineExample = ({
         >
           <FolderSelection
             image={state}
-            getFiles={(files: string | FileList) =>
-              setstate(typeof files === "string" ? files : files[0])
-            }
+            getFiles={(files: string | FileList | null) => {
+              if (!files) return;
+              setstate(typeof files === "string" ? files : files[0]);
+            }}
           >
             <span style={{ display: "grid", placeItems: "center" }}>
               {state ? "Choose a Different File" : "Choose or Drag a File Here"}
@@ -73,7 +74,7 @@ export const RomaineExample = ({
               // but for backwards compatability currently doing this...
               setTimeout(async () => {
                 console.log(
-                  await RomaineRef.current?.getDataURL({
+                  await RomaineRef.current?.getDataURL?.({
                     ...imageExportOptions,
                   })
                 );
