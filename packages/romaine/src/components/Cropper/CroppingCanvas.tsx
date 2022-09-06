@@ -88,7 +88,9 @@ export const CroppingCanvas = ({
 
   const cropCB: CropFunc = useCallback(
     async (opts = {}) => {
+      // need to figure out how to not need this and still render
       setLoading(true);
+      // push can be moved to mode
       pushHistory?.();
       return new Promise<void>((resolve) => {
         if (!opts.cropPoints) opts.cropPoints = cropPoints;
