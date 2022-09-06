@@ -15,18 +15,13 @@ export const useCanvas = ({ image, saltId }: Props) => {
   } = useRomaine();
   const [loaded, setLoaded] = useState(false);
 
-  const [originalImageDims, setOriginalImageDims] = useState<{
-    width: number;
-    height: number;
-  }>({
+  const [originalImageDims, setOriginalImageDims] = useState({
     width: 0,
     height: 0,
   });
   const canvasRef = useRef<HTMLCanvasElement>(document.createElement("canvas"));
   const canvasPtr = useRef<ImagePtr | undefined>();
-  const getFile = useCallback(async (image) => {
-    return await readFile(image);
-  }, []);
+  const getFile = useCallback(async (image) => await readFile(image), []);
 
   const createCanvas = useCallback(
     () =>
@@ -51,10 +46,6 @@ export const useCanvas = ({ image, saltId }: Props) => {
               ctx.fillRect(0, 0, img.width, img.height);
               ctx.drawImage(img, 0, 0);
 
-              // setPreviewPaneDimensions({
-              //   height: img.height,
-              //   width: img.width,
-              // });
               setLoaded(true);
               canvasPtr.current = cv.imread(canvasRef.current);
               return resolve();
@@ -73,7 +64,6 @@ export const useCanvas = ({ image, saltId }: Props) => {
 
   const resetImage = useCallback(async () => {
     setLoaded(false);
-    console.log(canvasPtr.current);
     canvasPtr.current?.delete();
     console.warn("image resetting");
     await createCanvas();

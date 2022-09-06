@@ -114,7 +114,7 @@ const CanvasActual_ = (
       image,
       saltId,
     });
-  console.log({ loaded });
+
   const {
     createPreview,
     previewRef: previewCanvasRef,
