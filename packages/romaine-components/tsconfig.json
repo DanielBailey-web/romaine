@@ -16,7 +16,7 @@
     "module": "ESNext",
     "target": "es6",
     "moduleResolution": "node",
-    "types": ["react"]
+    "types": ["react", "romaine"]
   },
   "watchOptions": {
     "watchFile": "useFsEvents",
