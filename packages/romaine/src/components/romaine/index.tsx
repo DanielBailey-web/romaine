@@ -124,7 +124,11 @@ const Romaine: FC<ROMAINE> = ({
     },
     [dispatchRomaine]
   );
-  const { cropPoints } = romaine;
+  const {
+    cropPoints,
+    history: { pointer },
+  } = romaine;
+
   const setCropPoints: SetCropPoints = useCallback(
     (payload) => {
       if (typeof payload === "function") payload = payload(cropPoints);
@@ -160,7 +164,7 @@ const Romaine: FC<ROMAINE> = ({
   useEffect(() => {
     setAngle(angle);
   }, [angle, setAngle]);
-
+  // console.log("pointer", romaine.history.pointer);
   const memoizedProviderValue: RomaineContext = useMemo(
     () => ({
       loaded,
@@ -168,7 +172,7 @@ const Romaine: FC<ROMAINE> = ({
         typeof window !== "undefined"
           ? window?.cv
           : (null as unknown as OpenCV),
-      romaine: { ...romaine, clearHistory },
+      romaine: { ...romaine, history: { ...romaine.history }, clearHistory },
       setImage,
       setMode,
       setAngle,
@@ -180,6 +184,7 @@ const Romaine: FC<ROMAINE> = ({
     [
       loaded,
       romaine,
+      pointer,
       setMode,
       setAngle,
       pushHistory,
@@ -190,7 +195,7 @@ const Romaine: FC<ROMAINE> = ({
   );
   // const { canvasRef } = useCanvas({ image });
   // usePreview({ cv: memoizedProviderValue, canvasRef });
-
+  console.log({ romaineHistoryPointer: romaine.history.pointer });
   return <Provider value={memoizedProviderValue}>{children}</Provider>;
 };
 Romaine.propTypes = {

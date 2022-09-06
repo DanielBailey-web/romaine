@@ -52,7 +52,7 @@ export const romaineReducer = (
     case "CROP_POINTS":
       return { ...state, cropPoints: action.payload };
     case "HISTORY":
-      return history(state, action.payload);
+      return { ...history(state, action.payload) };
     default:
       return { ...state };
   }

@@ -93,21 +93,20 @@ export const CropPoint: FC<CropPointProps & { pointArea: PointArea }> = ({
 
   const onStop: DraggableEventHandler = useCallback(
     (_, position) => {
-      cropPoints &&
-        externalOnStop(
-          {
-            ...position,
-            x: position.x + pointSize / 2,
-            y: position.y + pointSize / 2,
-          },
-          pointArea,
-          cropPoints
-        );
+      externalOnStop(
+        {
+          ...position,
+          x: position.x + pointSize / 2,
+          y: position.y + pointSize / 2,
+        },
+        pointArea,
+        cropPoints
+      );
     },
     [externalOnDrag, cropPoints]
   );
 
-  return cropPoints ? (
+  return (
     <Draggable
       bounds={bounds}
       defaultPosition={defaultPosition}
@@ -120,5 +119,5 @@ export const CropPoint: FC<CropPointProps & { pointArea: PointArea }> = ({
     >
       <div style={cropPointStyle} />
     </Draggable>
-  ) : null;
+  );
 };

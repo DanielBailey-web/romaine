@@ -31,6 +31,7 @@ export const useCanvas = ({ image, saltId }: Props) => {
         try {
           const img = document.createElement("img");
           img.onload = async () => {
+            console.log("Image onload function starting");
             // set edited image canvas and dimensions
             canvasRef.current = document.createElement("canvas");
             canvasRef.current.style.display = "none";
@@ -39,6 +40,7 @@ export const useCanvas = ({ image, saltId }: Props) => {
             }working-canvas`;
             canvasRef.current.width = img.width;
             canvasRef.current.height = img.height;
+            console.log("setting dims");
             setOriginalImageDims({ height: img.height, width: img.width });
             const ctx = canvasRef.current.getContext("2d");
             if (ctx) {
@@ -46,16 +48,18 @@ export const useCanvas = ({ image, saltId }: Props) => {
               ctx.fillRect(0, 0, img.width, img.height);
               ctx.drawImage(img, 0, 0);
 
-              setLoaded(true);
               canvasPtr.current = cv.imread(canvasRef.current);
+              console.log("setting loaded as true");
+              setLoaded(true);
               return resolve();
             }
             return reject();
           };
+          console.log("setting source information ");
           if (isCrossOriginURL(src)) img.crossOrigin = "anonymous";
           img.src = src;
         } catch (err) {
-          console.error(err);
+          console.error("Error in create canvas: ", err);
           reject("unknown error while creating canvas");
         }
       }),
@@ -63,6 +67,7 @@ export const useCanvas = ({ image, saltId }: Props) => {
   );
 
   const resetImage = useCallback(async () => {
+    // set loaded to false before we destroy the pointer to avoid race conditions
     setLoaded(false);
     canvasPtr.current?.delete();
     console.warn("image resetting");
@@ -85,6 +90,8 @@ export const useCanvas = ({ image, saltId }: Props) => {
     originalImageDims,
     canvasPtr,
     resetImage,
+    /** loaded: Is the image loaded onto the canvas and does the pointer exist */
     loaded,
   };
 };
+export type UseCanvasReturnType = ReturnType<typeof useCanvas>;

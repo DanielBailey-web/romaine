@@ -20,6 +20,7 @@ import { usePreview } from "./romaine/usePreview";
 import { rotate } from "../util/image/rotate";
 import { useCanvas } from "./romaine/useCanvas";
 import { ImagePtr } from "../types";
+import { handleModeChange } from "../util/image/mode";
 // import { createFilterMat } from "../util/image/filter/createFilterMat";
 // import { sepia } from "../util/image/filter/sepia";
 
@@ -45,17 +46,13 @@ const CanvasActual_ = (
     [maxHeight, maxWidth]
   );
 
+  const romaine = useRomaine();
   const {
     cv,
-    romaine: { mode, angle, history, clearHistory },
+    romaine: { mode, history },
     setMode,
-    pushHistory,
     undo,
-  } = useRomaine();
-
-  useEffect(() => {
-    if (mode === "undo") Restart();
-  }, [mode]);
+  } = romaine;
 
   const [cropFunc, setCropFunc] = useState<CropFunc | null>(null);
 
@@ -108,68 +105,76 @@ const CanvasActual_ = (
       },
     })
   );
+  const _canvas = useCanvas({
+    image,
+    saltId,
+  });
+  const { canvasRef, originalImageDims, loaded, canvasPtr } = _canvas;
 
-  const { canvasRef, resetImage, originalImageDims, loaded, canvasPtr } =
-    useCanvas({
-      image,
-      saltId,
-    });
-
+  const _preview = usePreview({
+    canvasRef,
+    maxDims,
+    originalImageDims,
+  });
   const {
     createPreview,
     previewRef: previewCanvasRef,
     previewDims,
     setPreviewPaneDimensions,
     imageResizeRatio,
-  } = usePreview({
-    canvasRef,
-    maxDims,
-    originalImageDims,
-  });
+  } = _preview;
 
+  // initial preview
   useEffect(() => {
-    if (loaded && mode !== "undo") {
-      //   //@ts-ignore
-      //   console.log("create sepia", cv.bitwise_not);
-      //   // const M = cv.Mat.eye(3, 3, cv.CV_32FC1);
-      //   const sepiaKernel = createFilterMat(cv, sepia);
-      const irr = setPreviewPaneDimensions(originalImageDims);
-      //   if (canvasPtr.current) {
-      //     // let anchor = new cv.Point(-1, -1);
-      //     // stencil
-      //     //@ts-ignore
-      //     // cv.adaptiveThreshold(
-      //     //   canvasPtr.current,
-      //     //   canvasPtr.current,
-      //     //   200,
-      //     //   //@ts-ignore
-      //     //   cv.ADAPTIVE_THRESH_GAUSSIAN_C,
-      //     //   cv.THRESH_BINARY,
-      //     //   3,
-      //     //   2
-      //     // );
-      //     // cv.cvtColor(
-      //     //   canvasPtr.current,
-      //     //   canvasPtr.current,
-      //     //   //@ts-ignore
-      //     //   cv.COLOR_RGBA2BGRA,
-      //     //   0
-      //     // );
-      //     //@ts-ignore
-      //     // cv.transform(canvasPtr.current, canvasPtr.current, sepiaKernel);
-      //     // cv.cvtColor(canvasPtr.current, canvasPtr.current, cv.COLOR_BGR2HSV, 0);
-      //     cv.bitwise_not(canvasPtr.current, canvasPtr.current);
-      //   }
-      createPreview(irr, canvasPtr.current, false);
-      //   sepiaKernel.delete();
-    }
+    if (loaded && mode !== "undo")
+      createPreview(
+        setPreviewPaneDimensions(originalImageDims),
+        canvasPtr.current,
+        false
+      );
   }, [loaded]);
+  // useEffect(() => {
+  //   if (loaded && mode !== "undo") {
+  //     //   //@ts-ignore
+  //     //   console.log("create sepia", cv.bitwise_not);
+  //     //   // const M = cv.Mat.eye(3, 3, cv.CV_32FC1);
+  //     //   const sepiaKernel = createFilterMat(cv, sepia);
+  //     const irr = setPreviewPaneDimensions(originalImageDims);
+  //     //   if (canvasPtr.current) {
+  //     //     // let anchor = new cv.Point(-1, -1);
+  //     //     // stencil
+  //     //     //@ts-ignore
+  //     //     // cv.adaptiveThreshold(
+  //     //     //   canvasPtr.current,
+  //     //     //   canvasPtr.current,
+  //     //     //   200,
+  //     //     //   //@ts-ignore
+  //     //     //   cv.ADAPTIVE_THRESH_GAUSSIAN_C,
+  //     //     //   cv.THRESH_BINARY,
+  //     //     //   3,
+  //     //     //   2
+  //     //     // );
+  //     //     // cv.cvtColor(
+  //     //     //   canvasPtr.current,
+  //     //     //   canvasPtr.current,
+  //     //     //   //@ts-ignore
+  //     //     //   cv.COLOR_RGBA2BGRA,
+  //     //     //   0
+  //     //     // );
+  //     //     //@ts-ignore
+  //     //     // cv.transform(canvasPtr.current, canvasPtr.current, sepiaKernel);
+  //     //     // cv.cvtColor(canvasPtr.current, canvasPtr.current, cv.COLOR_BGR2HSV, 0);
+  //     //     cv.bitwise_not(canvasPtr.current, canvasPtr.current);
+  //     //   }
+  //     createPreview(irr, canvasPtr.current, false);
+  //     //   sepiaKernel.delete();
+  //   }
+  // }, [loaded]);
 
   const [loading, setLoading] = useState(true);
   useEffect(() => {
-    if (canvasPtr.current) setLoading(false);
+    if (loaded && canvasPtr.current?.$$.ptr) setLoading(false);
   }, [loaded]);
-
   // window resizing re-render canvas
   const resizeTimeout = useRef(0);
   useEffect(() => {
@@ -193,85 +198,13 @@ const CanvasActual_ = (
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setPreviewPaneDimensions]);
 
-  // this function will do a full reset on the image removing all progress (also used on startup)
-  const Restart = async () => {
-    setLoading(true);
-    await resetImage();
-    cv && createPreview();
-    setLoading(false);
-  };
-
   // opencv documentation
   // https://docs.opencv.org/3.4/dd/d52/tutorial_js_geometric_transformations.html
   useEffect(() => {
-    if (canvasRef.current) {
-      if (mode === "rotate-left") {
-        pushHistory?.();
-        if (previewCanvasRef.current)
-          rotate(
-            cv,
-            previewCanvasRef.current,
-            mode,
-            setPreviewPaneDimensions,
-            createPreview,
-            {
-              angle,
-              preview: true,
-            }
-          );
-        setTimeout(() => {
-          if (canvasRef.current)
-            rotate(
-              cv,
-              canvasRef.current,
-              mode,
-              setPreviewPaneDimensions,
-              createPreview,
-              {
-                angle,
-                preview: false,
-                cleanup: false,
-              },
-              canvasPtr.current
-            ).then(() => setMode?.(null));
-        }, 0);
-      } else if (mode === "rotate-right") {
-        pushHistory?.();
-        if (previewCanvasRef.current)
-          rotate(
-            cv,
-            previewCanvasRef.current,
-            mode,
-            setPreviewPaneDimensions,
-            createPreview,
-            {
-              angle: 360 - angle,
-              preview: true,
-            }
-          );
-        setTimeout(() => {
-          if (canvasRef.current)
-            rotate(
-              cv,
-              canvasRef.current,
-              mode,
-              setPreviewPaneDimensions,
-              createPreview,
-              {
-                angle: 360 - angle,
-                preview: false,
-                cleanup: false,
-              },
-              canvasPtr.current
-            ).then(() => setMode?.(null));
-        }, 0);
-      } else if (mode === "full-reset") {
-        clearHistory();
-        Restart();
-        setMode && setMode(null);
-      } else if (mode === "undo" && canvasPtr.current?.$$.ptr && loaded) {
+    handleModeChange({ romaine, _preview, _canvas });
+    if (canvasRef.current && !loading) {
+      if (mode === "undo" && canvasPtr.current?.$$.ptr && loaded) {
         const length = history.pointer - 1;
-        console.log(canvasPtr.current);
         if (!canvasRef.current) {
           console.log("canvasRef is null");
           return;
@@ -333,19 +266,9 @@ const CanvasActual_ = (
         }
         undo();
         setMode?.("preview");
-        // });
-      } else if (mode === "preview") {
-        createPreview(
-          setPreviewPaneDimensions({
-            width: canvasRef.current.width,
-            height: canvasRef.current.height,
-          })
-        );
-        setMode?.(null);
       }
     }
   }, [mode]);
-  console.log(loading);
   return (
     <div
       style={{
@@ -373,7 +296,7 @@ const CanvasActual_ = (
       />
       {(mode === "crop" || mode === "perspective-crop") &&
         !loading &&
-        canvasPtr.current && (
+        canvasPtr.current?.$$.ptr && (
           <CroppingCanvas
             setCropFunc={setCropFunc}
             imageResizeRatio={imageResizeRatio}

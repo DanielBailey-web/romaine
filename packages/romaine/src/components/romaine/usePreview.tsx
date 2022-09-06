@@ -31,21 +31,12 @@ export const usePreview = ({
   });
   const createPreview: ShowPreview = (
     resizeRatio = imageResizeRatio,
-    //@ts-ignore
-    source = cv.imread(canvasRef.current),
+    source,
     cleanup = true
   ) => {
-    console.trace("creating preview");
+    if (!source && canvasRef.current) source == cv.imread(canvasRef.current);
+    if (!source?.$$.ptr) return;
     if (cv && previewRef.current) {
-      // if (canvasRef.current) {
-      //   createImageBitmap(canvasRef.current, {
-      //     resizeHeight: ~~(source.rows * resizeRatio),
-      //     resizeWidth: ~~(source.cols * resizeRatio),
-      //   }).then((bitmap) => {
-      //     previewRef.current?.getContext("2d")?.drawImage(bitmap, 0, 0);
-      //   });
-      // }
-      console.log(previewRef.current);
       const dst = new cv.Mat();
       const dsize = new cv.Size(0, 0);
       cv.resize(source, dst, dsize, resizeRatio, resizeRatio, cv.INTER_AREA);
@@ -83,3 +74,5 @@ export const usePreview = ({
     previewDims,
   };
 };
+
+export type UsePreviewReturnType = ReturnType<typeof usePreview>;
