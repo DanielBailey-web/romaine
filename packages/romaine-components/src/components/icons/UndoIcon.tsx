@@ -34,7 +34,7 @@ export const UndoIcon = (
   return (
     <IconWrapper
       {...props}
-      onClick={() => setMode && setMode("undo")}
+      onClick={() => setMode?.("undo")}
       selected="undo"
       tooltip="Undo (Ctrl + Z)"
       disabled={!pointer}
