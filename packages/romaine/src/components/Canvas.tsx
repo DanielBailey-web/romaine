@@ -1,7 +1,6 @@
 import type {
   ReactNode,
   ForwardedRef,
-  RefObject,
   DetailedHTMLProps,
   HTMLAttributes,
 } from "react";
@@ -11,20 +10,18 @@ import React, {
   useRef,
   useState,
   useImperativeHandle,
-  useCallback,
   useMemo,
 } from "react";
 import { CropperState, CroppingCanvas } from "./Cropper";
-import {
-  calcDims,
-  CalculatedDimensions,
-  isCrossOriginURL,
-  readFile,
-} from "../util";
 import { buildImgContainerStyle } from "../util/buildImgContainerStyle";
 import { CropFunc, RomaineRef } from "./Romaine.types";
 import { useRomaine } from "../hooks";
-import { SetPreviewPaneDimensions, ShowPreview } from "../types";
+import { usePreview } from "./romaine/usePreview";
+import { rotate } from "../util/image/rotate";
+import { useCanvas } from "./romaine/useCanvas";
+import { ImagePtr } from "../types";
+// import { createFilterMat } from "../util/image/filter/createFilterMat";
+// import { sepia } from "../util/image/filter/sepia";
 
 export type CanvasProps = {
   image: File | string;
@@ -37,11 +34,17 @@ export type CanvasProps = {
   maxHeight: number;
   saltId?: string;
 };
-let imageResizeRatio = 1;
 const CanvasActual_ = (
   props: Omit<CanvasProps, "ref">,
   romaineRef: ForwardedRef<RomaineRef>
 ) => {
+  // get the props we need
+  const { maxHeight, maxWidth, image, saltId } = props;
+  const maxDims = useMemo(
+    () => ({ maxHeight, maxWidth }),
+    [maxHeight, maxWidth]
+  );
+
   const {
     cv,
     romaine: { mode, angle, history, clearHistory },
@@ -49,12 +52,20 @@ const CanvasActual_ = (
     pushHistory,
     undo,
   } = useRomaine();
+
+  useEffect(() => {
+    if (mode === "undo") Restart();
+  }, [mode]);
+
+  const [cropFunc, setCropFunc] = useState<CropFunc | null>(null);
+
   useImperativeHandle(
     romaineRef,
     (): RomaineRef => ({
       getBlob: async (opts = {}) => {
         return new Promise((resolve) => {
-          if (canvasRef.current) {
+          if (canvasPtr.current) {
+            cv.imshow(canvasRef.current, canvasPtr.current);
             canvasRef.current.toBlob(
               (blob) => {
                 resolve(blob);
@@ -91,62 +102,73 @@ const CanvasActual_ = (
           }
         });
       },
+      crop: async () => {
+        await cropFunc?.({ preview: true });
+        setMode?.(null);
+      },
     })
   );
 
-  const { maxHeight, maxWidth, image } = props;
-  const previewCanvasRef = useRef<HTMLCanvasElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>();
-  const cropRef = useRef<CropFunc>();
-  const [previewDims, setPreviewDims] = useState<CalculatedDimensions>({
-    height: maxHeight,
-    width: maxWidth,
-    ratio: 1,
+  const { canvasRef, resetImage, originalImageDims, loaded, canvasPtr } =
+    useCanvas({
+      image,
+      saltId,
+    });
+  console.log({ loaded });
+  const {
+    createPreview,
+    previewRef: previewCanvasRef,
+    previewDims,
+    setPreviewPaneDimensions,
+    imageResizeRatio,
+  } = usePreview({
+    canvasRef,
+    maxDims,
+    originalImageDims,
   });
-  const [loading, setLoading] = useState(true);
-  // don't use 0 as original dims or there is possibly divide by zero error in setPreviewPaneDimensions
-  const [originalDims, setOriginalDims] = useState({ height: 1, width: 1 });
 
-  const setPreviewPaneDimensions: SetPreviewPaneDimensions = useCallback(
-    (dims = originalDims) => {
-      if (dims && previewCanvasRef?.current) {
-        const newPreviewDims = calcDims(
-          dims.width,
-          dims.height,
-          maxWidth,
-          maxHeight
-        );
-        setPreviewDims(newPreviewDims);
-
-        previewCanvasRef.current.width = newPreviewDims.width;
-        previewCanvasRef.current.height = newPreviewDims.height;
-        imageResizeRatio = newPreviewDims.width / dims.width;
-        return imageResizeRatio;
-      }
-    },
-    [originalDims, maxHeight, maxWidth]
-  );
-  /**
-   *
-   * @global `imageResizeRatio` maxWidth / width
-   * @global `src` (optional) The openCV imread pointer defaults to `cv.imread(canvasRef.current)`
-   * @param cleanup (default is true) Should the src object be cleaned up
-   * only use false if cleaning up your own src object! Otherwise this will result in memory leak!
-   */
-  const showPreview: ShowPreview = (
-    resizeRatio = imageResizeRatio,
-    source = cv.imread(canvasRef.current),
-    cleanup = true
-  ) => {
-    if (cv && previewCanvasRef.current) {
-      const dst = new cv.Mat();
-      const dsize = new cv.Size(0, 0);
-      cv.resize(source, dst, dsize, resizeRatio, resizeRatio, cv.INTER_AREA);
-      cv.imshow(previewCanvasRef.current, dst);
-      if (cleanup) source.delete();
-      dst.delete();
+  useEffect(() => {
+    if (loaded && mode !== "undo") {
+      //   //@ts-ignore
+      //   console.log("create sepia", cv.bitwise_not);
+      //   // const M = cv.Mat.eye(3, 3, cv.CV_32FC1);
+      //   const sepiaKernel = createFilterMat(cv, sepia);
+      const irr = setPreviewPaneDimensions(originalImageDims);
+      //   if (canvasPtr.current) {
+      //     // let anchor = new cv.Point(-1, -1);
+      //     // stencil
+      //     //@ts-ignore
+      //     // cv.adaptiveThreshold(
+      //     //   canvasPtr.current,
+      //     //   canvasPtr.current,
+      //     //   200,
+      //     //   //@ts-ignore
+      //     //   cv.ADAPTIVE_THRESH_GAUSSIAN_C,
+      //     //   cv.THRESH_BINARY,
+      //     //   3,
+      //     //   2
+      //     // );
+      //     // cv.cvtColor(
+      //     //   canvasPtr.current,
+      //     //   canvasPtr.current,
+      //     //   //@ts-ignore
+      //     //   cv.COLOR_RGBA2BGRA,
+      //     //   0
+      //     // );
+      //     //@ts-ignore
+      //     // cv.transform(canvasPtr.current, canvasPtr.current, sepiaKernel);
+      //     // cv.cvtColor(canvasPtr.current, canvasPtr.current, cv.COLOR_BGR2HSV, 0);
+      //     cv.bitwise_not(canvasPtr.current, canvasPtr.current);
+      //   }
+      createPreview(irr, canvasPtr.current, false);
+      //   sepiaKernel.delete();
     }
-  };
+  }, [loaded]);
+
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    if (canvasPtr.current) setLoading(false);
+  }, [loaded]);
 
   // window resizing re-render canvas
   const resizeTimeout = useRef(0);
@@ -154,15 +176,15 @@ const CanvasActual_ = (
     const windowResizeEvent = () => {
       // timeout 1s for resize event to finish
       const resizeRatio = setPreviewPaneDimensions(
-        canvasRef.current && {
-          width: canvasRef.current.width,
-          height: canvasRef.current.height,
+        canvasPtr.current && {
+          width: canvasPtr.current.cols,
+          height: canvasPtr.current.rows,
         }
       );
       if (resizeRatio !== Infinity) {
         clearTimeout(resizeTimeout.current);
         const timeout = setTimeout(() => {
-          showPreview(resizeRatio);
+          createPreview(resizeRatio, canvasPtr.current, false);
         }, 250);
         resizeTimeout.current = timeout;
       }
@@ -171,175 +193,149 @@ const CanvasActual_ = (
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setPreviewPaneDimensions]);
 
-  const createCanvas = (src: string | null) => {
-    return new Promise<void>((resolve, reject) => {
-      if (!src) return reject("Image source is invalid");
-      try {
-        const img = document.createElement("img");
-        img.onload = async () => {
-          // set edited image canvas and dimensions
-          canvasRef.current = document.createElement("canvas");
-          canvasRef.current.id = `${
-            props.saltId ? props.saltId + "-" : ""
-          }working-canvas`;
-          canvasRef.current.width = img.width;
-          canvasRef.current.height = img.height;
-          setOriginalDims({ height: img.height, width: img.width });
-          const ctx = canvasRef.current.getContext("2d");
-          if (ctx) {
-            ctx.fillStyle = "#fff0"; // transparent
-            ctx.fillRect(0, 0, img.width, img.height);
-            ctx.drawImage(img, 0, 0);
-            setPreviewPaneDimensions({
-              height: img.height,
-              width: img.width,
-            });
-            return resolve();
-          }
-          return reject();
-        };
-        if (isCrossOriginURL(src)) img.crossOrigin = "anonymous";
-        img.src = src;
-      } catch (err) {
-        console.error(err);
-        reject("unknown error while creating canvas");
-      }
-    });
-  };
-
-  // use a callback so that if the image is dynamic we aren't downloading a new one every time
-  const ReadFile = useCallback(() => {
-    return readFile(image);
-  }, [image]);
-
   // this function will do a full reset on the image removing all progress (also used on startup)
   const Restart = async () => {
     setLoading(true);
-    canvasRef.current = undefined;
-    await createCanvas(await ReadFile());
-    cv && showPreview();
+    await resetImage();
+    cv && createPreview();
     setLoading(false);
   };
 
-  useEffect(() => {
-    if (cv && image) {
-      Restart();
-    }
-  }, [cv, image]);
-
-  const rotate_bound = (canvas: HTMLCanvasElement, angle: number) => {
-    if (mode !== "undo" && mode !== "redo") pushHistory && pushHistory();
-
-    const src = cv.imread(canvasRef.current);
-    const dst = new cv.Mat();
-    const center = new cv.Point(src.cols / 2, src.rows / 2);
-
-    const M1_temp = cv.getRotationMatrix2D(center, angle, 1);
-    const a = [...M1_temp.data64F];
-    M1_temp.delete();
-
-    const cos = Math.abs(a[0]);
-    const sin = Math.abs(a[3]);
-
-    // compute the new bounding dimensions of the image
-    const newWidth = ~~(src.rows * sin + src.cols * cos);
-    const newHeight = ~~(src.rows * cos + src.cols * sin);
-
-    /**
-     * Col 3 Row 1 is horizontal transform (numerical position away from y axis)
-     *
-     * Col 3 Row 2 is vertical transform ("" y axis)
-     *
-     * @description
-     * This code is a modified version of rotate_bound found in python package imutils
-     * @link
-     * https://github.com/jrosebr1/imutils/blob/c12f15391fcc945d0d644b85194b8c044a392e0a/imutils/convenience.py#L41
-     */
-    const M1 = [
-      [a[0], a[1], a[2] + newWidth / 2 - center.x],
-      [a[3], a[4], a[5] + newHeight / 2 - center.y],
-    ];
-
-    const oneDimensionalArray = ([] as number[]).concat.apply([], M1);
-    const M = cv.matFromArray(2, 3, cv.CV_64FC1, oneDimensionalArray);
-
-    canvas.height = newHeight;
-    canvas.width = newWidth;
-    setPreviewPaneDimensions({ height: newHeight, width: newWidth });
-    // this is the slowest step
-    cv.warpAffine(
-      src,
-      dst,
-      M,
-      { height: newHeight, width: newWidth },
-      cv.INTER_LINEAR,
-      cv.BORDER_CONSTANT,
-      new cv.Scalar()
-    );
-    M.delete();
-    src.delete();
-    setTimeout(() => {
-      // show the real preview first so it works faster for user
-      // due to this we must cleanup dst ourselves
-      if (mode !== "undo" && mode !== "redo")
-        showPreview(imageResizeRatio, dst, false);
-      dst.delete();
-      // finished, set the mode back to null
-      setMode && setMode(null);
-    }, 0);
-    cv.imshow(canvas, dst);
-  };
   // opencv documentation
   // https://docs.opencv.org/3.4/dd/d52/tutorial_js_geometric_transformations.html
   useEffect(() => {
     if (canvasRef.current) {
       if (mode === "rotate-left") {
-        rotate_bound(canvasRef.current, angle);
+        pushHistory?.();
+        if (previewCanvasRef.current)
+          rotate(
+            cv,
+            previewCanvasRef.current,
+            mode,
+            setPreviewPaneDimensions,
+            createPreview,
+            {
+              angle,
+              preview: true,
+            }
+          );
+        setTimeout(() => {
+          if (canvasRef.current)
+            rotate(
+              cv,
+              canvasRef.current,
+              mode,
+              setPreviewPaneDimensions,
+              createPreview,
+              {
+                angle,
+                preview: false,
+                cleanup: false,
+              },
+              canvasPtr.current
+            ).then(() => setMode?.(null));
+        }, 0);
       } else if (mode === "rotate-right") {
-        rotate_bound(canvasRef.current, 360 - angle);
+        pushHistory?.();
+        if (previewCanvasRef.current)
+          rotate(
+            cv,
+            previewCanvasRef.current,
+            mode,
+            setPreviewPaneDimensions,
+            createPreview,
+            {
+              angle: 360 - angle,
+              preview: true,
+            }
+          );
+        setTimeout(() => {
+          if (canvasRef.current)
+            rotate(
+              cv,
+              canvasRef.current,
+              mode,
+              setPreviewPaneDimensions,
+              createPreview,
+              {
+                angle: 360 - angle,
+                preview: false,
+                cleanup: false,
+              },
+              canvasPtr.current
+            ).then(() => setMode?.(null));
+        }, 0);
       } else if (mode === "full-reset") {
         clearHistory();
         Restart();
         setMode && setMode(null);
-      } else if (mode === "undo") {
+      } else if (mode === "undo" && canvasPtr.current?.$$.ptr && loaded) {
         const length = history.pointer - 1;
-        Restart().then(() => {
-          if (!canvasRef.current) return;
-          for (let i = 0; i < length; i++) {
-            const imageResizeRatio = setPreviewPaneDimensions({
-              width: canvasRef.current.width,
-              height: canvasRef.current.height,
-            });
-            switch (history.commands[i].cmd) {
-              case "rotate-left":
-                rotate_bound(canvasRef.current, history.commands[i].payload);
-                break;
-              case "rotate-right":
-                rotate_bound(canvasRef.current, history.commands[i].payload);
-                break;
-              case "crop":
-                cropRef.current?.({
+        console.log(canvasPtr.current);
+        if (!canvasRef.current) {
+          console.log("canvasRef is null");
+          return;
+        }
+        for (let i = 0; i < length; i++) {
+          const imageResizeRatio = setPreviewPaneDimensions({
+            width: canvasRef.current.width,
+            height: canvasRef.current.height,
+          });
+          switch (history.commands[i].cmd) {
+            case "rotate-left":
+              console.log("ptr:", canvasPtr.current?.$$.ptr);
+              rotate(
+                cv,
+                canvasRef.current,
+                mode,
+                setPreviewPaneDimensions,
+                createPreview,
+                {
+                  angle: history.commands[i].payload,
                   preview: false,
-                  cropPoints: history.commands[i].payload,
-                  imageResizeRatio,
-                  mode: history.commands[i].cmd,
-                });
-                break;
-              case "perspective-crop":
-                cropRef.current?.({
+                  cleanup: false,
+                },
+                canvasPtr.current
+              );
+              break;
+            case "rotate-right":
+              rotate(
+                cv,
+                canvasRef.current,
+                mode,
+                setPreviewPaneDimensions,
+                createPreview,
+                {
+                  angle: history.commands[i].payload,
                   preview: false,
-                  cropPoints: history.commands[i].payload,
-                  imageResizeRatio,
-                  mode: history.commands[i].cmd,
-                });
-                break;
-            }
+                  cleanup: false,
+                },
+                canvasPtr.current
+              );
+              break;
+            case "crop":
+              cropFunc?.({
+                preview: false,
+                cropPoints: history.commands[i].payload,
+                imageResizeRatio,
+                mode: history.commands[i].cmd,
+              });
+              break;
+            case "perspective-crop":
+              cropFunc?.({
+                preview: false,
+                cropPoints: history.commands[i].payload,
+                imageResizeRatio,
+                mode: history.commands[i].cmd,
+              });
+              break;
           }
-          undo();
-          setMode?.("preview");
-        });
+        }
+        undo();
+        setMode?.("preview");
+        // });
       } else if (mode === "preview") {
-        showPreview(
+        createPreview(
           setPreviewPaneDimensions({
             width: canvasRef.current.width,
             height: canvasRef.current.height,
@@ -349,6 +345,7 @@ const CanvasActual_ = (
       }
     }
   }, [mode]);
+  console.log(loading);
   return (
     <div
       style={{
@@ -357,7 +354,7 @@ const CanvasActual_ = (
       }}
     >
       <canvas
-        id={`${props.saltId ? props.saltId + "-" : ""}preview-canvas`}
+        id={`${saltId ? saltId + "-" : ""}preview-canvas`}
         style={{
           backgroundSize: "20px 20px",
           backgroundImage:
@@ -374,21 +371,21 @@ const CanvasActual_ = (
         width={maxWidth}
         height={maxHeight}
       />
-      {(mode === "crop" || mode === "perspective-crop") && !loading && (
-        <CroppingCanvas
-          cropRef={cropRef}
-          romaineRef={romaineRef as RefObject<RomaineRef>}
-          imageResizeRatio={imageResizeRatio}
-          setPreviewPaneDimensions={setPreviewPaneDimensions}
-          createCanvas={createCanvas}
-          showPreview={showPreview}
-          canvasRef={canvasRef}
-          previewCanvasRef={previewCanvasRef}
-          previewDims={previewDims}
-          setPreviewDims={setPreviewDims}
-          {...props}
-        />
-      )}
+      {(mode === "crop" || mode === "perspective-crop") &&
+        !loading &&
+        canvasPtr.current && (
+          <CroppingCanvas
+            setCropFunc={setCropFunc}
+            imageResizeRatio={imageResizeRatio}
+            setPreviewPaneDimensions={setPreviewPaneDimensions}
+            showPreview={createPreview}
+            canvasRef={canvasRef}
+            canvasPtr={canvasPtr as React.MutableRefObject<ImagePtr>}
+            previewCanvasRef={previewCanvasRef}
+            previewDims={previewDims}
+            {...props}
+          />
+        )}
     </div>
   );
 };

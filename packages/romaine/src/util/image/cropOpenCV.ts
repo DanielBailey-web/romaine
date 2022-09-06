@@ -1,4 +1,5 @@
-import { ContourCoordinates, OpenCV } from "../../components";
+import { ContourCoordinates } from "../../components";
+import { ImagePtr, OpenCV } from "../../types";
 /**
  * perspective cropping utility (AKA keystone correction)
  * @param cv openCv
@@ -9,11 +10,12 @@ import { ContourCoordinates, OpenCV } from "../../components";
  */
 export const cropOpenCV = (
   cv: OpenCV,
-  docCanvas: HTMLCanvasElement,
+  dst: ImagePtr,
   cropPoints: ContourCoordinates,
   imageResizeRatio: number
+  // _canvasRef: HTMLCanvasElement,
 ): void => {
-  const dst = cv.imread(docCanvas);
+  // const dst = cv.imread(docCanvas);
 
   //   const bR = cropPoints["right-bottom"];
   const bL = cropPoints["left-bottom"];
@@ -42,7 +44,9 @@ export const cropOpenCV = (
     cv.BORDER_CONSTANT,
     new cv.Scalar()
   );
-  cv.imshow(docCanvas, dst);
-  dst.delete();
+  // setTimeout(async () => {
+  //   cv.imshow(canvasRef, dst);
+  // }, 0);
+  // dst.delete();
   M.delete();
 };

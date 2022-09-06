@@ -1,6 +1,5 @@
-import { OpenCV } from "../../components";
-import { OpenCVFilterProps } from "../../types";
-
+import { OpenCV, OpenCVFilterProps } from "../../types";
+// https://amin-ahmadi.com/2016/03/24/sepia-filter-opencv/
 export const applyFilter = async (
   cv: OpenCV,
   docCanvas: HTMLCanvasElement,
@@ -28,6 +27,7 @@ export const applyFilter = async (
   }
   if (options.th) {
     if (options.grayScale) {
+      //@ts-ignore need to fix this
       cv.adaptiveThreshold(
         dst,
         dst,
@@ -38,6 +38,7 @@ export const applyFilter = async (
         options.thMeanCorrection
       );
     } else {
+      //@ts-ignore need to fix this type error (add to OpenCV type)
       dst.convertTo(dst, -1, 1, 60);
       cv.threshold(dst, dst, 170, 255, cv.THRESH_BINARY);
     }

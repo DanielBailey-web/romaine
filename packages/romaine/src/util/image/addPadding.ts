@@ -13,6 +13,7 @@ export const addPadding: AddPadding = (
   { showPreview, setPreviewPaneDimensions }
 ) => {
   const dst = new cv.Mat();
+  // @ts-ignore
   cv.copyMakeBorder(
     cv.imread(src),
     dst,

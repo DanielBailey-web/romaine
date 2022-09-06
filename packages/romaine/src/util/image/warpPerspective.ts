@@ -1,24 +1,23 @@
-import { ContourCoordinates, OpenCV } from "../../components";
+import { ContourCoordinates } from "../../components";
+import { ImagePtr, OpenCV } from "../../types";
 /**
  * perspective cropping utility (AKA keystone correction)
  * @param cv openCv
- * @param docCanvas
+ * @param src The source image pointer
  * @param cropPoints
  * @param imageResizeRatio
- * @param setPreviewPaneDimensions
  */
 export const warpPerspective = (
   cv: OpenCV,
-  docCanvas: HTMLCanvasElement,
+  src: ImagePtr,
   cropPoints: ContourCoordinates,
   imageResizeRatio: number
 ): void => {
-  const dst = cv.imread(docCanvas);
+  // const src = cv.imread(docCanvas);
   const bR = cropPoints["right-bottom"];
   const bL = cropPoints["left-bottom"];
   const tR = cropPoints["right-top"];
   const tL = cropPoints["left-top"];
-  console.log(cropPoints, [tL, tR, bR, bL]);
 
   // create source coordinates matrix
   const sourceCoordinates = [tL, tR, bR, bL].map((point) => [
@@ -57,17 +56,17 @@ export const warpPerspective = (
   const dsize = new cv.Size(maxWidth, maxHeight);
   // perform warp
   cv.warpPerspective(
-    dst,
-    dst,
+    src,
+    src,
     transformMatrix,
     dsize,
     cv.INTER_LINEAR,
     cv.BORDER_CONSTANT,
     new cv.Scalar()
   );
-  cv.imshow(docCanvas, dst);
+  // cv.imshow(docCanvas, src);
 
-  dst.delete();
+  // src.delete();
   Ms.delete();
   Md.delete();
   transformMatrix.delete();

@@ -4,7 +4,9 @@ const withTM = require("next-transpile-modules")([
   "romaine-components",
 ]);
 /** @type {import('next').NextConfig} */
-module.exports = withTM({
+const opts = {
   reactStrictMode: true,
   swcMinify: true,
-});
+  experimental: { nextScriptWorkers: true },
+};
+module.exports = withTM(opts);

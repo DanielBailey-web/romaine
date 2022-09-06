@@ -1,5 +1,5 @@
 import { Offsets, ShowPreview, SetPreviewPaneDimensions } from ".";
-import { OpenCV } from "../components";
+import { OpenCV } from "./openCV";
 
 export type AddPadding = (
   cv: OpenCV,
