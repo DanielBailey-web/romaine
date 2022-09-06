@@ -143,7 +143,7 @@ const CropPointsDelimiters = ({
           th: false,
         },
         image: {
-          quality: 0.92,
+          quality: 1,
           type: "image/jpeg",
         },
       });
