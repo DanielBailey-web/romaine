@@ -9,7 +9,7 @@ interface RotateOptions {
 
 export const rotate = async (
   cv: OpenCV,
-  canvas: HTMLCanvasElement,
+  canvas: HTMLCanvasElement | null,
   mode: RomaineModes,
   setPreviewPaneDimensions: SetPreviewPaneDimensions,
   showPreview: ShowPreview,
@@ -22,10 +22,10 @@ export const rotate = async (
     ...opts,
   };
   let src = cvCanvas;
+  if (!canvas) return;
   if (!cvCanvas) src = cv.imread(canvas);
   // const dst = new cv.Mat();
   const center = new cv.Point(src.cols / 2, src.rows / 2);
-  console.log({ center });
 
   const M1_temp = cv.getRotationMatrix2D(center, angle, 1);
   const a = [...M1_temp.data64F];
@@ -94,7 +94,10 @@ export const rotate = async (
     // due to this we must cleanup dst ourselves
     // imshow is being called in showPreview, so for preview this would be redundant
     if (!preview) cv.imshow(canvas, src);
-    if (cleanup) src.delete();
+    if (cleanup) {
+      console.log("delete the src");
+      src.delete();
+    }
     // finished, set the mode back to null
     M.delete();
   }, 0);
