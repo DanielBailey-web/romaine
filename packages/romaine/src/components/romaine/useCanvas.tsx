@@ -24,14 +24,13 @@ export const useCanvas = ({ image, saltId }: Props) => {
   const getFile = useCallback(async (image) => await readFile(image), []);
 
   const createCanvas = useCallback(
-    async () =>
+    () =>
       new Promise<void>(async (resolve, reject) => {
         if (!image) return reject("Image source is invalid");
         const src = await getFile(image);
         try {
           const img = document.createElement("img");
           img.onload = async () => {
-            console.log("Image onload function starting");
             // set edited image canvas and dimensions
             canvasRef.current = document.createElement("canvas");
             canvasRef.current.style.display = "none";
@@ -40,7 +39,6 @@ export const useCanvas = ({ image, saltId }: Props) => {
             }working-canvas`;
             canvasRef.current.width = img.width;
             canvasRef.current.height = img.height;
-            console.log("setting dims");
             setOriginalImageDims({ height: img.height, width: img.width });
             const ctx = canvasRef.current.getContext("2d");
             if (ctx) {
@@ -49,13 +47,11 @@ export const useCanvas = ({ image, saltId }: Props) => {
               ctx.drawImage(img, 0, 0);
 
               canvasPtr.current = cv.imread(canvasRef.current);
-              console.log("setting loaded as true");
               setLoaded(true);
               return resolve();
             }
             return reject();
           };
-          console.log("setting source information ");
           if (isCrossOriginURL(src)) img.crossOrigin = "anonymous";
           img.src = src;
         } catch (err) {
@@ -70,7 +66,6 @@ export const useCanvas = ({ image, saltId }: Props) => {
     // set loaded to false before we destroy the pointer to avoid race conditions
     setLoaded(false);
     canvasPtr.current?.delete();
-    console.warn("image resetting");
     createCanvas();
   }, [image]);
 
