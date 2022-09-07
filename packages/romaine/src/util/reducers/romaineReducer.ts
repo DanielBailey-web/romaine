@@ -50,6 +50,7 @@ export const romaineReducer = (
     case "ANGLE":
       return { ...state, angle: action.payload };
     case "CROP_POINTS":
+      if (!action.payload) return { ...state };
       return { ...state, cropPoints: action.payload };
     case "HISTORY":
       return { ...history(state, action.payload) };
