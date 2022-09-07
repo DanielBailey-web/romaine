@@ -12,7 +12,7 @@ export const handleModeChange = ({
   romaine: {
     cv,
     setMode,
-    romaine: { mode, clearHistory, angle, cropPoints },
+    romaine: { mode, clearHistory, angle },
     pushHistory,
   },
   _canvas: { canvasRef, canvasPtr, resetImage },
@@ -33,12 +33,11 @@ export const handleModeChange = ({
       break;
     }
     case "crop": {
-      pushHistory?.();
-      console.log({ cropPoints });
+      // cropping modes are handled in CroppingCanvas.tsx
       break;
     }
     case "perspective-crop": {
-      pushHistory?.();
+      // cropping modes are handled in CroppingCanvas.tsx
       break;
     }
     case "rotate-left": {
