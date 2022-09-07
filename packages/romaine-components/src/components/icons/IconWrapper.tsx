@@ -46,8 +46,8 @@ export const IconWrapper = ({
           placeItems: "center",
           height: "40px",
           width: "100%",
+          pointerEvents: disabled ? "none" : "all",
         }}
-        disabled={disabled}
         {...props}
       >
         {children}
