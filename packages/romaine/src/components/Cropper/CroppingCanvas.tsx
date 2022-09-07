@@ -96,7 +96,6 @@ export const CroppingCanvas = ({
         if (!opts.cropPoints) opts.cropPoints = cropPoints;
         if (!opts.imageResizeRatio) opts.imageResizeRatio = imageResizeRatio;
         if (!opts.mode) opts.mode = mode;
-        console.log(opts);
 
         if (opts.cropPoints) {
           if (opts.mode === "crop")
