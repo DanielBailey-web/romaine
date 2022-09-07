@@ -97,6 +97,7 @@ export type OpenCV = CV_Types & {
   imshow: (canvas: HTMLCanvasElement, image: ImagePtr) => void;
   resize: (...args: any[]) => ImagePtr;
   getRotationMatrix2D: (point: point, angle: number, dunno: number) => ImagePtr;
+  adaptiveThreshold: (src: ImagePtr, dst: ImagePtr, ...args: any[]) => void;
   Canny: (
     src: ImagePtr,
     dest: ImagePtr,

@@ -27,7 +27,6 @@ export const applyFilter = async (
   }
   if (options.th) {
     if (options.grayScale) {
-      //@ts-ignore need to fix this
       cv.adaptiveThreshold(
         dst,
         dst,
