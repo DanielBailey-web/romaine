@@ -24,7 +24,7 @@ export const useCanvas = ({ image, saltId }: Props) => {
   const getFile = useCallback(async (image) => await readFile(image), []);
 
   const createCanvas = useCallback(
-    () =>
+    async () =>
       new Promise<void>(async (resolve, reject) => {
         if (!image) return reject("Image source is invalid");
         const src = await getFile(image);
@@ -66,12 +66,12 @@ export const useCanvas = ({ image, saltId }: Props) => {
     [image]
   );
 
-  const resetImage = useCallback(async () => {
+  const resetImage = useCallback(() => {
     // set loaded to false before we destroy the pointer to avoid race conditions
     setLoaded(false);
     canvasPtr.current?.delete();
     console.warn("image resetting");
-    await createCanvas();
+    createCanvas();
   }, [image]);
 
   useEffect(() => {

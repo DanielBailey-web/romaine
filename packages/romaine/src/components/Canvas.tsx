@@ -17,7 +17,6 @@ import { buildImgContainerStyle } from "../util/buildImgContainerStyle";
 import { CropFunc, RomaineRef } from "./Romaine.types";
 import { useRomaine } from "../hooks";
 import { usePreview } from "./romaine/usePreview";
-import { rotate } from "../util/image/rotate";
 import { useCanvas } from "./romaine/useCanvas";
 import { ImagePtr } from "../types";
 import { handleModeChange } from "../util/image/mode";
@@ -49,9 +48,8 @@ const CanvasActual_ = (
   const romaine = useRomaine();
   const {
     cv,
-    romaine: { mode, history },
+    romaine: { mode },
     setMode,
-    undo,
   } = romaine;
 
   const [cropFunc, setCropFunc] = useState<CropFunc | null>(null);
@@ -203,72 +201,72 @@ const CanvasActual_ = (
   useEffect(() => {
     handleModeChange({ romaine, _preview, _canvas });
     if (canvasRef.current && !loading) {
-      if (mode === "undo" && canvasPtr.current?.$$.ptr && loaded) {
-        const length = history.pointer - 1;
-        if (!canvasRef.current) {
-          console.log("canvasRef is null");
-          return;
-        }
-        for (let i = 0; i < length; i++) {
-          const imageResizeRatio = setPreviewPaneDimensions({
-            width: canvasRef.current.width,
-            height: canvasRef.current.height,
-          });
-          switch (history.commands[i].cmd) {
-            case "rotate-left":
-              console.log("ptr:", canvasPtr.current?.$$.ptr);
-              rotate(
-                cv,
-                canvasRef.current,
-                mode,
-                setPreviewPaneDimensions,
-                createPreview,
-                {
-                  angle: history.commands[i].payload,
-                  preview: false,
-                  cleanup: false,
-                },
-                canvasPtr.current
-              );
-              break;
-            case "rotate-right":
-              rotate(
-                cv,
-                canvasRef.current,
-                mode,
-                setPreviewPaneDimensions,
-                createPreview,
-                {
-                  angle: history.commands[i].payload,
-                  preview: false,
-                  cleanup: false,
-                },
-                canvasPtr.current
-              );
-              break;
-            case "crop":
-              cropFunc?.({
-                preview: false,
-                cropPoints: history.commands[i].payload,
-                imageResizeRatio,
-                mode: history.commands[i].cmd,
-              });
-              break;
-            case "perspective-crop":
-              cropFunc?.({
-                preview: false,
-                cropPoints: history.commands[i].payload,
-                imageResizeRatio,
-                mode: history.commands[i].cmd,
-              });
-              break;
-          }
-        }
-        undo();
-        setMode?.("preview");
-      }
+      // if (mode === "undo" && canvasPtr.current?.$$.ptr && loaded) {
+      //   const length = history.pointer - 1;
+      //   if (!canvasRef.current) {
+      //     console.log("canvasRef is null");
+      //     return;
+      //   }
+      //   for (let i = 0; i < length; i++) {
+      //     const imageResizeRatio = setPreviewPaneDimensions({
+      //       width: canvasRef.current.width,
+      //       height: canvasRef.current.height,
+      //     });
+      //     switch (history.commands[i].cmd) {
+      //       case "rotate-left":
+      //         console.log("ptr:", canvasPtr.current?.$$.ptr);
+      //         rotate(
+      //           cv,
+      //           canvasRef.current,
+      //           mode,
+      //           setPreviewPaneDimensions,
+      //           createPreview,
+      //           {
+      //             angle: history.commands[i].payload,
+      //             preview: false,
+      //             cleanup: false,
+      //           },
+      //           canvasPtr.current
+      //         );
+      //         break;
+      //       case "rotate-right":
+      //         rotate(
+      //           cv,
+      //           canvasRef.current,
+      //           mode,
+      //           setPreviewPaneDimensions,
+      //           createPreview,
+      //           {
+      //             angle: history.commands[i].payload,
+      //             preview: false,
+      //             cleanup: false,
+      //           },
+      //           canvasPtr.current
+      //         );
+      //         break;
+      //       case "crop":
+      //         cropFunc?.({
+      //           preview: false,
+      //           cropPoints: history.commands[i].payload,
+      //           imageResizeRatio,
+      //           mode: history.commands[i].cmd,
+      //         });
+      //         break;
+      //       case "perspective-crop":
+      //         cropFunc?.({
+      //           preview: false,
+      //           cropPoints: history.commands[i].payload,
+      //           imageResizeRatio,
+      //           mode: history.commands[i].cmd,
+      //         });
+      //         break;
+      //     }
+      //   }
+      //   undo();
+      //   setMode?.("preview");
+      // }
     }
-  }, [mode]);
+  }, [mode, loaded]);
   return (
     <div
       style={{
