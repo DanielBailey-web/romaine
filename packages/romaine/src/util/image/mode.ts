@@ -30,9 +30,6 @@ export const handleModeChange = ({
       break;
     }
     case "undo": {
-      console.log("resetting image in mode");
-      // resetImage();
-      console.log("creating preview in mode");
       let waitingOnPointer = true;
       if (history.pointer === 1) {
         undo();
@@ -182,8 +179,6 @@ export const handleModeChange = ({
         console.error("canvas ptr was undefined");
         break;
       }
-      console.log("creating preview in mode");
-
       createPreview(
         setPreviewPaneDimensions({
           width: canvasPtr.current?.cols,
