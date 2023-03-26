@@ -25,8 +25,8 @@ import { handleModeChange } from "../util/image/mode";
 
 export type CanvasProps = {
   image: File | string;
-  onDragStop: (s: CropperState) => void;
-  onChange: (s: CropperState) => void;
+  onDragStop?: (s: CropperState) => void;
+  onChange?: (s: CropperState) => void;
   pointSize?: number;
   lineWidth?: number;
   lineColor?: string;
@@ -80,7 +80,8 @@ const CanvasActual_ = (
       getDataURL: async (opts = {}) => {
         return new Promise((resolve, reject) => {
           try {
-            if (canvasRef.current) {
+            if (canvasPtr.current) {
+              cv.imshow(canvasRef.current, canvasPtr.current);
               resolve(
                 canvasRef.current.toDataURL(
                   opts?.type === "keep-same"
