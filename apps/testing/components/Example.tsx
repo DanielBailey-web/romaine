@@ -112,8 +112,6 @@ export const RomaineExample = ({
                 image={handleCrossOriginUrlCheck(state)}
                 maxHeight={height}
                 maxWidth={width}
-                onChange={() => {}}
-                onDragStop={() => {}}
                 pointSize={5}
                 lineWidth={1}
               />
