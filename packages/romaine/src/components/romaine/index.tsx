@@ -90,8 +90,8 @@ const Romaine: FC<ROMAINE> = ({
   }, [openCvPath]);
 
   useEffect(() => {
-    if (document.getElementById(scriptId) || window.cv) {
-      setLoaded(true);
+    if (window.cv) {
+      handleOnLoad();
       return;
     }
 
@@ -164,7 +164,6 @@ const Romaine: FC<ROMAINE> = ({
   useEffect(() => {
     setAngle(angle);
   }, [angle, setAngle]);
-  // console.log("pointer", romaine.history.pointer);
   const memoizedProviderValue: RomaineContext = useMemo(
     () => ({
       loaded,
@@ -195,7 +194,6 @@ const Romaine: FC<ROMAINE> = ({
   );
   // const { canvasRef } = useCanvas({ image });
   // usePreview({ cv: memoizedProviderValue, canvasRef });
-  console.log({ romaineHistoryPointer: romaine.history.pointer });
   return <Provider value={memoizedProviderValue}>{children}</Provider>;
 };
 Romaine.propTypes = {
