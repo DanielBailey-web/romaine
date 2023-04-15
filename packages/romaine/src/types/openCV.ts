@@ -164,6 +164,7 @@ export type OpenCV = CV_Types & {
     num3: number
   ) => void;
   getPerspectiveTransform: (mat1: any, mat2: any) => any;
+  flip: (src: ImagePtr, dest: ImagePtr, num: number) => void;
   Size: Size;
   Mat: Mat;
   Point: Point;

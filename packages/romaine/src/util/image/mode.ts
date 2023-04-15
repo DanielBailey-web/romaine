@@ -2,6 +2,7 @@ import { RomaineContext } from "../../components";
 import { UseCanvasReturnType } from "../../components/romaine/useCanvas";
 import { UsePreviewReturnType } from "../../components/romaine/usePreview";
 import { cropOpenCV } from "./cropOpenCV";
+import { flip } from "./flip";
 import { rotate } from "./rotate";
 import { warpPerspective } from "./warpPerspective";
 
@@ -110,6 +111,18 @@ export const handleModeChange = ({
     }
     case "perspective-crop": {
       // cropping modes are handled in CroppingCanvas.tsx
+      break;
+    }
+    case "flip-horizontal": {
+      if (canvasPtr.current)
+        flip(cv, canvasRef.current, canvasPtr.current, "horizontal");
+      setMode?.("preview");
+      break;
+    }
+    case "flip-vertical": {
+      if (canvasPtr.current)
+        flip(cv, canvasRef.current, canvasPtr.current, "vertical");
+      setMode?.("preview");
       break;
     }
     case "rotate-left": {

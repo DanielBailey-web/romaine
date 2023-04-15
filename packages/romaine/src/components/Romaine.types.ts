@@ -5,6 +5,10 @@ export interface RomaineRef {
   getBlob?: (options: Partial<ImageExportOptions>) => Promise<Blob | null>;
   getDataURL?: (options: Partial<ImageExportOptions>) => Promise<string>;
   crop?: () => Promise<void>;
+  /**
+   * flips the image horizontally or vertically
+   */
+  flip?: (orientation: "horizontal" | "vertical") => Promise<void>;
 }
 
 export type CropFunc = (options?: Partial<ClickCropOptions>) => Promise<void>;

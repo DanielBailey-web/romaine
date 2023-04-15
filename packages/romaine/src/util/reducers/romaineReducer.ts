@@ -9,7 +9,9 @@ export type RomaineCommands =
   | "full-reset"
   | "undo"
   | "redo"
-  | "preview";
+  | "preview"
+  | "flip-horizontal"
+  | "flip-vertical";
 export type RomaineModes = null | RomaineCommands;
 
 export interface ModeAction {

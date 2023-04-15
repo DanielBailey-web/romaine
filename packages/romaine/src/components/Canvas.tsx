@@ -102,6 +102,9 @@ const CanvasActual_ = (
         await cropFunc?.({ preview: true });
         setMode?.(null);
       },
+      flip: async (orientation) => {
+        setMode?.(`flip-${orientation}`);
+      },
     })
   );
   const _canvas = useCanvas({
