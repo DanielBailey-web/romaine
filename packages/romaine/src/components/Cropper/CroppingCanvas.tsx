@@ -142,7 +142,6 @@ export const CroppingCanvas = ({
     ]
   );
   useEffect(() => {
-    console.log("changed cropCB");
     setCropFunc(() => cropCB);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cropCB]);
@@ -223,7 +222,6 @@ export const CroppingCanvas = ({
     //   setCropPoints(contourCoordinates);
     // }
   };
-  console.log("well this function ran");
 
   useEffect(() => {
     if (
