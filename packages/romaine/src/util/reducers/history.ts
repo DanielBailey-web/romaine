@@ -80,6 +80,10 @@ const getHistoryFromState = ({
       return { cmd: mode, payload: angle % 360 };
     case "rotate-right":
       return { cmd: mode, payload: (360 - angle) % 360 };
+    case "flip-horizontal":
+      return { cmd: mode, payload: null };
+    case "flip-vertical":
+      return { cmd: mode, payload: null };
     case "crop":
       console.warn("need to add crop points to history");
       return { cmd: mode, payload: cropPoints };
@@ -90,10 +94,15 @@ const getHistoryFromState = ({
       throw new Error(
         'error: action "full-reset" should not call `history`.`PUSH`'
       ).stack;
-    default:
+    case null:
       // handles null
       throw new Error(
         "error: action of type null should not call `history`.`PUSH`"
+      ).stack;
+    default:
+      // handles fall through mode
+      throw new Error(
+        `error: action of type ${mode} is not defined in switch \`history\`.\`PUSH\``
       ).stack;
   }
 };
