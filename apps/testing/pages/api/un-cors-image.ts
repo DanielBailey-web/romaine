@@ -16,7 +16,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       res.setHeader("Content-Type", imageType);
       return res.send(buffer);
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return res.status(500).end();
     }
   }
