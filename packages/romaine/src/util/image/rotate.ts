@@ -66,7 +66,6 @@ export const rotate = async (
     height,
     width,
   });
-  console.log({ irr });
 
   // this is the slowest step
   cv.warpAffine(
@@ -94,10 +93,7 @@ export const rotate = async (
     // due to this we must cleanup dst ourselves
     // imshow is being called in showPreview, so for preview this would be redundant
     if (!preview) cv.imshow(canvas, src);
-    if (cleanup) {
-      console.log("delete the src");
-      src.delete();
-    }
+    if (cleanup) src.delete();
     // finished, set the mode back to null
     M.delete();
   }, 0);
