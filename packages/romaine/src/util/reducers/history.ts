@@ -73,6 +73,7 @@ export const history = (
 const getHistoryFromState = ({
   mode,
   angle,
+  scale,
   cropPoints,
 }: RomaineState): RomaineHistory => {
   switch (mode) {
@@ -90,6 +91,8 @@ const getHistoryFromState = ({
     case "perspective-crop":
       console.warn("need to add crop points to history");
       return { cmd: mode, payload: cropPoints };
+    case "scale":
+      return { cmd: mode, payload: scale };
     case "full-reset":
       throw new Error(
         'error: action "full-reset" should not call `history`.`PUSH`'

@@ -28,6 +28,7 @@ export interface RomaineContext {
   setImage: React.Dispatch<React.SetStateAction<string | File | null>>;
   setMode?: (mode: RomaineState["mode"]) => void;
   setAngle?: (angle: RomaineState["angle"]) => void;
+  setScale?: (scale: RomaineState["scale"]) => void;
   setCropPoints: SetCropPoints;
   pushHistory?: PushHistory;
   undo: PushHistory;
@@ -124,6 +125,12 @@ const Romaine: FC<ROMAINE> = ({
     },
     [dispatchRomaine]
   );
+  const setScale = useCallback(
+    (scale: RomaineState["scale"]) => {
+      dispatchRomaine({ type: "SCALE", payload: scale });
+    },
+    [dispatchRomaine]
+  );
   const {
     cropPoints,
     history: { pointer },
@@ -175,6 +182,7 @@ const Romaine: FC<ROMAINE> = ({
       setImage,
       setMode,
       setAngle,
+      setScale,
       pushHistory,
       setCropPoints,
       undo: moveHistory(true),
@@ -186,6 +194,7 @@ const Romaine: FC<ROMAINE> = ({
       pointer,
       setMode,
       setAngle,
+      setScale,
       pushHistory,
       moveHistory,
       clearHistory,

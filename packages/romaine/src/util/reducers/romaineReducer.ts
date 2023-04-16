@@ -11,7 +11,8 @@ export type RomaineCommands =
   | "redo"
   | "preview"
   | "flip-horizontal"
-  | "flip-vertical";
+  | "flip-vertical"
+  | "scale";
 export type RomaineModes = null | RomaineCommands;
 
 export interface ModeAction {
@@ -21,6 +22,13 @@ export interface ModeAction {
 export interface AngleAction {
   type: "ANGLE";
   payload: number;
+}
+export interface ScaleAction {
+  type: "SCALE";
+  payload: {
+    width: number;
+    height: number;
+  };
 }
 export interface HistoryAction {
   type: "HISTORY";
@@ -37,6 +45,7 @@ export type RomaineReducer =
     }
   | ModeAction
   | AngleAction
+  | ScaleAction
   | HistoryAction
   | CropPointsAction;
 export const romaineReducer = (
@@ -51,6 +60,8 @@ export const romaineReducer = (
       return { ...state, mode: action.payload };
     case "ANGLE":
       return { ...state, angle: action.payload };
+    case "SCALE":
+      return { ...state, scale: action.payload };
     case "CROP_POINTS":
       if (!action.payload) return { ...state };
       return { ...state, cropPoints: action.payload };

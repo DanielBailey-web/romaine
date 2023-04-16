@@ -4,6 +4,7 @@ import { UsePreviewReturnType } from "../../components/romaine/usePreview";
 import { cropOpenCV } from "./cropOpenCV";
 import { flip } from "./flip";
 import { rotate } from "./rotate";
+import { scale } from "./scale";
 import { warpPerspective } from "./warpPerspective";
 
 interface ModeProps {
@@ -15,7 +16,7 @@ export const handleModeChange = ({
   romaine: {
     cv,
     setMode,
-    romaine: { mode, clearHistory, angle, history },
+    romaine: { mode, clearHistory, angle, history, scale: newScale },
     pushHistory,
     undo,
   },
@@ -109,6 +110,9 @@ export const handleModeChange = ({
           case "flip-vertical":
             flip(cv, canvasRef.current, canvasPtr.current, "vertical");
             break;
+          case "scale":
+            scale(cv, canvasRef.current, canvasPtr.current, newScale);
+            break;
         }
       }
       if (!waitingOnPointer) {
@@ -138,6 +142,13 @@ export const handleModeChange = ({
         flip(cv, canvasRef.current, canvasPtr.current, "vertical");
         pushHistory?.();
       }
+      setMode?.("preview");
+      break;
+    }
+    case "scale": {
+      pushHistory?.();
+      if (canvasPtr.current)
+        scale(cv, canvasRef.current, canvasPtr.current, newScale);
       setMode?.("preview");
       break;
     }

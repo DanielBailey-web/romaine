@@ -28,7 +28,7 @@ export const RomaineExample = ({
   imageExportOptions,
 }: RomaineExampleProps) => {
   const RomaineRef = useRef<RomaineRef>(null);
-  const { loaded, setMode } = useRomaine();
+  const { loaded, setMode, setScale } = useRomaine();
   const [state, setstate] = useState<File | string | null>(image);
   const [containerRef, { x, y, width, height, top, right, bottom, left }] =
     useMeasure<HTMLDivElement>();
@@ -117,6 +117,18 @@ export const RomaineExample = ({
           }}
         >
           flip horizontal
+        </button>
+        <button
+          className="absolute top-0 left-96"
+          onClick={() => {
+            setScale?.({
+              height: 300,
+              width: 300,
+            });
+            setMode?.("scale");
+          }}
+        >
+          scale
         </button>
         <div
           className="w-full h-full relative border border-black pr-64"

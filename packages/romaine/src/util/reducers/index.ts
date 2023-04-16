@@ -8,6 +8,10 @@ export interface RomaineHistory {
 export interface RomaineState {
   mode: RomaineModes;
   angle: number;
+  scale: {
+    width: number;
+    height: number;
+  };
   cropPoints: ContourCoordinates;
   /** A command and a payload.
    * The payload is automatically generated based on current state
@@ -18,6 +22,10 @@ export interface RomaineState {
 export const initialRomaineState: RomaineState = {
   mode: null,
   angle: 90,
+  scale: {
+    width: 0,
+    height: 0,
+  },
   history: { commands: [], pointer: 0 },
   cropPoints: {
     "left-top": { x: 0, y: 0 },
