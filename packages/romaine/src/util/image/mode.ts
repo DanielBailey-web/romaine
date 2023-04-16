@@ -37,6 +37,12 @@ export const handleModeChange = ({
         setMode?.("preview");
         return;
       }
+      // if history.pointer -1 is 0, we're at the beginning of the history
+      if (history.pointer - 1 === 0) {
+        resetImage();
+        setMode?.(null);
+        return;
+      }
       for (let i = 0; i < history.pointer - 1; i++) {
         if (!canvasPtr.current?.$$.ptr) {
           continue;
@@ -97,6 +103,12 @@ export const handleModeChange = ({
               }) as number
             );
             break;
+          case "flip-horizontal":
+            flip(cv, canvasRef.current, canvasPtr.current, "horizontal");
+            break;
+          case "flip-vertical":
+            flip(cv, canvasRef.current, canvasPtr.current, "vertical");
+            break;
         }
       }
       if (!waitingOnPointer) {
@@ -114,14 +126,18 @@ export const handleModeChange = ({
       break;
     }
     case "flip-horizontal": {
-      if (canvasPtr.current)
+      if (canvasPtr.current) {
         flip(cv, canvasRef.current, canvasPtr.current, "horizontal");
+        pushHistory?.();
+      }
       setMode?.("preview");
       break;
     }
     case "flip-vertical": {
-      if (canvasPtr.current)
+      if (canvasPtr.current) {
         flip(cv, canvasRef.current, canvasPtr.current, "vertical");
+        pushHistory?.();
+      }
       setMode?.("preview");
       break;
     }
