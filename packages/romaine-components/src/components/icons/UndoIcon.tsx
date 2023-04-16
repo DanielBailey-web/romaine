@@ -31,7 +31,6 @@ export const UndoIcon = (
       window.removeEventListener("keydown", eventListenerCropper);
     };
   }, [eventListenerCropper]);
-  console.log(pointer);
   return (
     <IconWrapper
       {...props}
