@@ -75,11 +75,11 @@ export const RomaineExample = ({
               // React 18 useTransition would be nice here...
               // but for backwards compatability currently doing this...
               setTimeout(async () => {
-                console.log(
-                  await RomaineRef.current?.getDataURL?.({
-                    ...imageExportOptions,
-                  })
-                );
+                // console.log(
+                //   await RomaineRef.current?.getDataURL?.({
+                //     ...imageExportOptions,
+                //   })
+                // );
                 if (setBlob && RomaineRef.current?.getBlob) {
                   const newBlob =
                     (await RomaineRef.current?.getBlob({
