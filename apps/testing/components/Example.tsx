@@ -3,12 +3,14 @@ import { Canvas, RomaineRef, useRomaine, isCrossOriginURL } from "romaine";
 import type { ImageExportOptions } from "romaine";
 import {
   CropperIcon,
+  FlipHorizontalIcon,
   FolderSelection,
   FullReset,
   PerspectiveIcon,
   RotateLeft,
   RotateRight,
   UndoIcon,
+  FlipVerticalIcon,
 } from "romaine-components";
 import { useMeasure } from "react-use";
 import { useEffect } from "react";
@@ -89,7 +91,6 @@ export const RomaineExample = ({
     },
     []
   );
-  console.log(state);
   return (
     <div className="fixed inset-0">
       <div className="relative w-full h-full p-16">
@@ -100,6 +101,22 @@ export const RomaineExample = ({
           }}
         >
           crop
+        </button>
+        <button
+          className="absolute top-0 left-32"
+          onClick={() => {
+            RomaineRef.current?.flip?.("vertical");
+          }}
+        >
+          flip vertical
+        </button>
+        <button
+          className="absolute top-0 left-64"
+          onClick={() => {
+            RomaineRef.current?.flip?.("horizontal");
+          }}
+        >
+          flip horizontal
         </button>
         <div
           className="w-full h-full relative border border-black pr-64"
@@ -162,17 +179,17 @@ export const RomaineExample = ({
                   // but for backwards compatability currently doing this...
                   setTimeout(async () => {
                     // data url
-                    console.log(
-                      await RomaineRef.current?.getDataURL?.({
-                        ...imageExportOptions,
-                      })
-                    );
+                    // console.log(
+                    //   await RomaineRef.current?.getDataURL?.({
+                    //     ...imageExportOptions,
+                    //   })
+                    // );
                     if (setBlob && RomaineRef.current?.getBlob) {
                       const newBlob =
                         (await RomaineRef.current?.getBlob({
                           ...imageExportOptions,
                         })) || null;
-                      console.log(newBlob);
+                      // console.log(newBlob);
                       setBlob(newBlob);
                     } else {
                       console.warn(
@@ -197,6 +214,7 @@ export const RomaineExample = ({
                   style={{
                     display: "grid",
                     gridTemplateColumns: "repeat(6, 1fr)",
+                    gridTemplateRows: "repeat(6, 40px)",
                   }}
                 >
                   <RotateLeft />
@@ -206,6 +224,8 @@ export const RomaineExample = ({
                   <FullReset />
                   <div></div>
                   <UndoIcon />
+                  <FlipHorizontalIcon />
+                  <FlipVerticalIcon />
                 </div>
               </div>
             </>

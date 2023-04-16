@@ -9,6 +9,8 @@ import {
   RotateLeft,
   RotateRight,
   UndoIcon,
+  FlipHorizontalIcon,
+  FlipVerticalIcon,
 } from "../../";
 interface RomaineExampleProps {
   setBlob?: (blob: Blob | null) => void;
@@ -111,6 +113,8 @@ export const RomaineExample = ({
               <FullReset />
               <div></div>
               <UndoIcon />
+              <FlipHorizontalIcon />
+              <FlipVerticalIcon />
             </div>
           </div>
         </Canvas>
