@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import type { DetailedHTMLProps, HTMLAttributes } from "react";
-import { useRomaine } from "romaine";
+import { RomaineModes, useRomaine } from "romaine";
 
 export type IconProps = DetailedHTMLProps<
   HTMLAttributes<HTMLButtonElement>,
   HTMLButtonElement
 > & {
-  selected?: boolean | string;
+  selected?: boolean | RomaineModes;
   tooltip?: string;
   disabled?: boolean;
 };
@@ -24,13 +24,19 @@ export const IconWrapper = ({
   const [hover, sethover] = useState<boolean>(false);
   return (
     <abbr
-      style={{ cursor: disabled ? "not-allowed" : "pointer" }}
+      style={{
+        cursor: disabled ? "not-allowed" : "pointer",
+        display: "block",
+        width: "100%",
+        height: "100%",
+      }}
       title={tooltip}
       aria-label={tooltip}
     >
       <button
         onMouseEnter={() => sethover(true)}
         onMouseLeave={() => sethover(false)}
+        {...props}
         style={{
           border:
             selected === true || selected === mode || hover
@@ -44,11 +50,11 @@ export const IconWrapper = ({
             : "#fff0",
           display: "grid",
           placeItems: "center",
-          height: "40px",
+          height: "100%",
           width: "100%",
           pointerEvents: disabled ? "none" : "all",
+          ...props.style,
         }}
-        {...props}
       >
         {children}
       </button>

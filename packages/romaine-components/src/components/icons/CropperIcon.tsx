@@ -37,8 +37,8 @@ export const CropperIcon = (
         viewBox="0 0 24 24"
         strokeLinecap="round"
         strokeLinejoin="round"
-        height="25px"
-        width="25px"
+        height={props.style?.height || "25px"}
+        width={props.style?.width || "25px"}
         xmlns="http://www.w3.org/2000/svg"
       >
         <path d="M6.13 1L6 16a2 2 0 0 0 2 2h15"></path>

@@ -32,8 +32,8 @@ export const RotateLeft = (
         strokeWidth="0"
         viewBox="0 0 1024 1024"
         version="1.1"
-        height="25px"
-        width="25px"
+        height={props.style?.height || "25px"}
+        width={props.style?.width || "25px"}
         xmlns="http://www.w3.org/2000/svg"
       >
         <defs></defs>
