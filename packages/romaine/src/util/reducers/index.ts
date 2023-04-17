@@ -12,6 +12,14 @@ export interface RomaineState {
     width: number;
     height: number;
   };
+  image: {
+    /** The original image width */
+    width: number;
+    /** The original image height */
+    height: number;
+    /** The dom id */
+    id: string | null;
+  };
   cropPoints: ContourCoordinates;
   /** A command and a payload.
    * The payload is automatically generated based on current state
@@ -25,6 +33,11 @@ export const initialRomaineState: RomaineState = {
   scale: {
     width: 0,
     height: 0,
+  },
+  image: {
+    width: 0,
+    height: 0,
+    id: null,
   },
   history: { commands: [], pointer: 0 },
   cropPoints: {

@@ -12,6 +12,7 @@ export const useCanvas = ({ image, saltId }: Props) => {
   const {
     cv,
     romaine: { mode },
+    updateImageInformation,
   } = useRomaine();
   const [loaded, setLoaded] = useState(false);
 
@@ -30,6 +31,8 @@ export const useCanvas = ({ image, saltId }: Props) => {
         const src = await getFile(image);
         try {
           const img = document.createElement("img");
+          img.style.display = "none";
+          img.id = `${saltId ? saltId + "-" : ""}working-image`;
           img.onload = async () => {
             // set edited image canvas and dimensions
             canvasRef.current = document.createElement("canvas");
@@ -40,6 +43,11 @@ export const useCanvas = ({ image, saltId }: Props) => {
             canvasRef.current.width = img.width;
             canvasRef.current.height = img.height;
             setOriginalImageDims({ height: img.height, width: img.width });
+            updateImageInformation?.({
+              height: img.height,
+              width: img.width,
+              id: img.id,
+            });
             const ctx = canvasRef.current.getContext("2d");
             if (ctx) {
               ctx.fillStyle = "#fff0"; // transparent

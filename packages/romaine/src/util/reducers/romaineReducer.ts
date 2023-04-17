@@ -30,6 +30,14 @@ export interface ScaleAction {
     height: number;
   };
 }
+export interface ImageUpdateAction {
+  type: "IMAGE-UPDATE";
+  payload: {
+    width: number;
+    height: number;
+    id: string | null;
+  };
+}
 export interface HistoryAction {
   type: "HISTORY";
   payload: { cmd: "PUSH" | "CLEAR" | "UNDO" | "REDO" };
@@ -47,7 +55,8 @@ export type RomaineReducer =
   | AngleAction
   | ScaleAction
   | HistoryAction
-  | CropPointsAction;
+  | CropPointsAction
+  | ImageUpdateAction;
 export const romaineReducer = (
   state: RomaineState,
   action: RomaineReducer
@@ -67,6 +76,8 @@ export const romaineReducer = (
       return { ...state, cropPoints: action.payload };
     case "HISTORY":
       return { ...history(state, action.payload) };
+    case "IMAGE-UPDATE":
+      return { ...state, image: action.payload };
     default:
       return { ...state };
   }

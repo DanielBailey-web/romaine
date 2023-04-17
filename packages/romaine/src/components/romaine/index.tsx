@@ -33,6 +33,7 @@ export interface RomaineContext {
   pushHistory?: PushHistory;
   undo: PushHistory;
   redo: PushHistory;
+  updateImageInformation?: (imageInformation: RomaineState["image"]) => void;
 }
 
 const OpenCvContext = createContext<RomaineContext>({
@@ -131,6 +132,19 @@ const Romaine: FC<ROMAINE> = ({
     },
     [dispatchRomaine]
   );
+  const updateImageInformation = useCallback(
+    (image: RomaineState["image"]) => {
+      dispatchRomaine({
+        type: "SCALE",
+        payload: {
+          width: image.width,
+          height: image.height,
+        },
+      });
+      dispatchRomaine({ type: "IMAGE-UPDATE", payload: image });
+    },
+    [dispatchRomaine]
+  );
   const {
     cropPoints,
     history: { pointer },
@@ -183,6 +197,7 @@ const Romaine: FC<ROMAINE> = ({
       setMode,
       setAngle,
       setScale,
+      updateImageInformation,
       pushHistory,
       setCropPoints,
       undo: moveHistory(true),
@@ -199,6 +214,7 @@ const Romaine: FC<ROMAINE> = ({
       moveHistory,
       clearHistory,
       setCropPoints,
+      updateImageInformation,
     ]
   );
   // const { canvasRef } = useCanvas({ image });
