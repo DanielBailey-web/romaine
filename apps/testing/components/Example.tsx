@@ -24,14 +24,20 @@ interface RomaineExampleProps {
  */
 export const RomaineExample = ({
   setBlob,
-  image = "https://source.unsplash.com/random",
+  image = null,
   imageExportOptions,
 }: RomaineExampleProps) => {
   const RomaineRef = useRef<RomaineRef>(null);
-  const { loaded, setMode, setScale } = useRomaine();
+  const { loaded, setMode, setScale, romaine } = useRomaine();
   const [state, setstate] = useState<File | string | null>(image);
   const [containerRef, { x, y, width, height, top, right, bottom, left }] =
     useMeasure<HTMLDivElement>();
+
+  // useEffect(() => {
+  //   if (!image) {
+  //     setstate("https://source.unsplash.com/random");
+  //   }
+  // }, []);
 
   useEffect(() => {
     function pasteEventListenter(e: ClipboardEvent) {
@@ -91,6 +97,7 @@ export const RomaineExample = ({
     },
     []
   );
+
   return (
     <div className="fixed inset-0">
       <div className="relative w-full h-full p-16">
@@ -103,22 +110,6 @@ export const RomaineExample = ({
           crop
         </button>
         <button
-          className="absolute top-0 left-32"
-          onClick={() => {
-            RomaineRef.current?.flip?.("vertical");
-          }}
-        >
-          flip vertical
-        </button>
-        <button
-          className="absolute top-0 left-64"
-          onClick={() => {
-            RomaineRef.current?.flip?.("horizontal");
-          }}
-        >
-          flip horizontal
-        </button>
-        <button
           className="absolute top-0 left-96"
           onClick={() => {
             setScale?.({
@@ -128,7 +119,7 @@ export const RomaineExample = ({
             setMode?.("scale");
           }}
         >
-          scale
+          scale to 300x300px
         </button>
         <div
           className="w-full h-full relative border border-black pr-64"
