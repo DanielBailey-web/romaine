@@ -57,10 +57,38 @@ const CanvasActual_ = (
   useImperativeHandle(
     romaineRef,
     (): RomaineRef => ({
-      getBlob: async (opts = {}) => {
+      getBlob: async (
+        opts = {
+          jpeg: {
+            transparentToWhite: false,
+          },
+        }
+      ) => {
         return new Promise((resolve) => {
           if (canvasPtr.current) {
             cv.imshow(canvasRef.current, canvasPtr.current);
+            if (opts.jpeg?.transparentToWhite && opts.type === "image/jpeg")
+              transparentToWhite: {
+                const ctx = canvasRef.current.getContext("2d");
+                if (!ctx) break transparentToWhite;
+                let imgData = ctx.getImageData(
+                  0,
+                  0,
+                  canvasRef.current.width,
+                  canvasRef.current.height
+                );
+                let data = imgData.data;
+                for (let i = 0; i < data.length; i += 4) {
+                  if (data[i + 3] === 0) {
+                    data[i] = 255;
+                    data[i + 1] = 255;
+                    data[i + 2] = 255;
+                    data[i + 3] = 255;
+                  }
+                }
+                ctx.putImageData(imgData, 0, 0);
+              }
+
             canvasRef.current.toBlob(
               (blob) => {
                 resolve(blob);

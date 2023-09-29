@@ -78,6 +78,7 @@ const Romaine: FC<ROMAINE> = ({
     if (typeof window !== "undefined") {
       if (!document.getElementById(scriptId) && !window.cv) {
         const js = document.createElement("script");
+        // append to head
         js.id = scriptId;
         js.nonce = "8IBTHwOdqNKAWeKl7plt8g==";
         js.defer = true;

@@ -1,8 +1,15 @@
 import type { ContourCoordinates } from ".";
 import type { RomaineModes } from "../util";
-
+type ExtendedExportOptions = ImageExportOptions & {
+  jpeg?: {
+    /** Transform transparent pixels (0,0,0,1) to white (255,255,255,0)
+     *  when converting from transparent png/webp to jpeg
+     * */
+    transparentToWhite?: boolean;
+  };
+};
 export interface RomaineRef {
-  getBlob?: (options: Partial<ImageExportOptions>) => Promise<Blob | null>;
+  getBlob?: (options: Partial<ExtendedExportOptions>) => Promise<Blob | null>;
   getDataURL?: (options: Partial<ImageExportOptions>) => Promise<string>;
   crop?: () => Promise<void>;
   /**

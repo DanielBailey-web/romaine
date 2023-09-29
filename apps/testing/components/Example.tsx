@@ -191,6 +191,9 @@ export const RomaineExample = ({
                       const newBlob =
                         (await RomaineRef.current?.getBlob({
                           ...imageExportOptions,
+                          jpeg: {
+                            transparentToWhite: true,
+                          },
                         })) || null;
                       // console.log(newBlob);
                       setBlob(newBlob);
