@@ -71,13 +71,13 @@ const CanvasActual_ = (
               transparentToWhite: {
                 const ctx = canvasRef.current.getContext("2d");
                 if (!ctx) break transparentToWhite;
-                let imgData = ctx.getImageData(
+                const imgData = ctx.getImageData(
                   0,
                   0,
                   canvasRef.current.width,
                   canvasRef.current.height
                 );
-                let data = imgData.data;
+                const data = imgData.data;
                 for (let i = 0; i < data.length; i += 4) {
                   if (data[i + 3] === 0) {
                     data[i] = 255;
