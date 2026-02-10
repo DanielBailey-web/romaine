@@ -31,6 +31,7 @@ type MatPtr = {
   rows: number;
   size: () => size;
   copyTo: (dst: ImagePtr) => void;
+  clone: () => ImagePtr;
 };
 export type ImagePtr = MatPtr & {
   data64F: number[];
@@ -74,8 +75,19 @@ interface MatVector {
   new (): MatrixVector;
   MatVector: MatVector;
 }
+interface Rect {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+interface RectConstructor {
+  new (x: number, y: number, width: number, height: number): Rect;
+  Rect: RectConstructor;
+}
 interface CV_Types {
   INTER_LINEAR: number;
+  INTER_NEAREST: number;
   INTER_AREA: 3;
   RETR_CCOMP: number;
   CHAIN_APPROX_SIMPLE: number;
@@ -85,12 +97,21 @@ interface CV_Types {
   CV_32FC1: 5;
   CV_32FC2: number;
   CV_64FC1: 6;
+  CV_8UC1: number;
   COLOR_RGBA2GRAY: 11;
+  COLOR_RGBA2RGB: number;
+  COLOR_RGB2RGBA: number;
   COLOR_BGR2HSV: 40;
   COLOR_RGBA2BGRA: 5;
   THRESH_BINARY: number;
   ADAPTIVE_THRESH_MEAN_C: number;
   CV_8U: 0;
+  GC_BGD: 0;
+  GC_FGD: 1;
+  GC_PR_BGD: 2;
+  GC_PR_FGD: 3;
+  GC_INIT_WITH_RECT: 0;
+  GC_INIT_WITH_MASK: 1;
 }
 export type OpenCV = CV_Types & {
   imread: (canvas: HTMLCanvasElement) => ImagePtr;
@@ -165,9 +186,21 @@ export type OpenCV = CV_Types & {
   ) => void;
   getPerspectiveTransform: (mat1: any, mat2: any) => any;
   flip: (src: ImagePtr, dest: ImagePtr, num: number) => void;
+  grabCut: (
+    src: ImagePtr,
+    mask: ImagePtr,
+    rect: Rect,
+    bgdModel: ImagePtr,
+    fgdModel: ImagePtr,
+    iterCount: number,
+    mode: number
+  ) => void;
+  split: (src: ImagePtr, channels: MatrixVector) => void;
+  merge: (channels: MatrixVector, dst: ImagePtr) => void;
   Size: Size;
   Mat: Mat;
   Point: Point;
   Scalar: Scalar;
   MatVector: MatVector;
+  Rect: RectConstructor;
 };

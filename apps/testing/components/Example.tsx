@@ -11,6 +11,8 @@ import {
   RotateRight,
   UndoIcon,
   FlipVerticalIcon,
+  RemoveBackgroundIcon,
+  RefineBackgroundIcon,
 } from "romaine-components";
 import { useMeasure } from "react-use";
 import { useEffect } from "react";
@@ -232,6 +234,8 @@ export const RomaineExample = ({
                   <UndoIcon />
                   <FlipHorizontalIcon />
                   <FlipVerticalIcon />
+                  <RemoveBackgroundIcon />
+                  <RefineBackgroundIcon />
                 </div>
               </div>
             </>

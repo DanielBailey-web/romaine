@@ -7,3 +7,5 @@ export * from "./RotateRight";
 export * from "./UndoIcon";
 export * from "./FlipHorizontal";
 export * from "./FlipVertical";
+export * from "./RemoveBackground";
+export * from "./RefineBackground";

@@ -3,6 +3,7 @@ import { UseCanvasReturnType } from "../../components/romaine/useCanvas";
 import { UsePreviewReturnType } from "../../components/romaine/usePreview";
 import { cropOpenCV } from "./cropOpenCV";
 import { flip } from "./flip";
+import { removeBackground, refineBackground, clearGrabCutState } from "./removeBackground";
 import { rotate } from "./rotate";
 import { scale } from "./scale";
 import { warpPerspective } from "./warpPerspective";
@@ -25,6 +26,7 @@ export const handleModeChange = ({
 }: ModeProps) => {
   switch (mode) {
     case "full-reset": {
+      clearGrabCutState();
       clearHistory();
       resetImage();
       createPreview();
@@ -113,6 +115,14 @@ export const handleModeChange = ({
           case "scale":
             scale(cv, canvasRef.current, canvasPtr.current, newScale);
             break;
+          case "remove-background":
+            removeBackground(cv, canvasRef.current, canvasPtr.current);
+            break;
+          case "refine-background":
+            if (history.commands[i].payload) {
+              refineBackground(cv, canvasRef.current, canvasPtr.current, history.commands[i].payload);
+            }
+            break;
         }
       }
       if (!waitingOnPointer) {
@@ -150,6 +160,18 @@ export const handleModeChange = ({
       if (canvasPtr.current)
         scale(cv, canvasRef.current, canvasPtr.current, newScale);
       setMode?.("preview");
+      break;
+    }
+    case "remove-background": {
+      if (canvasPtr.current) {
+        pushHistory?.();
+        removeBackground(cv, canvasRef.current, canvasPtr.current);
+      }
+      setMode?.("preview");
+      break;
+    }
+    case "refine-background": {
+      // Persistent mode — handled by BrushCanvas component
       break;
     }
     case "rotate-left": {

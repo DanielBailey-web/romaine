@@ -20,6 +20,7 @@ import { usePreview } from "./romaine/usePreview";
 import { useCanvas } from "./romaine/useCanvas";
 import { ImagePtr } from "../types";
 import { handleModeChange } from "../util/image/mode";
+import { BrushCanvas } from "./BrushRefine";
 // import { createFilterMat } from "../util/image/filter/createFilterMat";
 // import { sepia } from "../util/image/filter/sepia";
 
@@ -132,6 +133,9 @@ const CanvasActual_ = (
       },
       flip: async (orientation) => {
         setMode?.(`flip-${orientation}`);
+      },
+      removeBackground: async () => {
+        setMode?.("remove-background");
       },
     })
   );
@@ -304,14 +308,17 @@ const CanvasActual_ = (
       style={{
         position: "relative",
         ...(previewDims && buildImgContainerStyle(previewDims)),
+        ...(mode === "refine-background" && { backgroundColor: "#111" }),
       }}
     >
       <canvas
         id={`${saltId ? saltId + "-" : ""}preview-canvas`}
         style={{
-          backgroundSize: "20px 20px",
-          backgroundImage:
-            "linear-gradient(to bottom, #0001 10px, #0003 10px),linear-gradient(to right, #0002 10px, #0004 10px),linear-gradient(to right, transparent 10px, #ffff 10px),linear-gradient(to bottom, #0004 10px, transparent 10px),linear-gradient(to bottom, #ffff 10px, #ffff 10px)",
+          ...(mode !== "refine-background" && {
+            backgroundSize: "20px 20px",
+            backgroundImage:
+              "linear-gradient(to bottom, #0001 10px, #0003 10px),linear-gradient(to right, #0002 10px, #0004 10px),linear-gradient(to right, transparent 10px, #ffff 10px),linear-gradient(to bottom, #0004 10px, transparent 10px),linear-gradient(to bottom, #ffff 10px, #ffff 10px)",
+          }),
           position: "absolute",
           top: 0,
           right: 0,
@@ -337,6 +344,19 @@ const CanvasActual_ = (
             previewCanvasRef={previewCanvasRef}
             previewDims={previewDims}
             {...props}
+          />
+        )}
+      {mode === "refine-background" &&
+        !loading &&
+        canvasPtr.current?.$$.ptr && (
+          <BrushCanvas
+            canvasRef={canvasRef}
+            canvasPtr={canvasPtr as React.RefObject<ImagePtr>}
+            previewCanvasRef={previewCanvasRef}
+            previewDims={previewDims}
+            imageResizeRatio={imageResizeRatio}
+            showPreview={createPreview}
+            setPreviewPaneDimensions={setPreviewPaneDimensions}
           />
         )}
     </div>

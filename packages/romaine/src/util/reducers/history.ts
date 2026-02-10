@@ -1,4 +1,5 @@
 import type { RomaineState, HistoryAction, RomaineHistory } from ".";
+import { getLastAppliedStrokes } from "../image/removeBackground";
 /**
  * function to add the current state to the history
  *
@@ -91,6 +92,10 @@ const getHistoryFromState = ({
       return { cmd: mode, payload: cropPoints };
     case "scale":
       return { cmd: mode, payload: scale };
+    case "remove-background":
+      return { cmd: mode, payload: null };
+    case "refine-background":
+      return { cmd: mode, payload: getLastAppliedStrokes() };
     case "full-reset":
       throw new Error(
         'error: action "full-reset" should not call `history`.`PUSH`'

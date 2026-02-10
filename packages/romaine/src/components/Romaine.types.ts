@@ -16,6 +16,11 @@ export interface RomaineRef {
    * flips the image horizontally or vertically
    */
   flip?: (orientation: "horizontal" | "vertical") => Promise<void>;
+  /**
+   * Removes the background using OpenCV's GrabCut algorithm.
+   * Assumes image edges are background.
+   */
+  removeBackground?: () => Promise<void>;
 }
 
 export type CropFunc = (options?: Partial<ClickCropOptions>) => Promise<void>;

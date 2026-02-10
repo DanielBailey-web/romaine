@@ -12,7 +12,9 @@ export type RomaineCommands =
   | "preview"
   | "flip-horizontal"
   | "flip-vertical"
-  | "scale";
+  | "scale"
+  | "remove-background"
+  | "refine-background";
 export type RomaineModes = null | RomaineCommands;
 
 export interface ModeAction {
