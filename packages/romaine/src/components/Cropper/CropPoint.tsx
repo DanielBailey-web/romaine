@@ -185,13 +185,22 @@ export const CropPoint: FC<CropPointProps & { pointArea: PointArea }> = ({
 
   const nodeRef = useRef<HTMLDivElement>(null);
 
-  // Position magnifier above the crop point, or below if too close to the top
+  // Position magnifier above or below with hysteresis to prevent flipping
+  const magnifierSide = useRef<"above" | "below">("above");
   const pointPos = cropPoints[pointArea];
+  const threshold = MAGNIFIER_SIZE + MAGNIFIER_OFFSET;
+  const buffer = 40;
+
+  if (magnifierSide.current === "above" && pointPos.y < threshold) {
+    magnifierSide.current = "below";
+  } else if (magnifierSide.current === "below" && pointPos.y > threshold + buffer) {
+    magnifierSide.current = "above";
+  }
+
   const magX = pointPos.x - MAGNIFIER_SIZE / 2;
-  const magAbove = pointPos.y - MAGNIFIER_SIZE - MAGNIFIER_OFFSET;
-  const magY = magAbove < 0
-    ? pointPos.y + pointSize + MAGNIFIER_OFFSET
-    : magAbove;
+  const magY = magnifierSide.current === "above"
+    ? pointPos.y - MAGNIFIER_SIZE - MAGNIFIER_OFFSET
+    : pointPos.y + pointSize + MAGNIFIER_OFFSET;
 
   return (
     <>
