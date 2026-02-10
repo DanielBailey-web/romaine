@@ -59,7 +59,7 @@
   },
   "peerDependencies": {
     "react": ">=16.8.3",
-    "romaine": "^0.8.0"
+    "romaine": ">0.8.0"
   },
   "dependencies": {}
 }
