@@ -56,7 +56,7 @@ const CropPointsDelimiters = ({
   }, [cropPoints]);
 
   const drawShape = useCallback(
-    ([point1, point2, point3, point4]) => {
+    ([point1, point2, point3, point4]: CoordinateXY[]) => {
       const ctx = canvas.current && canvas.current.getContext("2d");
       if (ctx) {
         ctx.lineWidth = lineWidth;
@@ -110,12 +110,12 @@ const CropPointsDelimiters = ({
       return true;
     return false;
   };
-  const getCursorPosition = (
-    event: React.MouseEvent<HTMLCanvasElement, MouseEvent>
+  const getMousePosition = (
+    event: React.MouseEvent<HTMLDivElement, MouseEvent>
   ) => {
     if (canvas?.current?.getBoundingClientRect) {
-      const x = event.clientX - canvas?.current?.getBoundingClientRect().left;
-      const y = event.clientY - canvas?.current?.getBoundingClientRect().top;
+      const x = event.clientX - canvas.current.getBoundingClientRect().left;
+      const y = event.clientY - canvas.current.getBoundingClientRect().top;
       if (xyInPoints({ x, y })) return "inside";
       else return "outside";
     }
@@ -124,18 +124,18 @@ const CropPointsDelimiters = ({
     useState<React.CSSProperties["cursor"]>("default");
 
   const handleMouseMove = (
-    e: React.MouseEvent<HTMLCanvasElement, MouseEvent>
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>
   ) => {
-    const cursorPosition = getCursorPosition(e);
-    if (cursorPosition === "inside" && cursor !== "crosshair")
+    const pos = getMousePosition(e);
+    if (pos === "inside" && cursor !== "crosshair")
       setCursor("crosshair");
-    else if (cursorPosition === "outside" && cursor !== "default")
+    else if (pos === "outside" && cursor !== "default")
       setCursor("default");
   };
 
-  const handleClick = (e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
-    const cursorPosition = getCursorPosition(e);
-    if (cursorPosition === "inside")
+  const handleClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    const pos = getMousePosition(e);
+    if (pos === "inside")
       crop({
         preview: true,
         filterCvParams: {
@@ -150,24 +150,37 @@ const CropPointsDelimiters = ({
   };
 
   return (
-    <canvas
-      id={`${props.saltId ? props.saltId + "-" : ""}crop-point-delimiters`}
-      ref={canvas}
-      style={{
-        position: "absolute",
-        top: 0,
-        right: 0,
-        left: 0,
-        bottom: 0,
-        zIndex: 5,
-        cursor,
-      }}
-      width={previewDims.width}
-      height={previewDims.height}
-      onClick={handleClick}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={() => setCursor("default")}
-    />
+    <>
+      <canvas
+        id={`${props.saltId ? props.saltId + "-" : ""}crop-point-delimiters`}
+        ref={canvas}
+        style={{
+          position: "absolute",
+          top: 0,
+          right: 0,
+          left: 0,
+          bottom: 0,
+          zIndex: 5,
+          pointerEvents: "none",
+        }}
+        width={previewDims.width}
+        height={previewDims.height}
+      />
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          right: 0,
+          left: 0,
+          bottom: 0,
+          zIndex: 4,
+          cursor,
+        }}
+        onClick={handleClick}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={() => setCursor("default")}
+      />
+    </>
   );
 };
 

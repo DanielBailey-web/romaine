@@ -1,9 +1,9 @@
-import { MutableRefObject, useCallback, useRef, useState } from "react";
+import { type RefObject, useCallback, useRef, useState } from "react";
 import { useRomaine } from "../../hooks";
 import { SetPreviewPaneDimensions, ShowPreview } from "../../types";
 import { calcDims, CalculatedDimensions } from "../../util";
 interface Props {
-  canvasRef: MutableRefObject<HTMLCanvasElement | undefined>;
+  canvasRef: RefObject<HTMLCanvasElement | undefined>;
   maxDims: {
     maxHeight: number;
     maxWidth: number;

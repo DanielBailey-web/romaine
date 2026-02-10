@@ -86,10 +86,8 @@ const getHistoryFromState = ({
     case "flip-vertical":
       return { cmd: mode, payload: null };
     case "crop":
-      console.warn("need to add crop points to history");
       return { cmd: mode, payload: cropPoints };
     case "perspective-crop":
-      console.warn("need to add crop points to history");
       return { cmd: mode, payload: cropPoints };
     case "scale":
       return { cmd: mode, payload: scale };

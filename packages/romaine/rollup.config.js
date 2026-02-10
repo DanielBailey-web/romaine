@@ -1,11 +1,7 @@
 import typescript from "rollup-plugin-typescript2";
-import del from "rollup-plugin-delete";
-import pkg from "./package.json";
-import { eslint } from "rollup-plugin-eslint";
 import replace from "@rollup/plugin-replace";
 import peerDepsExternal from "rollup-plugin-peer-deps-external";
 
-const EXTENSIONS = [".ts", ".tsx", ".js", ".jsx", ".json"];
 const external = ["react", "react-dom"];
 const globals = {
   react: "React",
@@ -18,20 +14,13 @@ export default [
     output: {
       esModule: false,
       name: "romaine",
-      file: pkg.main,
+      file: "dist/index.jsx",
       format: "esm",
       sourcemap: true,
       globals,
       exports: "named",
-      // paths: {
-      //   react: "../../node_modules/react",
-      // },
     },
     plugins: [
-      eslint({
-        exclude: ["node_modules/**", "dist/**"],
-      }),
-      // del({ targets: ["dist/*", "playground/src/component-lib"] }),
       typescript({ tsconfig: "./tsconfig.json" }),
       replace({
         "process.env.NODE_ENV": JSON.stringify(NODE_ENV),

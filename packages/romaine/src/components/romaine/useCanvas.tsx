@@ -21,8 +21,11 @@ export const useCanvas = ({ image, saltId }: Props) => {
     height: 0,
   });
   const canvasRef = useRef<HTMLCanvasElement>(document.createElement("canvas"));
-  const canvasPtr = useRef<ImagePtr | undefined>();
-  const getFile = useCallback(async (image) => await readFile(image), []);
+  const canvasPtr = useRef<ImagePtr | undefined>(undefined);
+  const getFile = useCallback(
+    async (image: File | string) => await readFile(image),
+    []
+  );
 
   const createCanvas = useCallback(
     () =>
@@ -63,7 +66,6 @@ export const useCanvas = ({ image, saltId }: Props) => {
           if (isCrossOriginURL(src)) img.crossOrigin = "anonymous";
           img.src = src;
         } catch (err) {
-          console.error("Error in create canvas: ", err);
           reject("unknown error while creating canvas");
         }
       }),

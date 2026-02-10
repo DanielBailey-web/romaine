@@ -1,22 +1,22 @@
 {
   "include": ["src/**/*"],
   "compilerOptions": {
-    "lib": ["es6", "dom"],
-    "jsx": "react",
+    "lib": ["es2020", "dom"],
+    "jsx": "react-jsx",
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    "typeRoots": ["./types/*"],
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "strict": true,
+    "skipLibCheck": true,
     "outDir": "./dist/",
     "module": "ESNext",
-    "target": "es6",
+    "target": "es2020",
     "moduleResolution": "node",
-    "types": ["react"]
+    "typeRoots": ["./node_modules/@types", "../../node_modules/@types"]
   },
   "watchOptions": {
     "watchFile": "useFsEvents",

@@ -35,16 +35,16 @@ export interface CropperSpecificProps
     | "onChange"
   > {
   /** The canvas which we pass to OpenCV for manipulations */
-  canvasRef: React.MutableRefObject<HTMLCanvasElement | undefined>;
+  canvasRef: React.RefObject<HTMLCanvasElement | undefined>;
   /** The canvas we display images on */
-  previewCanvasRef: React.RefObject<HTMLCanvasElement>;
+  previewCanvasRef: React.RefObject<HTMLCanvasElement | null>;
   /** The canvas we draw the lines connecting the crop points on */
   previewDims: CalculatedDimensions | undefined;
   imageResizeRatio: number;
   showPreview: ShowPreview;
   setPreviewPaneDimensions: (dims?: size) => undefined | number;
   setCropFunc: React.Dispatch<React.SetStateAction<CropFunc | null>>;
-  canvasPtr: React.MutableRefObject<ImagePtr>;
+  canvasPtr: React.RefObject<ImagePtr>;
 }
 
 export const CroppingCanvas = ({
@@ -339,6 +339,7 @@ export const CroppingCanvas = ({
               previewDims={previewDims}
               onDrag={onCornerDrag}
               onStop={onCornerStop}
+              previewCanvasRef={previewCanvasRef}
               bounds={{
                 left:
                   (previewCanvasRef?.current?.offsetLeft || 0) - pointSize / 2,

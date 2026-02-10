@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import type { DetailedHTMLProps, HTMLAttributes } from "react";
 import { RomaineModes, useRomaine } from "romaine";
 

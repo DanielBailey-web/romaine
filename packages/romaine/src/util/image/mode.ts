@@ -216,7 +216,6 @@ export const handleModeChange = ({
     }
     case "preview": {
       if (!canvasPtr.current?.$$.ptr) {
-        console.error("canvas ptr was undefined");
         break;
       }
       createPreview(

@@ -206,7 +206,7 @@ const CanvasActual_ = (
     if (loaded && canvasPtr.current?.$$.ptr) setLoading(false);
   }, [loaded]);
   // window resizing re-render canvas
-  const resizeTimeout = useRef(0);
+  const resizeTimeout = useRef<ReturnType<typeof setTimeout>>(undefined);
   useEffect(() => {
     const windowResizeEvent = () => {
       // timeout 1s for resize event to finish
@@ -333,7 +333,7 @@ const CanvasActual_ = (
             setPreviewPaneDimensions={setPreviewPaneDimensions}
             showPreview={createPreview}
             canvasRef={canvasRef}
-            canvasPtr={canvasPtr as React.MutableRefObject<ImagePtr>}
+            canvasPtr={canvasPtr as React.RefObject<ImagePtr>}
             previewCanvasRef={previewCanvasRef}
             previewDims={previewDims}
             {...props}
@@ -358,8 +358,8 @@ export interface RomaineCanvas
  *
  * Can also pass children that can be absolutely positioned
  */
-const _Canvas = (
-  { openCvPath, children, image, wrapperProps = {}, ...props }: RomaineCanvas,
+const CanvasInner = (
+  { openCvPath: _openCvPath, children, image, wrapperProps = {}, ...props }: RomaineCanvas,
   ref: ForwardedRef<RomaineRef>
 ) => {
   const { cv, loaded } = useRomaine();
@@ -386,4 +386,4 @@ const _Canvas = (
   ) : null;
 };
 
-export const Canvas = forwardRef<RomaineRef, RomaineCanvas>(_Canvas);
+export const Canvas = forwardRef<RomaineRef, RomaineCanvas>(CanvasInner);
