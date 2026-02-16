@@ -1,6 +1,6 @@
 {
   "name": "romaine",
-  "version": "0.10.2",
+  "version": "0.11.0",
   "description": "React OpenCV Manipulation and Image Narration & Editing",
   "main": "dist/index.jsx",
   "types": "dist/",
