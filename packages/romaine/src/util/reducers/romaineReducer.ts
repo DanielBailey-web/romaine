@@ -14,7 +14,8 @@ export type RomaineCommands =
   | "flip-vertical"
   | "scale"
   | "remove-background"
-  | "refine-background";
+  | "refine-background"
+  | (string & {}); // allow plugin mode strings
 export type RomaineModes = null | RomaineCommands;
 
 export interface ModeAction {
@@ -42,7 +43,7 @@ export interface ImageUpdateAction {
 }
 export interface HistoryAction {
   type: "HISTORY";
-  payload: { cmd: "PUSH" | "CLEAR" | "UNDO" | "REDO" };
+  payload: { cmd: "PUSH" | "CLEAR" | "UNDO" | "REDO"; customPayload?: unknown };
 }
 export interface CropPointsAction {
   type: "CROP_POINTS";

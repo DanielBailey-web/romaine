@@ -13,7 +13,7 @@ interface ModeProps {
   _preview: UsePreviewReturnType;
   _canvas: UseCanvasReturnType;
 }
-export const handleModeChange = ({
+export const handleModeChange = async ({
   romaine: {
     cv,
     setMode,
@@ -123,6 +123,30 @@ export const handleModeChange = ({
               refineBackground(cv, canvasRef.current, canvasPtr.current, history.commands[i].payload);
             }
             break;
+          default: {
+            // Plugin modes: if payload is a Blob, apply it to canvasPtr
+            const cmdPayload = history.commands[i].payload;
+            if (cmdPayload instanceof Blob) {
+              const url = URL.createObjectURL(cmdPayload);
+              const img = new Image();
+              img.src = url;
+              await new Promise<void>((resolve) => {
+                img.onload = () => {
+                  const tmp = document.createElement("canvas");
+                  tmp.width = img.width;
+                  tmp.height = img.height;
+                  const ctx = tmp.getContext("2d")!;
+                  ctx.drawImage(img, 0, 0);
+                  const newMat = cv.imread(tmp);
+                  if (canvasPtr.current) canvasPtr.current.delete();
+                  canvasPtr.current = newMat;
+                  URL.revokeObjectURL(url);
+                  resolve();
+                };
+              });
+            }
+            break;
+          }
         }
       }
       if (!waitingOnPointer) {
@@ -251,5 +275,8 @@ export const handleModeChange = ({
       setMode?.(null);
       break;
     }
+    default:
+      // Unknown/plugin modes — no-op (plugin handles via its own component)
+      break;
   }
 };

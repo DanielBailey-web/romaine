@@ -4,6 +4,7 @@ import React, {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
   ReactNode,
   useReducer,
@@ -13,11 +14,16 @@ import { moduleConfig } from "../../util/configs";
 import { romaineReducer, initialRomaineState, ClearHistory } from "../../util";
 import type { RomaineState, PushHistory, SetCropPoints } from "../../util";
 import type { OpenCV } from "../../types/openCV";
+import type { ImageExportOptions } from "../Romaine.types";
 declare global {
   interface Window {
     cv: OpenCV;
     Module: typeof moduleConfig;
   }
+}
+export interface CanvasApi {
+  getBlob: (opts?: Partial<ImageExportOptions>) => Promise<Blob | null>;
+  setFromBlob: (blob: Blob) => Promise<void>;
 }
 export interface RomaineContext {
   loaded: boolean;
@@ -25,6 +31,7 @@ export interface RomaineContext {
   romaine: RomaineState & {
     clearHistory: ClearHistory;
   };
+  canvasApi: React.MutableRefObject<CanvasApi | null>;
   setImage: React.Dispatch<React.SetStateAction<string | File | null>>;
   setMode?: (mode: RomaineState["mode"]) => void;
   setAngle?: (angle: RomaineState["angle"]) => void;
@@ -67,6 +74,7 @@ const Romaine: FC<ROMAINE> = ({
 }: ROMAINE) => {
   const [loaded, setLoaded] = useState(false);
   const [_image, setImage] = useState<File | string | null>(null);
+  const canvasApi = useRef<CanvasApi | null>(null);
 
   const handleOnLoad = useCallback(() => {
     onLoad && onLoad(window.cv);
@@ -159,8 +167,8 @@ const Romaine: FC<ROMAINE> = ({
     [dispatchRomaine, cropPoints]
   );
 
-  const pushHistory: PushHistory = useCallback(() => {
-    dispatchRomaine({ type: "HISTORY", payload: { cmd: "PUSH" } });
+  const pushHistory: PushHistory = useCallback((customPayload?: unknown) => {
+    dispatchRomaine({ type: "HISTORY", payload: { cmd: "PUSH", customPayload } });
   }, [dispatchRomaine]);
 
   const clearHistory: ClearHistory = useCallback(() => {
@@ -194,6 +202,7 @@ const Romaine: FC<ROMAINE> = ({
           ? window?.cv
           : (null as unknown as OpenCV),
       romaine: { ...romaine, history: { ...romaine.history }, clearHistory },
+      canvasApi,
       setImage,
       setMode,
       setAngle,

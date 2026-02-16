@@ -6,7 +6,7 @@ import { getLastAppliedStrokes } from "../image/removeBackground";
  * This function only depends on state inside romaine and therefore is called with no input
  * @example PushHistory();
  */
-export type PushHistory = () => void;
+export type PushHistory = (customPayload?: unknown) => void;
 /**
  * function to clear the history on romaine
  * @example ClearHistory();
@@ -43,11 +43,15 @@ export const history = (
           [] as typeof state.history.commands
         );
       }
+      // Use custom payload from plugin if provided, otherwise derive from state
+      const entry = payload.customPayload !== undefined
+        ? { cmd: state.mode as string, payload: payload.customPayload }
+        : getHistoryFromState(state);
       return {
         ...state,
         history: {
           ...state.history,
-          commands: [...newCommands, getHistoryFromState(state)],
+          commands: [...newCommands, entry],
           pointer: pointer + 1,
         },
       };
@@ -106,9 +110,7 @@ const getHistoryFromState = ({
         "error: action of type null should not call `history`.`PUSH`"
       ).stack;
     default:
-      // handles fall through mode
-      throw new Error(
-        `error: action of type ${mode} is not defined in switch \`history\`.\`PUSH\``
-      ).stack;
+      // Plugin modes — return generic entry (plugins should use customPayload instead)
+      return { cmd: mode as string, payload: null };
   }
 };

@@ -49,6 +49,7 @@ const CanvasActual_ = (
   const romaine = useRomaine();
   const {
     cv,
+    canvasApi,
     romaine: { mode },
     setMode,
   } = romaine;
@@ -80,10 +81,13 @@ const CanvasActual_ = (
                 );
                 const data = imgData.data;
                 for (let i = 0; i < data.length; i += 4) {
-                  if (data[i + 3] === 0) {
-                    data[i] = 255;
-                    data[i + 1] = 255;
-                    data[i + 2] = 255;
+                  const alpha = data[i + 3];
+                  if (alpha < 255) {
+                    // Alpha-blend against white for semi-transparent pixels
+                    const a = alpha / 255;
+                    data[i] = Math.round(data[i] * a + 255 * (1 - a));
+                    data[i + 1] = Math.round(data[i + 1] * a + 255 * (1 - a));
+                    data[i + 2] = Math.round(data[i + 2] * a + 255 * (1 - a));
                     data[i + 3] = 255;
                   }
                 }
@@ -157,6 +161,52 @@ const CanvasActual_ = (
     setPreviewPaneDimensions,
     imageResizeRatio,
   } = _preview;
+
+  // Populate canvasApi for plugin access
+  useEffect(() => {
+    canvasApi.current = {
+      getBlob: async (opts) => {
+        return new Promise((resolve) => {
+          if (canvasPtr.current) {
+            cv.imshow(canvasRef.current, canvasPtr.current);
+            canvasRef.current.toBlob(
+              (blob) => resolve(blob),
+              opts?.type === "keep-same" ? "image/png" : opts?.type,
+              opts?.quality
+            );
+          } else {
+            resolve(null);
+          }
+        });
+      },
+      setFromBlob: async (blob) => {
+        return new Promise((resolve) => {
+          const url = URL.createObjectURL(blob);
+          const img = new Image();
+          img.onload = () => {
+            const tmp = document.createElement("canvas");
+            tmp.width = img.width;
+            tmp.height = img.height;
+            const ctx = tmp.getContext("2d")!;
+            ctx.drawImage(img, 0, 0);
+            const newMat = cv.imread(tmp);
+            if (canvasPtr.current) canvasPtr.current.delete();
+            canvasPtr.current = newMat;
+            const irr = setPreviewPaneDimensions({
+              width: img.width,
+              height: img.height,
+            });
+            createPreview(irr, canvasPtr.current, false);
+            URL.revokeObjectURL(url);
+            resolve();
+          };
+          img.src = url;
+        });
+      },
+    };
+    // No cleanup — the ref is overwritten on each re-run, and nullified
+    // naturally when CanvasActual unmounts (no image loaded).
+  }, [canvasPtr, canvasRef, cv, createPreview, setPreviewPaneDimensions, canvasApi]);
 
   // initial preview
   useEffect(() => {
@@ -308,13 +358,15 @@ const CanvasActual_ = (
       style={{
         position: "relative",
         ...(previewDims && buildImgContainerStyle(previewDims)),
-        ...(mode === "refine-background" && { backgroundColor: "#111" }),
+        ...((mode === "refine-background" || mode === "ml-refine-brush") && {
+          backgroundColor: "#111",
+        }),
       }}
     >
       <canvas
         id={`${saltId ? saltId + "-" : ""}preview-canvas`}
         style={{
-          ...(mode !== "refine-background" && {
+          ...(mode !== "refine-background" && mode !== "ml-refine-brush" && {
             backgroundSize: "20px 20px",
             backgroundImage:
               "linear-gradient(to bottom, #0001 10px, #0003 10px),linear-gradient(to right, #0002 10px, #0004 10px),linear-gradient(to right, transparent 10px, #ffff 10px),linear-gradient(to bottom, #0004 10px, transparent 10px),linear-gradient(to bottom, #ffff 10px, #ffff 10px)",
