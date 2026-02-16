@@ -14,6 +14,7 @@ import {
   RemoveBackgroundIcon,
   RefineBackgroundIcon,
 } from "romaine-components";
+import { BgRemovalHandler, MlRemoveBgIcon, MlRefineIcon } from "@romaine/bg-removal";
 import { useMeasure } from "react-use";
 import { useEffect } from "react";
 interface RomaineExampleProps {
@@ -32,6 +33,7 @@ export const RomaineExample = ({
   const RomaineRef = useRef<RomaineRef>(null);
   const { loaded, setMode, setScale, romaine } = useRomaine();
   const [state, setstate] = useState<File | string | null>(image);
+  const [exportFormat, setExportFormat] = useState<"image/png" | "image/jpeg">("image/png");
   const [containerRef, { x, y, width, height, top, right, bottom, left }] =
     useMeasure<HTMLDivElement>();
 
@@ -136,7 +138,9 @@ export const RomaineExample = ({
                 maxWidth={width}
                 pointSize={5}
                 lineWidth={1}
-              />
+              >
+                <BgRemovalHandler />
+              </Canvas>
 
               <FolderSelection
                 image={state}
@@ -163,52 +167,71 @@ export const RomaineExample = ({
                   )}
                 </span>
               </FolderSelection>
-              <button
+              <div
                 style={{
                   position: "absolute",
                   right: 0,
                   bottom: "3ch",
                   zIndex: 400,
-                  outline: "thin solid black",
-                  borderRadius: 0,
-                  fontSize: "16px",
-                  background: "white",
                   width: "240px",
-                  border: "none",
-                  cursor: "pointer",
-                }}
-                onClick={async () => {
-                  setMode && setMode(null);
-                  // need to let mode actually get set to null
-                  // React 18 useTransition would be nice here...
-                  // but for backwards compatability currently doing this...
-                  setTimeout(async () => {
-                    // data url
-                    // console.log(
-                    //   await RomaineRef.current?.getDataURL?.({
-                    //     ...imageExportOptions,
-                    //   })
-                    // );
-                    if (setBlob && RomaineRef.current?.getBlob) {
-                      const newBlob =
-                        (await RomaineRef.current?.getBlob({
-                          ...imageExportOptions,
-                          jpeg: {
-                            transparentToWhite: true,
-                          },
-                        })) || null;
-                      // console.log(newBlob);
-                      setBlob(newBlob);
-                    } else {
-                      console.warn(
-                        "You must give the example setBlob as an input"
-                      );
-                    }
-                  }, 0);
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 4,
                 }}
               >
-                Export Image
-              </button>
+                <div style={{ display: "flex", gap: 0 }}>
+                  {(["image/png", "image/jpeg"] as const).map((fmt) => (
+                    <button
+                      key={fmt}
+                      onClick={() => setExportFormat(fmt)}
+                      style={{
+                        flex: 1,
+                        padding: "4px 0",
+                        fontSize: "14px",
+                        cursor: "pointer",
+                        border: "1px solid black",
+                        background: exportFormat === fmt ? "#333" : "white",
+                        color: exportFormat === fmt ? "white" : "black",
+                      }}
+                    >
+                      {fmt === "image/png" ? "PNG" : "JPEG"}
+                    </button>
+                  ))}
+                </div>
+                <button
+                  style={{
+                    outline: "thin solid black",
+                    borderRadius: 0,
+                    fontSize: "16px",
+                    background: "white",
+                    border: "none",
+                    cursor: "pointer",
+                    width: "100%",
+                  }}
+                  onClick={async () => {
+                    setMode && setMode(null);
+                    setTimeout(async () => {
+                      if (setBlob && RomaineRef.current?.getBlob) {
+                        const newBlob =
+                          (await RomaineRef.current?.getBlob({
+                            ...imageExportOptions,
+                            type: exportFormat,
+                            jpeg: {
+                              transparentToWhite: true,
+                            },
+                          })) || null;
+                        setBlob(newBlob);
+                      } else {
+                        console.warn(
+                          "You must give the example setBlob as an input"
+                        );
+                      }
+                    }, 0);
+                  }}
+                >
+                  Export as {exportFormat === "image/png" ? "PNG" : "JPEG"}
+                </button>
+              </div>
               <div
                 style={{
                   position: "absolute",
@@ -236,6 +259,8 @@ export const RomaineExample = ({
                   <FlipVerticalIcon />
                   <RemoveBackgroundIcon />
                   <RefineBackgroundIcon />
+                  <MlRemoveBgIcon />
+                  <MlRefineIcon />
                 </div>
               </div>
             </>

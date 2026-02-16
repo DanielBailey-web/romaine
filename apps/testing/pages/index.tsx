@@ -13,7 +13,8 @@ export default function Web() {
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", "image.png"); //or any other extension
+      const ext = blob.type === "image/jpeg" ? "jpg" : "png";
+      link.setAttribute("download", `image.${ext}`);
       document.body.appendChild(link);
       link.click();
     }
@@ -23,7 +24,6 @@ export default function Web() {
       <Romaine openCvPath="/cv.js">
         <RomaineExample
           image={null}
-          imageExportOptions={{ type: "image/jpeg" }}
           setBlob={setBlob}
         />
       </Romaine>

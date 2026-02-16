@@ -10,7 +10,9 @@
   },
   "dependencies": {
     "@builder.io/partytown": "^0.10.3",
+    "@romaine/bg-removal": "*",
     "next": "^15.3.3",
+    "onnxruntime-web": "1.21.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-use": "^17.6.0",
@@ -21,8 +23,8 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^22.15.29",
-    "autoprefixer": "^10.4.21",
     "@types/react": "^19.2.13",
+    "autoprefixer": "^10.4.21",
     "config": "*",
     "eslint": "^9.27.0",
     "postcss": "^8.5.6",
