@@ -1,0 +1,42 @@
+{
+  "name": "@romaine/bg-removal",
+  "version": "0.1.0",
+  "description": "ML-based background removal plugin for romaine using @imgly/background-removal",
+  "main": "dist/index.jsx",
+  "types": "dist/",
+  "files": [
+    "dist/"
+  ],
+  "type": "module",
+  "scripts": {
+    "build": "rollup -c --environment NODE_ENV=production",
+    "dev": "rollup -c -w"
+  },
+  "keywords": [
+    "romaine",
+    "background-removal",
+    "image",
+    "ml",
+    "onnx",
+    "react"
+  ],
+  "author": "Daniel Bailey",
+  "license": "MIT",
+  "peerDependencies": {
+    "react": ">=16.8.3",
+    "romaine": ">=0.10.0"
+  },
+  "dependencies": {
+    "@imgly/background-removal": "^1.5.0"
+  },
+  "devDependencies": {
+    "@rollup/plugin-replace": "^6.0.3",
+    "@types/react": "^19.2.13",
+    "rollup": "^4.57.1",
+    "rollup-plugin-delete": "^2.0.0",
+    "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rollup-plugin-typescript2": "^0.36.0",
+    "tslib": "^2.8.1",
+    "typescript": "^5.9.3"
+  }
+}
