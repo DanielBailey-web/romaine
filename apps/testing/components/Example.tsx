@@ -14,7 +14,7 @@ import {
   RemoveBackgroundIcon,
   RefineBackgroundIcon,
 } from "romaine-components";
-import { BgRemovalHandler, MlRemoveBgIcon, MlRefineIcon } from "@romaine/bg-removal";
+import { BgRemovalHandler, MlRemoveBgIcon, MlRefineIcon } from "@romaine-plugins/bg-remover";
 import { useMeasure } from "react-use";
 import { useEffect } from "react";
 interface RomaineExampleProps {

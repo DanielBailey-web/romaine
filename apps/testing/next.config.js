@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  transpilePackages: ["ui", "romaine", "romaine-components", "@romaine/bg-removal"],
+  transpilePackages: ["ui", "romaine", "romaine-components", "@romaine-plugins/bg-remover"],
   experimental: { nextScriptWorkers: true },
   webpack: (config, { isServer }) => {
     if (isServer) {
