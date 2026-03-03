@@ -12,6 +12,14 @@ export interface RemoveBgOptions {
   progress?: ProgressCallback;
 }
 
+/** Preloads the ML model and WASM runtime so the first inference is instant. */
+export async function preloadBgRemoval(
+  opts: RemoveBgOptions = {}
+): Promise<void> {
+  const { preload } = await import("@imgly/background-removal");
+  return preload({ model: opts.model ?? "isnet_fp16", progress: opts.progress });
+}
+
 export async function removeBg(
   blob: Blob,
   opts: RemoveBgOptions = {}

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useRomaine } from "romaine";
-import { segmentFg, ModelType } from "./removeBg";
+import { segmentFg, preloadBgRemoval, ModelType } from "./removeBg";
 import {
   getMlMaskState,
   setMlMaskState,
@@ -11,6 +11,8 @@ import { MlBrushCanvas } from "./MlBrushCanvas";
 
 export interface BgRemovalHandlerProps {
   model?: ModelType;
+  /** Preload the ML model and WASM runtime on mount so first inference is instant. */
+  preload?: boolean;
 }
 
 /** Waits for canvasApi to be populated (sibling effect ordering). */
@@ -34,6 +36,7 @@ async function waitForApi(
 
 export const BgRemovalHandler = ({
   model = "isnet_fp16",
+  preload = false,
 }: BgRemovalHandlerProps) => {
   const {
     canvasApi,
@@ -46,6 +49,15 @@ export const BgRemovalHandler = ({
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const abortRef = useRef(false);
+
+  // Preload ML model and WASM runtime on mount
+  useEffect(() => {
+    if (preload) {
+      preloadBgRemoval({ model }).catch(() => {
+        // Silently fail — preload is best-effort
+      });
+    }
+  }, [preload, model]);
 
   const handleProgress = useCallback(
     (_key: string, current: number, total: number) => {

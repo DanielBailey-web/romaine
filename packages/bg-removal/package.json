@@ -1,6 +1,6 @@
 {
-  "name": "@romaine/bg-removal",
-  "version": "0.2.0",
+  "name": "@romaine-plugins/bg-remover",
+  "version": "0.2.1",
   "description": "ML-based background removal plugin for romaine using @imgly/background-removal",
   "main": "dist/index.jsx",
   "types": "dist/",

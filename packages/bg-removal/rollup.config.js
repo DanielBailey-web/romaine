@@ -13,7 +13,7 @@ export default [
     input: "src/index.ts",
     output: {
       esModule: false,
-      name: "@romaine/bg-removal",
+      name: "@romaine-plugins/bg-remover",
       file: "dist/index.jsx",
       format: "esm",
       sourcemap: true,

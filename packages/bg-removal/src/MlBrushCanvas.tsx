@@ -25,7 +25,7 @@ export const MlBrushCanvas = () => {
   const strokesRef = useRef<BrushStroke[]>([]);
   const currentStrokeRef = useRef<BrushStroke | null>(null);
   const mousePos = useRef<{ x: number; y: number } | null>(null);
-  const [dims, setDims] = useState({ width: 0, height: 0 });
+  const [dims, setDims] = useState({ width: 0, height: 0, offsetX: 0, offsetY: 0 });
 
   // Draggable toolbar state
   const [toolbarPos, setToolbarPos] = useState<{
@@ -47,17 +47,29 @@ export const MlBrushCanvas = () => {
     }
   }, [setMode]);
 
-  // Measure container dimensions
+  // Measure the CanvasActual inner div (aspect-ratio-constrained preview area),
+  // not the outer wrapper (which is maxWidth × maxHeight and may be larger).
+  // Also compute its offset within the wrapper so overlays align correctly.
   useEffect(() => {
-    const el = containerRef.current?.parentElement;
+    const wrapper = containerRef.current?.parentElement;
+    if (!wrapper) return;
+    const previewCanvas = wrapper.querySelector("canvas[id$='preview-canvas']");
+    const el = previewCanvas?.parentElement;
     if (!el) return;
     const update = () => {
-      const rect = el.getBoundingClientRect();
-      setDims({ width: rect.width, height: rect.height });
+      const wrapperRect = wrapper.getBoundingClientRect();
+      const elRect = el.getBoundingClientRect();
+      setDims({
+        width: elRect.width,
+        height: elRect.height,
+        offsetX: elRect.left - wrapperRect.left,
+        offsetY: elRect.top - wrapperRect.top,
+      });
     };
     update();
     const observer = new ResizeObserver(update);
     observer.observe(el);
+    observer.observe(wrapper);
     return () => observer.disconnect();
   }, []);
 
@@ -249,7 +261,16 @@ export const MlBrushCanvas = () => {
   }, [setMode]);
 
   return (
-    <div ref={containerRef}>
+    <div
+      ref={containerRef}
+      style={{
+        position: "absolute",
+        left: dims.offsetX,
+        top: dims.offsetY,
+        width: dims.width,
+        height: dims.height,
+      }}
+    >
       {/* Ghost canvas: faded original image */}
       <canvas
         ref={ghostRef}
