@@ -1063,6 +1063,41 @@
   resolved "https://registry.npmjs.org/@next/swc-darwin-arm64/-/swc-darwin-arm64-15.5.12.tgz"
   integrity sha512-RnRjBtH8S8eXCpUNkQ+543DUc7ys8y15VxmFU9HRqlo9BG3CcBUiwNtF8SNoi2xvGCVJq1vl2yYq+3oISBS0Zg==
 
+"@next/swc-darwin-x64@15.5.12":
+  version "15.5.12"
+  resolved "https://registry.npmjs.org/@next/swc-darwin-x64/-/swc-darwin-x64-15.5.12.tgz"
+  integrity sha512-nqa9/7iQlboF1EFtNhWxQA0rQstmYRSBGxSM6g3GxvxHxcoeqVXfGNr9stJOme674m2V7r4E3+jEhhGvSQhJRA==
+
+"@next/swc-linux-arm64-gnu@15.5.12":
+  version "15.5.12"
+  resolved "https://registry.npmjs.org/@next/swc-linux-arm64-gnu/-/swc-linux-arm64-gnu-15.5.12.tgz"
+  integrity sha512-dCzAjqhDHwmoB2M4eYfVKqXs99QdQxNQVpftvP1eGVppamXh/OkDAwV737Zr0KPXEqRUMN4uCjh6mjO+XtF3Mw==
+
+"@next/swc-linux-arm64-musl@15.5.12":
+  version "15.5.12"
+  resolved "https://registry.npmjs.org/@next/swc-linux-arm64-musl/-/swc-linux-arm64-musl-15.5.12.tgz"
+  integrity sha512-+fpGWvQiITgf7PUtbWY1H7qUSnBZsPPLyyq03QuAKpVoTy/QUx1JptEDTQMVvQhvizCEuNLEeghrQUyXQOekuw==
+
+"@next/swc-linux-x64-gnu@15.5.12":
+  version "15.5.12"
+  resolved "https://registry.npmjs.org/@next/swc-linux-x64-gnu/-/swc-linux-x64-gnu-15.5.12.tgz"
+  integrity sha512-jSLvgdRRL/hrFAPqEjJf1fFguC719kmcptjNVDJl26BnJIpjL3KH5h6mzR4mAweociLQaqvt4UyzfbFjgAdDcw==
+
+"@next/swc-linux-x64-musl@15.5.12":
+  version "15.5.12"
+  resolved "https://registry.npmjs.org/@next/swc-linux-x64-musl/-/swc-linux-x64-musl-15.5.12.tgz"
+  integrity sha512-/uaF0WfmYqQgLfPmN6BvULwxY0dufI2mlN2JbOKqqceZh1G4hjREyi7pg03zjfyS6eqNemHAZPSoP84x17vo6w==
+
+"@next/swc-win32-arm64-msvc@15.5.12":
+  version "15.5.12"
+  resolved "https://registry.npmjs.org/@next/swc-win32-arm64-msvc/-/swc-win32-arm64-msvc-15.5.12.tgz"
+  integrity sha512-xhsL1OvQSfGmlL5RbOmU+FV120urrgFpYLq+6U8C6KIym32gZT6XF/SDE92jKzzlPWskkbjOKCpqk5m4i8PEfg==
+
+"@next/swc-win32-x64-msvc@15.5.12":
+  version "15.5.12"
+  resolved "https://registry.npmjs.org/@next/swc-win32-x64-msvc/-/swc-win32-x64-msvc-15.5.12.tgz"
+  integrity sha512-Z1Dh6lhFkxvBDH1FoW6OU/L6prYwPSlwjLiZkExIAh8fbP6iI/M7iGTQAJPYJ9YFlWobCZ1PHbchFhFYb2ADkw==
+
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
   resolved "https://registry.npmjs.org/@nodelib/fs.scandir/-/fs.scandir-2.1.5.tgz"
@@ -1172,8 +1207,8 @@
   resolved "https://registry.npmjs.org/@rollup/rollup-darwin-arm64/-/rollup-darwin-arm64-4.57.1.tgz"
   integrity sha512-crNPrwJOrRxagUYeMn/DZwqN88SDmwaJ8Cvi/TN1HnWBU7GwknckyosC2gd0IqYRsHDEnXf328o9/HC6OkPgOg==
 
-"@romaine/bg-removal@*", "@romaine/bg-removal@file:/Users/danielbailey/Desktop/romaine/packages/bg-removal":
-  version "0.2.0"
+"@romaine-plugins/bg-remover@*", "@romaine-plugins/bg-remover@^0.2.0", "@romaine-plugins/bg-remover@file:/Users/danielbailey/Desktop/romaine/packages/bg-removal":
+  version "0.2.1"
   resolved "file:packages/bg-removal"
   dependencies:
     "@imgly/background-removal" "^1.5.0"
@@ -4056,11 +4091,11 @@ rollup@*, rollup@^1.20.0||^2.0.0||^3.0.0||^4.0.0, rollup@^4.57.1, rollup@>=1.26.
     "@rollup/rollup-win32-x64-msvc" "4.57.1"
     fsevents "~2.3.2"
 
-romaine-components@*, "romaine-components@file:/Users/danielbailey/Desktop/romaine/packages/romaine-components":
+romaine-components@*, romaine-components@^0.11.0, "romaine-components@file:/Users/danielbailey/Desktop/romaine/packages/romaine-components":
   version "0.11.0"
   resolved "file:packages/romaine-components"
 
-romaine@*, romaine@>=0.10.0, romaine@>0.8.0, "romaine@file:/Users/danielbailey/Desktop/romaine/packages/romaine":
+romaine@*, romaine@^0.11.0, romaine@>=0.10.0, romaine@>0.8.0, "romaine@file:/Users/danielbailey/Desktop/romaine/packages/romaine":
   version "0.11.0"
   resolved "file:packages/romaine"
   dependencies:
@@ -4493,7 +4528,7 @@ tapable@^2.3.0:
   resolved "file:apps/testing"
   dependencies:
     "@builder.io/partytown" "^0.10.3"
-    "@romaine/bg-removal" "*"
+    "@romaine-plugins/bg-remover" "*"
     next "^15.3.3"
     onnxruntime-web "1.21.0"
     react "^19.2.4"

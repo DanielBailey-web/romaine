@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@builder.io/partytown": "^0.10.3",
-    "@romaine/bg-removal": "*",
+    "@romaine-plugins/bg-remover": "*",
     "next": "^15.3.3",
     "onnxruntime-web": "1.21.0",
     "react": "^19.2.4",
