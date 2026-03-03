@@ -1,76 +1,90 @@
 # romaine-components
 
-Component library for use with <a href="https://www.npmjs.com/package/romaine">romaine</a>
+Component library for use with [romaine](https://www.npmjs.com/package/romaine)
 
-# Installation
+## Installation
 
-`$ npm i romaine-components`
-OR
-`$ yarn add romaine-components romaine`
+```bash
+npm i romaine romaine-components
+# or
+yarn add romaine romaine-components
+```
 
-# Example
+## Available Components
 
-```ts
-import { useEffect, useState, useMemo } from "react";
-import { RomaineExample } from "romaine-components/example";
-import { Romaine } from "romaine";
+| Component               | Description                                    | Shortcut         |
+| :---------------------- | :--------------------------------------------- | :--------------- |
+| `CropperIcon`           | Enter regular crop mode                        | —                |
+| `PerspectiveIcon`       | Enter perspective crop mode                    | —                |
+| `RotateLeft`            | Rotate image counter-clockwise                 | —                |
+| `RotateRight`           | Rotate image clockwise                         | —                |
+| `FlipHorizontalIcon`    | Flip image horizontally                        | —                |
+| `FlipVerticalIcon`      | Flip image vertically                          | —                |
+| `RemoveBackgroundIcon`  | Remove background via GrabCut (OpenCV)         | Ctrl + Shift + B |
+| `RefineBackgroundIcon`  | Brush refinement for GrabCut result            | Ctrl + Shift + R |
+| `UndoIcon`              | Undo last action                               | —                |
+| `FullReset`             | Reset to original image                        | —                |
+| `FolderSelection`       | File/URL input for loading images              | —                |
+
+## Example
+
+```tsx
+import { Romaine, Canvas, useRomaine } from "romaine";
+import {
+  CropperIcon,
+  PerspectiveIcon,
+  RotateLeft,
+  RotateRight,
+  FlipHorizontalIcon,
+  FlipVerticalIcon,
+  RemoveBackgroundIcon,
+  RefineBackgroundIcon,
+  UndoIcon,
+  FullReset,
+  FolderSelection,
+} from "romaine-components";
 
 function App() {
   const [blob, setBlob] = useState<Blob | null>(null);
-  const image = useMemo(
-    () => `https://source.unsplash.com/random?unique=${Math.random()}`,
-    []
-  );
-  useEffect(() => {
-    if (blob !== null) {
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", "image.png"); //or any other extension
-      document.body.appendChild(link);
-      link.click();
-    }
-  }, [blob]);
 
   return (
-    <div className="App">
-      <Romaine angle={90}>
-        <RomaineExample
-          imageExportOptions={{ type: "image/jpeg", quality: 0.92 }}
-          setBlob={setBlob}
-          image={image}
-        />
-      </Romaine>
-    </div>
+    <Romaine>
+      <Editor setBlob={setBlob} />
+    </Romaine>
   );
 }
 
-export default App;
+function Editor({ setBlob }) {
+  const { loaded } = useRomaine();
+
+  return loaded ? (
+    <div>
+      <Canvas image="/photo.jpg" maxWidth={800} maxHeight={600} />
+      <div>
+        <CropperIcon />
+        <PerspectiveIcon />
+        <RotateLeft />
+        <RotateRight />
+        <FlipHorizontalIcon />
+        <FlipVerticalIcon />
+        <RemoveBackgroundIcon />
+        <RefineBackgroundIcon />
+        <UndoIcon />
+        <FullReset />
+      </div>
+    </div>
+  ) : null;
+}
 ```
 
-# Field Inputs
+## Export Options
 
-## Romaine
-
-### Note:
-
-Changing props triggers the Context Alternative, which causes an un-needed render when you can use the context alternative yourself.
-
-| Parameter | Type     | Description                  | Default | Context Alternative |
-| :-------- | :------- | :--------------------------- | :------ | :------------------ |
-| `angle`   | `number` | Turn angle for rotation tool | `90`    | `setAngle(90)`      |
-
-## Romaine Components
-
-| Parameter            | Type       | Description                                              | Default     |
-| :------------------- | :--------- | :------------------------------------------------------- | :---------- |
-| `imageExportOptions` | `object`   | Object given to `RomaineRef.current?.getBlob()` function | `90`        |
-| `setBlob`            | `function` | setter function give from useState hook                  | `undefined` |
-| `image`              | `string`   | location (URL or File) of the image                      | `null`      |
-
-### imageExportOptions
-
-| Parameter            | Type     | Description                                                         | Default     |
-| :------------------- | :------- | :------------------------------------------------------------------ | :---------- |
-| `type: "image/jpeg"` | `string` | Object given to `RomaineRef.current?.getBlob()` function            | `image/png` |
-| `quality`            | `number` | Quality settings for image when type = `image/webp` OR `image/jpeg` | `0.92`      |
+```tsx
+const blob = await romaineRef.current?.getBlob({
+  type: "image/jpeg",       // "image/png" (default) or "image/jpeg"
+  quality: 0.92,            // JPEG quality (0-1)
+  jpeg: {
+    transparentToWhite: true // blend transparent pixels to white for JPEG
+  }
+});
+```
