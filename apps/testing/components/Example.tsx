@@ -216,6 +216,7 @@ export const RomaineExample = ({
                           (await RomaineRef.current?.getBlob({
                             ...imageExportOptions,
                             type: exportFormat,
+                            maxSize: { width: 1280, height: 1280 },
                             jpeg: {
                               transparentToWhite: true,
                             },
