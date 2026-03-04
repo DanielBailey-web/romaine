@@ -62,6 +62,40 @@ function MyEditor() {
 | `pointSize` | `number`                | Crop point handle size            | `5`         |
 | `lineWidth` | `number`                | Crop border line width            | `1`         |
 
+## Exporting
+
+Use a ref on `<Canvas>` to access export methods:
+
+```tsx
+const ref = useRef<RomaineRef>(null);
+
+// Export as blob
+const blob = await ref.current?.getBlob({
+  type: "image/jpeg",
+  quality: 0.85,
+  maxSize: { width: 1920, height: 1080 },
+  jpeg: { transparentToWhite: true },
+});
+
+// Export as data URL
+const dataURL = await ref.current?.getDataURL({
+  type: "image/png",
+  maxSize: { width: 1920, height: 1080 },
+});
+```
+
+### ImageExportOptions
+
+| Parameter  | Type                                                 | Description                                                                                                  |
+| :--------- | :--------------------------------------------------- | :----------------------------------------------------------------------------------------------------------- |
+| `type`     | `"image/png" \| "image/jpeg" \| "image/webp" \| "keep-same"` | Output format. `"keep-same"` preserves the original file type.                                      |
+| `quality`  | `number`                                             | 0–1 quality for lossy formats (JPEG default 0.92, WebP default 0.80).                                       |
+| `maxSize`  | `{ width: number; height: number }`                  | Maximum export dimensions. If the image exceeds either dimension, it is downscaled proportionally to fit.    |
+
+`getBlob` also accepts a `jpeg.transparentToWhite` option to alpha-blend transparent pixels against white before JPEG export.
+
+> **Note:** `maxSize` only affects the exported output — it does not modify the working image. Use the `scale` mode for permanent resizing.
+
 ## Plugin Architecture
 
 Romaine supports extensible commands via the `(string & {})` union on `RomaineCommands`. Plugins can:

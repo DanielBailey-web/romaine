@@ -20,6 +20,7 @@ import { usePreview } from "./romaine/usePreview";
 import { useCanvas } from "./romaine/useCanvas";
 import { ImagePtr } from "../types";
 import { handleModeChange } from "../util/image/mode";
+import { imshowWithMaxSize } from "../util/image/resizeCanvasForExport";
 import { BrushCanvas } from "./BrushRefine";
 // import { createFilterMat } from "../util/image/filter/createFilterMat";
 // import { sepia } from "../util/image/filter/sepia";
@@ -68,7 +69,7 @@ const CanvasActual_ = (
       ) => {
         return new Promise((resolve) => {
           if (canvasPtr.current) {
-            cv.imshow(canvasRef.current, canvasPtr.current);
+            imshowWithMaxSize(cv, canvasRef.current, canvasPtr.current, opts?.maxSize);
             if (opts.jpeg?.transparentToWhite && opts.type === "image/jpeg")
               transparentToWhite: {
                 const ctx = canvasRef.current.getContext("2d");
@@ -114,7 +115,7 @@ const CanvasActual_ = (
         return new Promise((resolve, reject) => {
           try {
             if (canvasPtr.current) {
-              cv.imshow(canvasRef.current, canvasPtr.current);
+              imshowWithMaxSize(cv, canvasRef.current, canvasPtr.current, opts?.maxSize);
               resolve(
                 canvasRef.current.toDataURL(
                   opts?.type === "keep-same"
@@ -168,7 +169,7 @@ const CanvasActual_ = (
       getBlob: async (opts) => {
         return new Promise((resolve) => {
           if (canvasPtr.current) {
-            cv.imshow(canvasRef.current, canvasPtr.current);
+            imshowWithMaxSize(cv, canvasRef.current, canvasPtr.current, opts?.maxSize);
             canvasRef.current.toBlob(
               (blob) => resolve(blob),
               opts?.type === "keep-same" ? "image/png" : opts?.type,

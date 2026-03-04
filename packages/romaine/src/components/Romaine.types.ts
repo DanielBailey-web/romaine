@@ -55,4 +55,7 @@ export interface ImageExportOptions {
    * @external https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob
    */
   quality: number;
+  /** Maximum export dimensions. If the image exceeds either dimension, it will
+   *  be downscaled proportionally (preserving aspect ratio) to fit within these bounds. */
+  maxSize?: { width: number; height: number };
 }

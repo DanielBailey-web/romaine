@@ -4,3 +4,4 @@ export * from "./multiplyMatrices";
 export * from "./addPadding";
 export * from "./cropOpenCV";
 export { hasGrabCutMask } from "./removeBackground";
+export { imshowWithMaxSize } from "./resizeCanvasForExport";
